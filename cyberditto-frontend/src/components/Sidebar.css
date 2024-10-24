@@ -1,0 +1,93 @@
+/* General Sidebar Container */
+.sidebar-container {
+    width: 200px; /* Fixed width */
+    height: 100vh; /* Full height */
+    background-color: #1e1e1e; /* Dark grey/black background */
+    color: #ffffff; /* White text */
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar Menu */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+/* Sidebar Item */
+.sidebar-item {
+    width: 100%;
+    padding: 10px;
+}
+
+/* Sidebar Link */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #ffffff; /* White text for items */
+    font-size: 14px;
+    padding: 12px 15px;
+    transition: background 0.3s ease;
+    border-radius: 4px; /* Rounded corners for a modern look */
+}
+
+/* Sidebar Icon Styling */
+.sidebar-icon {
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+/* Hover Effects */
+.sidebar-link:hover {
+    background-color: #333333; /* Light grey on hover */
+    cursor: pointer;
+}
+
+/* Active or Selected Link Styling */
+.sidebar-link.active {
+    background-color: #444444; /* Slightly lighter grey */
+    font-weight: bold;
+}
+
+/* Logout Button */
+.logout-button {
+    background-color: #444444; /* Dark grey for the logout button */
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    margin: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+/* Logout Button Hover Effect */
+.logout-button:hover {
+    background-color: #666666; /* Slightly lighter grey on hover */
+}
+
+/* Responsive Sidebar (for small screens) */
+@media (max-width: 768px) {
+    .sidebar-container {
+        width: 200px;
+    }
+
+    .sidebar-link {
+        font-size: 12px; /* Smaller font size for smaller screens */
+    }
+
+    .sidebar-icon {
+        font-size: 16px; /* Smaller icons for smaller screens */
+    }
+}
