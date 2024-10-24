@@ -8,9 +8,6 @@ CyberDitto provides an automated platform for creating digital twins of real-wor
 - [Technologies Used](#technologies-used)
 - [Architecture](#architecture)
 - [Setup Instructions](#setup-instructions)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 1. **User Registration & Onboarding**
