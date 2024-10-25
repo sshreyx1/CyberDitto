@@ -1,0 +1,408 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.app-emulation {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #f0f2f5;
+}
+
+.app-emulation-content {
+    flex: 1;
+    margin-left: 200px;
+    padding: 24px;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.app-emulation-header {
+    margin-bottom: 32px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.app-emulation-header h1 {
+    color: #2d3748;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.app-emulation-subtitle {
+    color: #666;
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+.app-emulation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+.app-emulation-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-emulation-card-header {
+    padding: 16px 20px;
+    font-weight: 600;
+    font-size: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f8fafc;
+    color: #2d3748;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+}
+
+.card-icon {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #1a73e8;
+}
+
+.app-emulation-card-content {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Scenario Form Styles */
+.scenario-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.form-group select,
+.form-group input {
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+}
+
+.run-scenario-button {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.run-scenario-button:hover {
+    background-color: #1557b0;
+}
+
+/* Operations List Styles */
+.operations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.operation-item {
+    padding: 16px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.operation-name {
+    font-weight: 500;
+    color: #2d3748;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.operation-status {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.operation-item.active .operation-status {
+    background-color: #1a73e8;
+    color: white;
+}
+
+.operation-item.completed .operation-status {
+    background-color: #10b981;
+    color: white;
+}
+
+.operation-details {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #666;
+}
+
+/* Defense Metrics Styles */
+.defense-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.metric-group {
+    text-align: center;
+}
+
+.circular-progress {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(#1a73e8 75%, #e2e8f0 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    position: relative;
+}
+
+.circular-progress::before {
+    content: '';
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    background: white;
+    border-radius: 50%;
+}
+
+.percentage {
+    position: relative;
+    font-size: 24px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.defense-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.defense-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Attack Metrics Styles */
+.attack-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.technique-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.technique-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: #f8fafc;
+    border-radius: 6px;
+}
+
+.technique-item.success {
+    border-left: 4px solid #10b981;
+}
+
+.technique-item.failed {
+    border-left: 4px solid #ef4444;
+}
+
+.technique-status {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.technique-item.success .technique-status {
+    background-color: #10b981;
+    color: white;
+}
+
+.technique-item.failed .technique-status {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* MITRE Coverage Styles */
+.mitre-coverage {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.tactics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.tactic-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tactic-name {
+    flex: 1;
+    font-size: 14px;
+    color: #4a5568;
+}
+
+.techniques-progress {
+    flex: 2;
+    height: 8px;
+    background-color: #e2e8f0;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.techniques-progress .progress {
+    height: 100%;
+    background-color: #1a73e8;
+    border-radius: 4px;
+}
+
+.techniques-progress .count {
+    position: absolute;
+    right: -40px;
+    top: -4px;
+    font-size: 12px;
+    color: #666;
+}
+
+.coverage-summary {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.total-coverage {
+    margin-bottom: 16px;
+}
+
+.total-coverage .label {
+    font-size: 14px;
+    color: #666;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.total-coverage .value {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a73e8;
+}
+
+/* Remediation Styles */
+.remediation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.remediation-item {
+    padding: 16px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.remediation-title {
+    font-weight: 500;
+    color: #2d3748;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.remediation-steps {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.remediate-button {
+    padding: 8px 16px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.remediate-button:hover {
+    background-color: #059669;
+}
+
+/* Responsive Styles */
+@media (max-width: 1400px) {
+    .app-emulation-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .app-emulation-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-emulation-content {
+        margin-left: 60px;
+        padding: 16px;
+    }
+
+    .app-emulation-header h1 {
+        font-size: 24px;
+    }
+}

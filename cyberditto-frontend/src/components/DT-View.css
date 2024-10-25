@@ -1,0 +1,243 @@
+.dt-view-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    width: 100%;
+    position: relative;
+}
+
+.dt-view-wrapper .dt-view-content {
+    flex: 1;
+    margin-left: 200px;
+    padding: 24px;
+    min-height: 100vh;
+    max-width: calc(100vw - 200px);
+    box-sizing: border-box;
+}
+
+.dt-view-wrapper .dt-view-header {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dt-view-wrapper .dt-view-header h1 {
+    font-size: 24px;
+    color: #1e1e1e;
+    margin: 0;
+    margin-bottom: 8px;
+}
+
+.dt-view-wrapper .dt-view-header p {
+    color: #666;
+    margin: 0;
+}
+
+.dt-view-wrapper .twins-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.dt-view-wrapper .twin-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dt-view-wrapper .twin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dt-view-wrapper .twin-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dt-view-wrapper .twin-icon {
+    color: #1a73e8;
+}
+
+.dt-view-wrapper .twin-title h2 {
+    font-size: 18px;
+    color: #1e1e1e;
+    margin: 0;
+}
+
+.dt-view-wrapper .twin-status {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.dt-view-wrapper .status-running {
+    background: #e6f4ea;
+    color: #137333;
+}
+
+.dt-view-wrapper .status-stopped {
+    background: #fce8e6;
+    color: #c5221f;
+}
+
+.dt-view-wrapper .status-error {
+    background: #fef7e0;
+    color: #b06000;
+}
+
+.dt-view-wrapper .twin-details {
+    margin-bottom: 20px;
+}
+
+.dt-view-wrapper .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dt-view-wrapper .detail-row:last-child {
+    border-bottom: none;
+}
+
+.dt-view-wrapper .detail-label {
+    color: #666;
+    font-size: 14px;
+}
+
+.dt-view-wrapper .detail-value {
+    color: #1e1e1e;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.dt-view-wrapper .resource-usage {
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.dt-view-wrapper .resource-usage h3 {
+    font-size: 16px;
+    color: #1e1e1e;
+    margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dt-view-wrapper .resource-icon {
+    color: #1a73e8;
+}
+
+.dt-view-wrapper .usage-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dt-view-wrapper .usage-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dt-view-wrapper .usage-item label {
+    width: 60px;
+    font-size: 14px;
+    color: #666;
+}
+
+.dt-view-wrapper .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.dt-view-wrapper .progress-fill {
+    height: 100%;
+    background: #1a73e8;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.dt-view-wrapper .usage-item span {
+    width: 40px;
+    font-size: 14px;
+    color: #1e1e1e;
+    text-align: right;
+}
+
+.dt-view-wrapper .twin-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.dt-view-wrapper .action-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dt-view-wrapper .action-button.start {
+    background: #e6f4ea;
+    color: #137333;
+}
+
+.dt-view-wrapper .action-button.start:hover {
+    background: #d2ebd3;
+}
+
+.dt-view-wrapper .action-button.stop {
+    background: #fce8e6;
+    color: #c5221f;
+}
+
+.dt-view-wrapper .action-button.stop:hover {
+    background: #f8d7d5;
+}
+
+.dt-view-wrapper .action-button.monitor {
+    background: #e8f0fe;
+    color: #1a73e8;
+}
+
+.dt-view-wrapper .action-button.monitor:hover {
+    background: #d4e4fd;
+}
+
+@media (max-width: 768px) {
+    .dt-view-wrapper .dt-view-content {
+        margin-left: 60px;
+        max-width: calc(100vw - 60px);
+    }
+    
+    .dt-view-wrapper .twins-grid {
+        grid-template-columns: 1fr;
+    }
+}

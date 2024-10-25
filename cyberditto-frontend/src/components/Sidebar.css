@@ -1,93 +1,143 @@
-/* General Sidebar Container */
-.sidebar-container {
-    width: 200px; /* Fixed width */
-    height: 100vh; /* Full height */
-    background-color: #1e1e1e; /* Dark grey/black background */
-    color: #ffffff; /* White text */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+.app-sidebar {
+    font-family: 'Poppins', sans-serif;
+    width: 200px;
+    height: 100vh;
+    background-color: #1e1e1e;
+    color: #ffffff;
     position: fixed;
     top: 0;
     left: 0;
     padding-top: 20px;
     display: flex;
     flex-direction: column;
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Sidebar Menu */
-.sidebar-menu {
+.app-sidebar-menu {
     list-style: none;
     padding: 0;
     margin: 0;
     flex: 1;
 }
 
-/* Sidebar Item */
-.sidebar-item {
+.app-sidebar-item {
     width: 100%;
-    padding: 10px;
+    padding: 5px 10px;
 }
 
-/* Sidebar Link */
-.sidebar-link {
+.app-sidebar-link {
     display: flex;
     align-items: center;
     text-decoration: none;
-    color: #ffffff; /* White text for items */
+    color: #ffffff;
     font-size: 14px;
     padding: 12px 15px;
-    transition: background 0.3s ease;
-    border-radius: 4px; /* Rounded corners for a modern look */
-}
-
-/* Sidebar Icon Styling */
-.sidebar-icon {
-    margin-right: 12px;
-    font-size: 18px;
-}
-
-/* Hover Effects */
-.sidebar-link:hover {
-    background-color: #333333; /* Light grey on hover */
+    transition: all 0.3s ease;
+    font-weight: 400;
     cursor: pointer;
 }
 
-/* Active or Selected Link Styling */
-.sidebar-link.active {
-    background-color: #444444; /* Slightly lighter grey */
-    font-weight: bold;
+.app-sidebar-link-content {
+    display: flex;
+    align-items: center;
 }
 
-/* Logout Button */
-.logout-button {
-    background-color: #444444; /* Dark grey for the logout button */
+.app-sidebar-link:hover {
+    background-color: #333333;
+}
+
+.app-sidebar-link.active {
+    background-color: #333333;
+    font-weight: 500;
+}
+
+.app-sidebar-icon {
+    margin-right: 12px;
+    font-size: 18px;
+    min-width: 20px;
+}
+
+/* Remove chevron styles as they're not needed */
+.app-sidebar-chevron {
+    display: none;
+}
+
+.app-sidebar-submenu {
+    list-style: none;
+    padding: 5px 0 5px 44px;
+    margin: 0;
+    background-color: #262626;
+}
+
+.app-sidebar-sublink {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #b0b0b0;
+    font-size: 13px;
+    padding: 8px 15px;
+    transition: all 0.3s ease;
+}
+
+.app-sidebar-sublink:hover {
+    color: #ffffff;
+    background-color: #333333;
+}
+
+.app-sidebar-sublink.active {
+    color: #ffffff;
+    background-color: #333333;
+    font-weight: 500;
+}
+
+.app-sidebar-subicon {
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.app-sidebar-logout {
+    background-color: transparent;
     color: #ffffff;
     border: none;
-    padding: 12px;
+    padding: 12px 25px;
     margin: 10px;
     cursor: pointer;
     font-size: 14px;
+    font-family: 'Poppins', sans-serif;
     display: flex;
     align-items: center;
-    justify-content: center;
-    border-radius: 4px;
     transition: background 0.3s ease;
+    font-weight: 500;
 }
 
-/* Logout Button Hover Effect */
-.logout-button:hover {
-    background-color: #666666; /* Slightly lighter grey on hover */
+.app-sidebar-logout:hover {
+    background-color: #333333;
 }
 
-/* Responsive Sidebar (for small screens) */
 @media (max-width: 768px) {
-    .sidebar-container {
-        width: 200px;
+    .app-sidebar {
+        width: 60px;
     }
 
-    .sidebar-link {
-        font-size: 12px; /* Smaller font size for smaller screens */
+    .app-sidebar-link span,
+    .app-sidebar-logout span,
+    .app-sidebar-chevron {
+        display: none;
     }
 
-    .sidebar-icon {
-        font-size: 16px; /* Smaller icons for smaller screens */
+    .app-sidebar-submenu {
+        position: absolute;
+        left: 60px;
+        background-color: #1e1e1e;
+        padding: 10px;
+        border-radius: 4px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .app-sidebar-icon {
+        margin-right: 0;
     }
 }

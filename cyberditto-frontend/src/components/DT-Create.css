@@ -1,0 +1,158 @@
+.dt-create-wrapper {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #f0f2f5;
+    position: relative;
+}
+
+.dt-create-wrapper .dt-create-content {
+    flex: 1;
+    margin-left: 200px;
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    max-width: calc(100vw - 200px);
+}
+
+.dt-create-wrapper .dt-create-header {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dt-create-wrapper .dt-create-header h1 {
+    font-size: 24px;
+    color: #1e1e1e;
+    margin: 0;
+    margin-bottom: 8px;
+}
+
+.dt-create-wrapper .dt-create-header p {
+    color: #666;
+    margin: 0;
+}
+
+.dt-create-wrapper .dt-create-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.dt-create-wrapper .dt-create-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dt-create-wrapper .dt-create-section h2 {
+    font-size: 18px;
+    color: #1e1e1e;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dt-create-wrapper .section-icon {
+    width: 20px;
+    height: 20px;
+    color: #1a73e8;
+}
+
+.dt-create-wrapper .form-group {
+    margin-bottom: 16px;
+}
+
+.dt-create-wrapper .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #4a5568;
+    font-size: 14px;
+}
+
+.dt-create-wrapper .form-group input,
+.dt-create-wrapper .form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.dt-create-wrapper .form-group input:focus,
+.dt-create-wrapper .form-group select:focus {
+    outline: none;
+    border-color: #1a73e8;
+}
+
+.dt-create-wrapper .scanning-status {
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.dt-create-wrapper .scanning-progress,
+.dt-create-wrapper .scan-instructions,
+.dt-create-wrapper .scan-complete {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.dt-create-wrapper .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #1a73e8;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.dt-create-wrapper .scan-button {
+    width: 100%;
+    padding: 12px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dt-create-wrapper .scan-button:hover {
+    background: #1557b0;
+}
+
+.dt-create-wrapper .scan-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .dt-create-wrapper .dt-create-content {
+        margin-left: 60px;
+        max-width: calc(100vw - 60px);
+    }
+}
