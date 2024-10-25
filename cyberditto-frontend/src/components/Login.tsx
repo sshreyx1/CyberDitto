@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css'; // Adjust path as needed
+import './Login.css';
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -13,45 +13,45 @@ const Login: React.FC = () => {
 
         // Simple authentication check
         if (username === 'admin' && password === 'password') {
-            // Save auth token to local storage
             localStorage.setItem('authToken', 'some-token-value');
             localStorage.setItem('username', username);
-            navigate('/dashboard'); // Redirect to the dashboard
+            navigate('/dashboard');
         } else {
-            setError('Invalid username or password.'); // Show error message
+            setError('Invalid username or password.');
         }
     };
 
     return (
-        <div className="login-container">
-            <div className="login-box">
-                <div className="login-logo-section">
+        <div className="auth-login-container">
+            <div className="auth-login-box">
+                <div className="auth-login-logo-section">
+                    {/* Add your logo here if needed */}
                 </div>
                 <form onSubmit={handleLogin}>
-                    <div className="login-form-group">
+                    <div className="auth-login-form-group">
                         <input 
                             type="text" 
-                            className="login-input" 
+                            className="auth-login-input" 
                             placeholder="Username" 
                             value={username}
                             onChange={(e) => setUsername(e.target.value)} 
                             required 
                         />
                     </div>
-                    <div className="login-form-group">
+                    <div className="auth-login-form-group">
                         <input 
                             type="password" 
-                            className="login-input" 
+                            className="auth-login-input" 
                             placeholder="Password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} 
                             required 
                         />
                     </div>
-                    {error && <div className="login-error">{error}</div>}
-                    <button type="submit" className="login-button">Login</button>
+                    {error && <div className="auth-login-error">{error}</div>}
+                    <button type="submit" className="auth-login-button">Login</button>
                 </form>
-                <div className="login-signup-text">
+                <div className="auth-login-signup-text">
                     Don't have an account? <a href="/signup">Sign up</a>
                 </div>
             </div>
