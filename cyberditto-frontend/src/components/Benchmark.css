@@ -1,0 +1,273 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.app-benchmark {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #f0f2f5;
+}
+
+.app-benchmark-content {
+    flex: 1;
+    margin-left: 200px;
+    padding: 24px;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.app-benchmark-header {
+    margin-bottom: 32px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.app-benchmark-header h1 {
+    color: #2d3748;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.app-benchmark-subtitle {
+    color: #666;
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+.app-benchmark-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+.app-benchmark-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-benchmark-card-header {
+    padding: 16px 20px;
+    font-weight: 600;
+    font-size: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f8fafc;
+    color: #2d3748;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+}
+
+.app-benchmark-card-content {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Benchmark Form Styles */
+.benchmark-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.run-benchmark-button {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.run-benchmark-button:hover {
+    background-color: #1557b0;
+}
+
+/* Findings List Styles */
+.findings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.finding-item {
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid;
+}
+
+.finding-item.critical {
+    background-color: #fef2f2;
+    border-left-color: #ef4444;
+}
+
+.finding-item.warning {
+    background-color: #fffbeb;
+    border-left-color: #f59e0b;
+}
+
+.finding-title {
+    font-weight: 500;
+    color: #2d3748;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.finding-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.finding-severity {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Compliance Summary Styles */
+.compliance-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.compliance-score {
+    text-align: center;
+}
+
+.compliance-score .score {
+    font-size: 48px;
+    font-weight: 600;
+    color: #1a73e8;
+    display: block;
+}
+
+.compliance-score .score-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.compliance-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.breakdown-item .category {
+    flex: 1;
+    font-size: 14px;
+    color: #4a5568;
+}
+
+.progress-bar {
+    flex: 2;
+    height: 8px;
+    background-color: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar .progress {
+    height: 100%;
+    background-color: #1a73e8;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.breakdown-item .percentage {
+    font-size: 14px;
+    color: #666;
+    width: 40px;
+    text-align: right;
+}
+
+/* Remediation Styles */
+.remediation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.remediation-item {
+    padding: 16px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.remediation-title {
+    font-weight: 500;
+    color: #2d3748;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.remediation-steps {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.remediate-button {
+    padding: 8px 16px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.remediate-button:hover {
+    background-color: #059669;
+}
+
+@media (max-width: 1400px) {
+    .app-benchmark-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .app-benchmark-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-benchmark-content {
+        margin-left: 60px;
+        padding: 16px;
+    }
+
+    .app-benchmark-header h1 {
+        font-size: 24px;
+    }
+}
