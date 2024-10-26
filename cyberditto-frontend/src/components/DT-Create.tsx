@@ -6,6 +6,9 @@ import { Server, Network, CheckCircle, AlertCircle } from 'lucide-react';
 const DTCreate: React.FC = () => {
   const [scanStep, setScanStep] = useState<number>(1);
   const [scanning, setScanning] = useState<boolean>(false);
+  const [deploying, setDeploying] = useState<boolean>(false);
+  const [deploymentStep, setDeploymentStep] = useState<number>(0);
+  const [deploymentComplete, setDeploymentComplete] = useState<boolean>(false);
   const [networkData, setNetworkData] = useState({
     environmentName: '',
     endpointCount: '',
@@ -31,6 +34,42 @@ const DTCreate: React.FC = () => {
     }, 3000);
   };
 
+  const handleDeploy = async () => {
+    setDeploying(true);
+    
+    // Simulate deployment steps
+    const steps = [
+      'Environment Setup',
+      'Network Configuration',
+      'Endpoint Replication',
+      'Validation'
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setDeploymentStep(i + 1);
+    }
+
+    setTimeout(() => {
+      setDeploying(false);
+      setDeploymentComplete(true);
+    }, 1000);
+  };
+
+  const handleReset = () => {
+    setScanStep(1);
+    setDeploymentStep(0);
+    setDeploymentComplete(false);
+    setNetworkData({
+      environmentName: '',
+      endpointCount: '',
+      operatingSystem: 'Windows Server 2019',
+      networkType: 'Corporate LAN',
+      ipRange: '',
+      topology: 'Star'
+    });
+  };
+
   return (
     <div className="dt-create-wrapper">
       <Sidebar />
@@ -51,6 +90,7 @@ const DTCreate: React.FC = () => {
                 value={networkData.environmentName}
                 onChange={handleInputChange}
                 placeholder="e.g., Production Environment"
+                disabled={deploymentComplete}
               />
             </div>
             <div className="form-group">
@@ -61,6 +101,7 @@ const DTCreate: React.FC = () => {
                 value={networkData.endpointCount}
                 onChange={handleInputChange}
                 placeholder="Enter the number of endpoints"
+                disabled={deploymentComplete}
               />
             </div>
             <div className="form-group">
@@ -69,6 +110,7 @@ const DTCreate: React.FC = () => {
                 name="operatingSystem"
                 value={networkData.operatingSystem}
                 onChange={handleInputChange}
+                disabled={deploymentComplete}
               >
                 <option>Windows Server 2019</option>
                 <option>Windows Server 2016</option>
@@ -85,6 +127,7 @@ const DTCreate: React.FC = () => {
                 name="networkType"
                 value={networkData.networkType}
                 onChange={handleInputChange}
+                disabled={deploymentComplete}
               >
                 <option>Corporate LAN</option>
                 <option>DMZ</option>
@@ -99,6 +142,7 @@ const DTCreate: React.FC = () => {
                 value={networkData.ipRange}
                 onChange={handleInputChange}
                 placeholder="e.g., 192.168.1.0/24"
+                disabled={deploymentComplete}
               />
             </div>
             <div className="form-group">
@@ -107,6 +151,7 @@ const DTCreate: React.FC = () => {
                 name="topology"
                 value={networkData.topology}
                 onChange={handleInputChange}
+                disabled={deploymentComplete}
               >
                 <option>Star</option>
                 <option>Mesh</option>
@@ -128,6 +173,11 @@ const DTCreate: React.FC = () => {
                   <AlertCircle className="section-icon" />
                   <p>Configure the settings above and click Start Scan to begin the discovery process</p>
                 </div>
+              ) : deploymentComplete ? (
+                <div className="scan-complete">
+                  <CheckCircle className="section-icon" />
+                  <p>Digital Twin deployed successfully!</p>
+                </div>
               ) : (
                 <div className="scan-complete">
                   <CheckCircle className="section-icon" />
@@ -135,14 +185,50 @@ const DTCreate: React.FC = () => {
                 </div>
               )}
             </div>
-            <button 
-              className={`scan-button ${scanning ? 'scanning' : ''}`}
-              onClick={handleScan}
-              disabled={scanning}
-            >
-              {scanning ? 'Scanning...' : scanStep === 1 ? 'Start Scan' : 'Create Digital Twin'}
-            </button>
+            {deploymentComplete ? (
+              <button 
+                className="scan-button reset"
+                onClick={handleReset}
+              >
+                Create New Digital Twin
+              </button>
+            ) : (
+              <button 
+                className={`scan-button ${scanning || deploying ? 'scanning' : ''}`}
+                onClick={scanStep === 1 ? handleScan : handleDeploy}
+                disabled={scanning || deploying}
+              >
+                {scanning ? 'Scanning...' : 
+                 deploying ? 'Deploying...' : 
+                 scanStep === 1 ? 'Start Scan' : 'Deploy Digital Twin'}
+              </button>
+            )}
           </div>
+
+          {/* Deployment Status Section - Now stays visible after completion */}
+          {(scanStep === 2 || deploying || deploymentComplete) && (
+            <div className="dt-create-section">
+              <h2><CheckCircle className="section-icon" /> Deployment Status</h2>
+              <div className="status-container">
+                <div className={`status-item ${deploymentStep >= 1 ? 'completed' : ''}`}>
+                  <span className="status-label">Environment Setup</span>
+                  <span className="status-indicator"></span>
+                </div>
+                <div className={`status-item ${deploymentStep >= 2 ? 'completed' : ''}`}>
+                  <span className="status-label">Network Configuration</span>
+                  <span className="status-indicator"></span>
+                </div>
+                <div className={`status-item ${deploymentStep >= 3 ? 'completed' : ''}`}>
+                  <span className="status-label">Endpoint Replication</span>
+                  <span className="status-indicator"></span>
+                </div>
+                <div className={`status-item ${deploymentStep >= 4 ? 'completed' : ''}`}>
+                  <span className="status-label">Validation</span>
+                  <span className="status-indicator"></span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
