@@ -46,7 +46,7 @@
 
 .app-digitaltwin-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(12, 1fr);
     gap: 24px;
     padding: 0;
 }
@@ -66,21 +66,29 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.app-digitaltwin-card.performance-card {
+    grid-column: span 12;
+    min-height: 400px;
+}
+
+.app-digitaltwin-card:not(.performance-card) {
+    grid-column: span 6;
+}
+
 .app-digitaltwin-card-header {
     padding: 16px 20px;
     font-weight: 600;
     font-size: 16px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e2e8f0;
     background-color: #f8fafc;
     color: #2d3748;
     border-radius: 12px 12px 0 0;
     display: flex;
     align-items: center;
+    gap: 8px;
 }
 
 .card-icon {
-    margin-right: 10px;
-    font-size: 18px;
     color: #1a73e8;
 }
 
@@ -91,141 +99,297 @@
     flex-direction: column;
 }
 
-/* Form Styles */
-.config-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+/* Performance Chart Styles */
+.performance-chart {
+    width: 100%;
+    height: 300px;
+    padding: 16px 0;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #4a5568;
-}
-
-.form-group input,
-.form-group select {
-    padding: 10px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.2s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    border-color: #1a73e8;
-    outline: none;
-}
-
-.deploy-button {
-    margin-top: 16px;
-    padding: 12px;
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.deploy-button:hover {
-    background-color: #1557b0;
-}
-
-/* Status Styles */
-.status-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.status-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px;
-    background-color: #f8fafc;
-    border-radius: 6px;
-}
-
-.status-label {
-    font-size: 14px;
-    color: #4a5568;
-}
-
-.status-indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: #e2e8f0;
-}
-
-.status-item.completed .status-indicator {
-    background-color: #10b981;
-}
-
-/* Twins List Styles */
+/* Active Digital Twins Styles */
 .twins-list {
     display: flex;
     flex-direction: column;
+    gap: 20px;
+}
+
+.environment-card {
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.environment-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.env-header {
+    display: flex;
+    flex-direction: column;
     gap: 16px;
 }
 
-.twin-item {
+.env-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.env-main h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.env-status {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.env-status.running {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.env-status.stopped {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.env-metrics {
+    display: flex;
+    justify-content: flex-start;
+    gap: 32px;
+    padding: 16px 0;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.metric {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.metric svg {
+    color: #1a73e8;
+}
+
+.metric span {
+    color: #4a5568;
+}
+
+.metric .value {
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.metric.inactive {
+    color: #94a3b8;
+}
+
+.metric.inactive svg {
+    color: #94a3b8;
+}
+
+.metric.inactive span,
+.metric.inactive .value {
+    color: #94a3b8;
+}
+
+.env-info {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 16px;
+}
+
+.info-item {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+}
+
+.info-item:not(:last-child)::after {
+    content: "•";
+    margin-left: 24px;
+    color: #94a3b8;
+}
+
+/* Network Topology Styles */
+.topology-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.topology-stat-item {
+    text-align: center;
     padding: 16px;
     background-color: #f8fafc;
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease;
 }
 
-.twin-name {
+.topology-stat-item:hover {
+    transform: translateY(-2px);
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.topology-status {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.topology-header {
     font-weight: 500;
     color: #2d3748;
-    display: block;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
 }
 
-.twin-status {
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-left: 8px;
+.health-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.twin-status.active {
-    background-color: #10b981;
-    color: white;
+.health-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
 }
 
-.twin-status.stopped {
-    background-color: #ef4444;
-    color: white;
+.health-item.healthy {
+    background-color: #dcfce7;
+    color: #166534;
 }
 
-.twin-details {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #666;
+.health-item.warning {
+    background-color: #fef3c7;
+    color: #92400e;
 }
 
+/* Alerts Styles */
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.alert-item {
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    border-left: 4px solid;
+}
+
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.alert-item p {
+    font-size: 14px;
+    color: #4a5568;
+    margin: 4px 0;
+}
+
+.alert-item small {
+    color: #64748b;
+}
+
+.alert-item.high {
+    border-left-color: #ef4444;
+}
+
+.alert-item.medium {
+    border-left-color: #f59e0b;
+}
+
+.alert-item.low {
+    border-left-color: #10b981;
+}
+
+.alert-item.high .alert-header {
+    color: #ef4444;
+}
+
+.alert-item.medium .alert-header {
+    color: #f59e0b;
+}
+
+.alert-item.low .alert-header {
+    color: #10b981;
+}
+
+/* Chart Customization */
+.recharts-default-tooltip {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    padding: 8px 12px !important;
+}
+
+.recharts-tooltip-label {
+    color: #4a5568 !important;
+    font-weight: 500 !important;
+    margin-bottom: 4px !important;
+}
+
+/* Responsive Designs */
 @media (max-width: 1400px) {
-    .app-digitaltwin-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .app-digitaltwin-card.performance-card {
+        grid-column: span 12;
+    }
+    
+    .app-digitaltwin-card:not(.performance-card) {
+        grid-column: span 6;
     }
 }
 
 @media (max-width: 1024px) {
-    .app-digitaltwin-grid {
-        grid-template-columns: 1fr;
+    .app-digitaltwin-card.performance-card {
+        grid-column: span 12;
+    }
+    
+    .app-digitaltwin-card:not(.performance-card) {
+        grid-column: span 12;
+    }
+    
+    .env-metrics {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .performance-chart {
+        height: 250px;
     }
 }
 
@@ -237,5 +401,51 @@
 
     .app-digitaltwin-header h1 {
         font-size: 24px;
+    }
+    
+    .env-metrics {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .env-info {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .info-item:not(:last-child)::after {
+        display: none;
+    }
+    
+    .performance-chart {
+        height: 200px;
+    }
+    
+    .topology-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-digitaltwin-grid {
+        gap: 16px;
+    }
+    
+    .app-digitaltwin-header {
+        padding: 16px;
+    }
+    
+    .env-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .env-metrics {
+        padding: 12px 0;
+    }
+    
+    .performance-chart {
+        padding: 8px 0;
     }
 }
