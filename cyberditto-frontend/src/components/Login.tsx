@@ -1,23 +1,41 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { authService } from '../services/AuthService';
 import './Login.css';
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    useEffect(() => {
+        if (authService.isAuthenticated()) {
+            const from = location.state?.from?.pathname || '/dashboard';
+            navigate(from, { replace: true });
+        }
+    }, [navigate, location]);
+
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setError('');
+        setIsLoading(true);
 
-        // Simple authentication check
-        if (username === 'admin' && password === 'password') {
-            localStorage.setItem('authToken', 'some-token-value');
-            localStorage.setItem('username', username);
-            navigate('/dashboard');
-        } else {
-            setError('Invalid username or password.');
+        try {
+            const success = authService.login(username, password);
+            if (success) {
+                const from = location.state?.from?.pathname || '/dashboard';
+                navigate(from, { replace: true });
+            } else {
+                setError('Invalid username or password.');
+            }
+        } catch (err) {
+            setError('An error occurred during login. Please try again.');
+            console.error('Login error:', err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -25,9 +43,9 @@ const Login: React.FC = () => {
         <div className="auth-login-container">
             <div className="auth-login-box">
                 <div className="auth-login-logo-section">
-                    {/* Add your logo here if needed */}
+                    <h1 className="auth-login-title">Welcome Back</h1>
                 </div>
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleLogin} noValidate>
                     <div className="auth-login-form-group">
                         <input 
                             type="text" 
@@ -36,6 +54,9 @@ const Login: React.FC = () => {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)} 
                             required 
+                            autoComplete="username"
+                            disabled={isLoading}
+                            aria-label="Username"
                         />
                     </div>
                     <div className="auth-login-form-group">
@@ -46,14 +67,24 @@ const Login: React.FC = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} 
                             required 
+                            autoComplete="current-password"
+                            disabled={isLoading}
+                            aria-label="Password"
                         />
                     </div>
-                    {error && <div className="auth-login-error">{error}</div>}
-                    <button type="submit" className="auth-login-button">Login</button>
+                    {error && (
+                        <div className="auth-login-error" role="alert">
+                            {error}
+                        </div>
+                    )}
+                    <button 
+                        type="submit" 
+                        className="auth-login-button"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Logging in...' : 'Login'}
+                    </button>
                 </form>
-                <div className="auth-login-signup-text">
-                    Don't have an account? <a href="/signup">Sign up</a>
-                </div>
             </div>
         </div>
     );

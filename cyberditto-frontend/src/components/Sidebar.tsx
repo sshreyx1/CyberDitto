@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import './Sidebar.css';
 import { 
-  FaChartPie, 
-  FaDesktop, 
-  FaClipboardCheck, 
-  FaUserShield, 
-  FaSignOutAlt,
-  FaChevronDown,
-  FaPlus,
-  FaEye
+    FaChartPie, 
+    FaDesktop, 
+    FaClipboardCheck, 
+    FaUserShield, 
+    FaSignOutAlt,
+    FaChevronDown,
+    FaPlus,
+    FaEye
 } from 'react-icons/fa';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { authService } from '../services/AuthService';
 
 const Sidebar: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
+    const mounted = React.useRef(true);
 
-    // Automatically expand menu based on current path
+    useEffect(() => {
+        return () => {
+            mounted.current = false;
+        };
+    }, []);
+
     useEffect(() => {
         if (location.pathname.includes('/digitaltwin')) {
             setExpandedMenu('digitaltwin');
@@ -28,10 +35,33 @@ const Sidebar: React.FC = () => {
         }
     }, [location.pathname]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('username');
-        navigate('/login');
+    useEffect(() => {
+        const checkAuth = () => {
+            if (!authService.isAuthenticated() && location.pathname !== '/login') {
+                navigate('/login', { replace: true });
+            }
+        };
+
+        checkAuth();
+        window.addEventListener('storage', checkAuth);
+
+        return () => {
+            window.removeEventListener('storage', checkAuth);
+        };
+    }, [navigate, location.pathname]);
+
+    const handleLogout = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (window.confirm('Are you sure you want to log out?')) {
+            try {
+                await authService.logout();
+                if (mounted.current) {
+                    navigate('/login', { replace: true });
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
     };
 
     const isActive = (path: string) => {
@@ -39,7 +69,6 @@ const Sidebar: React.FC = () => {
     };
 
     const toggleSubMenu = (menu: string, e: React.MouseEvent) => {
-        // Only toggle if clicking the chevron
         if ((e.target as HTMLElement).closest('.app-sidebar-chevron')) {
             e.preventDefault();
             setExpandedMenu(expandedMenu === menu ? null : menu);
@@ -60,7 +89,6 @@ const Sidebar: React.FC = () => {
                     </Link>
                 </li>
 
-                {/* Digital Twin Section */}
                 <li className="app-sidebar-item">
                     <Link 
                         to="/digitaltwin" 
@@ -91,7 +119,6 @@ const Sidebar: React.FC = () => {
                     )}
                 </li>
 
-                {/* Benchmark Section */}
                 <li className="app-sidebar-item">
                     <Link 
                         to="/benchmark"
@@ -122,7 +149,6 @@ const Sidebar: React.FC = () => {
                     )}
                 </li>
 
-                {/* Emulation Section */}
                 <li className="app-sidebar-item">
                     <Link 
                         to="/emulation"

@@ -1,0 +1,17 @@
+Vagrant.configure("2") do |config|
+    config.vm.box = "StefanScherer/windows_11"
+    config.vm.box_version = "2021.12.09"
+    
+    config.vm.provider "virtualbox" do |vb|
+      vb.memory = "4096"
+      vb.cpus = 2
+      vb.gui = true
+    end
+  
+    config.vm.provision "file", source: "security_posture.json", destination: "C:/security_posture.json"
+    
+    config.vm.provision "shell", inline: <<-SHELL
+      Write-Host "Setting up Windows environment..."
+      # Add any additional setup commands here
+    SHELL
+  end
