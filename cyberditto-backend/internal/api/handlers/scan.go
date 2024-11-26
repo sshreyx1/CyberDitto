@@ -1,22 +1,28 @@
+// internal/api/handlers/scan.go
+
 package handlers
 
 import (
     "cyberditto-backend/internal/core/scan"
     "cyberditto-backend/internal/core/deploy"
+    "cyberditto-backend/internal/core/emulation" 
     "encoding/json"
     "github.com/gorilla/mux"
     "net/http"
 )
 
 type Handlers struct {
-    scanService    *scan.Service
-    deployService  *deploy.Service
+    scanService      *scan.Service
+    deployService    *deploy.Service
+    emulationService *emulation.Service  
 }
 
 func NewHandlers() *Handlers {
+    projectRoot := "."  // You might need to adjust this path
     return &Handlers{
-        scanService:    scan.NewService(),
-        deployService:  deploy.NewService(),
+        scanService:      scan.NewService(),
+        deployService:    deploy.NewService(),
+        emulationService: emulation.NewService(projectRoot),  // Add this initialization
     }
 }
 

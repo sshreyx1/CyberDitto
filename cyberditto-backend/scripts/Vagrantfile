@@ -1,17 +1,35 @@
+# scripts/Vagrantfile
 Vagrant.configure("2") do |config|
-    config.vm.box = "StefanScherer/windows_11"
-    config.vm.box_version = "2021.12.09"
-    
-    config.vm.provider "virtualbox" do |vb|
-      vb.memory = "4096"
-      vb.cpus = 2
-      vb.gui = true
-    end
+  config.vm.box = "StefanScherer/windows_11"
+  config.vm.box_version = "2021.12.09"
   
-    config.vm.provision "file", source: "security_posture.json", destination: "C:/security_posture.json"
-    
-    config.vm.provision "shell", inline: <<-SHELL
-      Write-Host "Setting up Windows environment..."
-      # Add any additional setup commands here
-    SHELL
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "4096"
+    vb.cpus = 2
+    vb.gui = true
+    vb.name = "CyberDitto_#{ENV['VM_ID']}"
+    vb.customize ["modifyvm", :id, "--vram", "128"]
+    vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
   end
+
+  # Copy configuration files
+  config.vm.provision "file", source: "security_posture.json", destination: "C:/security_posture.json"
+  config.vm.provision "file", source: "prepare_vm.ps1", destination: "C:/prepare_vm.ps1"
+  
+  # Run setup scripts
+  config.vm.provision "shell", inline: <<-SHELL
+    Write-Host "Setting up Windows 11 environment..."
+    
+    # Run VM preparation script
+    Write-Host "Starting VM preparation..."
+    & "C:/prepare_vm.ps1"
+    
+    # Verify setup
+    if (Test-Path "C:/AtomicRedTeam/setup_complete") {
+      Write-Host "VM preparation completed successfully"
+    } else {
+      Write-Host "VM preparation failed"
+      exit 1
+    }
+  SHELL
+end

@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+// src/components/Emulation-View.tsx
+
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import './Emulation-View.css';
 import { 
@@ -7,7 +10,6 @@ import {
   AlertTriangle, 
   CheckCircle2, 
   XCircle,
-  ArrowRight,
   Clock,
   Download,
   ChevronDown,
@@ -15,133 +17,52 @@ import {
   FileText,
   Activity
 } from 'lucide-react';
-
-interface EmulationResult {
-  id: string;
-  scenarioName: string;
-  targetEnvironment: string;
-  date: string;
-  duration: string;
-  status: 'completed' | 'failed' | 'aborted';
-  successRate: number;
-  techniques: {
-    total: number;
-    successful: number;
-    failed: number;
-    blocked: number;
-  };
-  findings: {
-    critical: number;
-    high: number;
-    medium: number;
-    low: number;
-  };
-  techniques_detail: {
-    id: string;
-    name: string;
-    status: 'success' | 'failed' | 'blocked';
-    description: string;
-    duration: string;
-  }[];
-}
+import { 
+  emulationApi,
+  EmulationResult,
+  TestResult
+} from '../services/Emulation';
 
 const EmulationView: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [expandedResult, setExpandedResult] = useState<string | null>(null);
   const [timeFilter, setTimeFilter] = useState('all');
+  const [results, setResults] = useState<EmulationResult[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const results: EmulationResult[] = [
-    {
-      id: '1',
-      scenarioName: 'Credential Access and Lateral Movement',
-      targetEnvironment: 'Production Environment',
-      date: '2024-02-20',
-      duration: '45 minutes',
-      status: 'completed',
-      successRate: 75,
-      techniques: {
-        total: 12,
-        successful: 9,
-        failed: 2,
-        blocked: 1
-      },
-      findings: {
-        critical: 2,
-        high: 3,
-        medium: 4,
-        low: 5
-      },
-      techniques_detail: [
-        {
-          id: 'T1003',
-          name: 'OS Credential Dumping',
-          status: 'success',
-          description: 'Successfully extracted password hashes from memory',
-          duration: '5m 30s'
-        },
-        {
-          id: 'T1021',
-          name: 'Remote Services',
-          status: 'blocked',
-          description: 'Attempt to use remote services was blocked by security controls',
-          duration: '3m 15s'
-        },
-        {
-          id: 'T1078',
-          name: 'Valid Accounts',
-          status: 'success',
-          description: 'Successfully used compromised credentials for access',
-          duration: '4m 45s'
-        }
-      ]
-    },
-    {
-      id: '2',
-      scenarioName: 'Data Exfiltration',
-      targetEnvironment: 'Test Environment',
-      date: '2024-02-19',
-      duration: '30 minutes',
-      status: 'completed',
-      successRate: 60,
-      techniques: {
-        total: 8,
-        successful: 5,
-        failed: 2,
-        blocked: 1
-      },
-      findings: {
-        critical: 1,
-        high: 2,
-        medium: 3,
-        low: 2
-      },
-      techniques_detail: [
-        {
-          id: 'T1048',
-          name: 'Exfiltration Over Alternative Protocol',
-          status: 'success',
-          description: 'Successfully exfiltrated data over DNS',
-          duration: '6m 20s'
-        },
-        {
-          id: 'T1567',
-          name: 'Exfiltration Over Web Service',
-          status: 'failed',
-          description: 'Failed to exfiltrate data over HTTP',
-          duration: '4m 10s'
-        }
-      ]
+  useEffect(() => {
+    // If there's a specific execution ID in URL params, expand that result
+    const executionId = searchParams.get('id');
+    if (executionId) {
+      setExpandedResult(executionId);
     }
-  ];
+
+    // Load emulation results
+    loadResults();
+  }, [searchParams]);
+
+  const loadResults = async () => {
+    try {
+      const allResults = await emulationApi.getAllEmulations();
+      setResults(allResults);
+    } catch (error) {
+      console.error('Failed to load emulation results:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleExpand = (id: string) => {
     setExpandedResult(expandedResult === id ? null : id);
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
+      case 'pass':
       case 'completed':
         return 'status-success';
-      case 'failed':
+      case 'fail':
+      case 'error':
         return 'status-error';
       case 'blocked':
         return 'status-blocked';
@@ -157,6 +78,27 @@ const EmulationView: React.FC = () => {
       day: 'numeric'
     });
   };
+
+  const calculateSuccessRate = (result: EmulationResult) => {
+    if (result.summary) {
+      return result.summary.success_rate;
+    }
+    return 0;
+  };
+
+  if (loading) {
+    return (
+      <div className="emulation-view">
+        <Sidebar />
+        <div className="emulation-view-content">
+          <div className="loading">
+            <Activity className="spin" />
+            Loading results...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="emulation-view">
@@ -193,7 +135,7 @@ const EmulationView: React.FC = () => {
             <CheckCircle2 className="summary-icon" />
             <div className="summary-content">
               <span className="summary-value">
-                {Math.round(results.reduce((acc, curr) => acc + curr.successRate, 0) / results.length)}%
+                {Math.round(results.reduce((acc, curr) => acc + calculateSuccessRate(curr), 0) / results.length)}%
               </span>
               <span className="summary-label">Average Success Rate</span>
             </div>
@@ -202,9 +144,9 @@ const EmulationView: React.FC = () => {
             <AlertTriangle className="summary-icon" />
             <div className="summary-content">
               <span className="summary-value">
-                {results.reduce((acc, curr) => acc + curr.findings.critical + curr.findings.high, 0)}
+                {results.reduce((acc, curr) => acc + curr.summary.passed_tests, 0)}
               </span>
-              <span className="summary-label">Critical/High Findings</span>
+              <span className="summary-label">Total Passed Tests</span>
             </div>
           </div>
         </div>
@@ -218,20 +160,22 @@ const EmulationView: React.FC = () => {
               >
                 <div className="result-main">
                   <div className="result-info">
-                    <h3>{result.scenarioName}</h3>
-                    <span className="target-env">{result.targetEnvironment}</span>
+                    <h3>Emulation {result.id}</h3>
+                    <span className="target-env">Deployment ID: {result.deploy_id}</span>
                   </div>
                   <div className="result-metrics">
-                    <span className={`completion-rate ${result.successRate >= 70 ? 'high' : 
-                      result.successRate >= 40 ? 'medium' : 'low'}`}>
-                      {result.successRate}% Success
+                    <span className={`completion-rate ${
+                      result.summary.success_rate >= 70 ? 'high' : 
+                      result.summary.success_rate >= 40 ? 'medium' : 'low'
+                    }`}>
+                      {result.summary.success_rate}% Success
                     </span>
                   </div>
                 </div>
                 <div className="result-meta">
                   <span className="meta-item">
                     <Clock size={16} />
-                    {formatDate(result.date)}
+                    {formatDate(result.created_at)}
                   </span>
                   <span className={`status-badge ${getStatusColor(result.status)}`}>
                     {result.status}
@@ -244,64 +188,45 @@ const EmulationView: React.FC = () => {
                 <div className="result-details">
                   <div className="stats-grid">
                     <div className="stat-card">
-                      <h4>Techniques Executed</h4>
+                      <h4>Test Summary</h4>
                       <div className="technique-stats">
                         <div className="stat-item">
-                          <span className="stat-label">Successful</span>
-                          <span className="stat-value success">{result.techniques.successful}</span>
+                          <span className="stat-label">Passed</span>
+                          <span className="stat-value success">{result.summary.passed_tests}</span>
                         </div>
                         <div className="stat-item">
                           <span className="stat-label">Failed</span>
-                          <span className="stat-value failed">{result.techniques.failed}</span>
+                          <span className="stat-value failed">{result.summary.failed_tests}</span>
                         </div>
                         <div className="stat-item">
-                          <span className="stat-label">Blocked</span>
-                          <span className="stat-value blocked">{result.techniques.blocked}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="stat-card">
-                      <h4>Security Findings</h4>
-                      <div className="findings-stats">
-                        <div className="finding-item critical">
-                          <span className="finding-count">{result.findings.critical}</span>
-                          <span className="finding-label">Critical</span>
-                        </div>
-                        <div className="finding-item high">
-                          <span className="finding-count">{result.findings.high}</span>
-                          <span className="finding-label">High</span>
-                        </div>
-                        <div className="finding-item medium">
-                          <span className="finding-count">{result.findings.medium}</span>
-                          <span className="finding-label">Medium</span>
-                        </div>
-                        <div className="finding-item low">
-                          <span className="finding-count">{result.findings.low}</span>
-                          <span className="finding-label">Low</span>
+                          <span className="stat-label">Total</span>
+                          <span className="stat-value">{result.summary.total_tests}</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <div className="techniques-detail">
-                    <h4>Executed Techniques</h4>
+                    <h4>Executed Tests</h4>
                     <div className="techniques-list">
-                      {result.techniques_detail.map(technique => (
-                        <div key={technique.id} className="technique-item">
+                      {result.results.map((test, index) => (
+                        <div key={index} className="technique-item">
                           <div className="technique-header">
                             <div className="technique-info">
-                              <span className="technique-id">{technique.id}</span>
-                              <h5>{technique.name}</h5>
+                              <span className="technique-id">{test.technique}</span>
+                              <h5>{test.technique_name}</h5>
                             </div>
-                            <span className={`technique-status ${getStatusColor(technique.status)}`}>
-                              {technique.status}
+                            <span className={`technique-status ${getStatusColor(test.status)}`}>
+                              {test.status}
                             </span>
                           </div>
-                          <p className="technique-description">{technique.description}</p>
+                          {test.error_message && (
+                            <p className="technique-description error">{test.error_message}</p>
+                          )}
                           <div className="technique-meta">
                             <span>
                               <Clock size={14} />
-                              Duration: {technique.duration}
+                              Executed at: {formatDate(test.timestamp)}
                             </span>
                           </div>
                         </div>
@@ -310,17 +235,22 @@ const EmulationView: React.FC = () => {
                   </div>
 
                   <div className="result-actions">
-                    <button className="action-button">
-                      <BarChart2 size={18} />
-                      View Analysis
-                    </button>
-                    <button className="action-button">
-                      <FileText size={18} />
-                      Full Report
-                    </button>
-                    <button className="action-button">
+                    <button
+                      className="action-button"
+                      onClick={() => {
+                        // Download results as JSON
+                        const dataStr = "data:text/json;charset=utf-8," + 
+                          encodeURIComponent(JSON.stringify(result, null, 2));
+                        const downloadAnchor = document.createElement('a');
+                        downloadAnchor.setAttribute("href", dataStr);
+                        downloadAnchor.setAttribute("download", `emulation_${result.id}_results.json`);
+                        document.body.appendChild(downloadAnchor);
+                        downloadAnchor.click();
+                        downloadAnchor.remove();
+                      }}
+                    >
                       <Download size={18} />
-                      Export Data
+                      Export Results
                     </button>
                   </div>
                 </div>
