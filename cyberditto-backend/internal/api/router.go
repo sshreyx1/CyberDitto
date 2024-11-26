@@ -8,11 +8,28 @@ import (
     "github.com/gorilla/mux"
     "github.com/rs/cors"
     "net/http"
+    "path/filepath"
+    "os"
 )
 
 func SetupRouter() http.Handler {
     r := mux.NewRouter()
-    h := handlers.NewHandlers()
+    
+    // Get project root directory
+    cwd, err := os.Getwd()
+    if err != nil {
+        panic("Failed to get working directory: " + err.Error())
+    }
+    
+    // Navigate up to project root from cmd/server
+    projectRoot := filepath.Join(cwd, "..", "..")
+    projectRoot, err = filepath.Abs(projectRoot)
+    if err != nil {
+        panic("Failed to get absolute path: " + err.Error())
+    }
+    
+    // Initialize handlers with project root
+    h := handlers.NewHandlers(projectRoot)
 
     // API subrouter
     api := r.PathPrefix("/api").Subrouter()

@@ -4,8 +4,8 @@ package handlers
 
 import (
     "cyberditto-backend/internal/core/scan"
-    "cyberditto-backend/internal/core/deploy"
-    "cyberditto-backend/internal/core/emulation" 
+    "cyberditto-backend/internal/core/deploy"  
+    "cyberditto-backend/internal/core/emulation"
     "encoding/json"
     "github.com/gorilla/mux"
     "net/http"
@@ -14,15 +14,15 @@ import (
 type Handlers struct {
     scanService      *scan.Service
     deployService    *deploy.Service
-    emulationService *emulation.Service  
+    emulationService *emulation.Service
 }
 
-func NewHandlers() *Handlers {
-    projectRoot := "."  // You might need to adjust this path
+func NewHandlers(projectRoot string) *Handlers {
+    deployService := deploy.NewService()
     return &Handlers{
         scanService:      scan.NewService(),
-        deployService:    deploy.NewService(),
-        emulationService: emulation.NewService(projectRoot),  // Add this initialization
+        deployService:    deployService,
+        emulationService: emulation.NewService(projectRoot, deployService),
     }
 }
 

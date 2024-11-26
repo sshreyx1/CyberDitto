@@ -4,6 +4,7 @@ package emulation
 
 import (
     "cyberditto-backend/pkg/vagrant"
+    "cyberditto-backend/internal/core/deploy"  
     "fmt"
     "os"
     "os/exec"
@@ -13,20 +14,32 @@ import (
 )
 
 type Executor struct {
-    vagrant     *vagrant.Manager
+    vagrant *vagrant.Manager
     projectRoot string
+    deployService *deploy.Service  
 }
 
-func NewExecutor(vagrant *vagrant.Manager, projectRoot string) *Executor {
+func NewExecutor(vagrant *vagrant.Manager, projectRoot string, deployService *deploy.Service) *Executor {
     return &Executor{
-        vagrant:     vagrant,
-        projectRoot: projectRoot,
+        vagrant:      vagrant,
+        projectRoot:  projectRoot,
+        deployService: deployService,
     }
 }
 
 func (e *Executor) Execute(config ExecutionConfig) (*ExecutionResult, error) {
-    // Get VM information and verify it's running
-    status, err := e.vagrant.GetStatus(config.DeploymentID)
+    // First get deployment info to get the VagrantID
+    deployStatus, err := e.deployService.GetStatus(config.DeploymentID)
+    if err != nil {
+        return nil, fmt.Errorf("failed to get deployment info: %v", err)
+    }
+
+    if deployStatus.VagrantID == "" {
+        return nil, fmt.Errorf("no vagrant ID found for deployment %s", config.DeploymentID)
+    }
+
+    // Get VM information and verify it's running using VagrantID
+    status, err := e.vagrant.GetStatus(deployStatus.VagrantID)
     if err != nil {
         return nil, fmt.Errorf("failed to get VM status: %v", err)
     }
@@ -47,21 +60,21 @@ func (e *Executor) Execute(config ExecutionConfig) (*ExecutionResult, error) {
         return nil, fmt.Errorf("failed to generate script: %v", err)
     }
 
-    // Copy script to VM using vagrant path
+    // Copy script to VM using VagrantID
     remoteScriptPath := fmt.Sprintf("C:\\AtomicScripts\\attack_%d.ps1", time.Now().UnixNano())
-    if err := e.copyToVM(config.DeploymentID, scriptPath, remoteScriptPath); err != nil {
+    if err := e.copyToVM(deployStatus.VagrantID, scriptPath, remoteScriptPath); err != nil {
         return nil, fmt.Errorf("failed to copy script to VM: %v", err)
     }
 
     // Execute script
     logPath := filepath.Join(execDir, "execution.log")
-    if err := e.executeOnVM(config.DeploymentID, remoteScriptPath, logPath); err != nil {
+    if err := e.executeOnVM(deployStatus.VagrantID, remoteScriptPath, logPath); err != nil {
         return nil, fmt.Errorf("failed to execute script: %v", err)
     }
 
     // Collect results
     resultsPath := filepath.Join(execDir, "results.csv")
-    if err := e.collectResults(config.DeploymentID, resultsPath); err != nil {
+    if err := e.collectResults(deployStatus.VagrantID, resultsPath); err != nil {
         return nil, fmt.Errorf("failed to collect results: %v", err)
     }
 
@@ -109,8 +122,8 @@ $OutputPath = "C:\AtomicResults"
     return os.WriteFile(scriptPath, []byte(scriptContent), 0644)
 }
 
-func (e *Executor) copyToVM(deployID string, localPath, remotePath string) error {
-    log.Printf("Copying script from %s to VM %s at %s", localPath, deployID, remotePath)
+func (e *Executor) copyToVM(vagrantID string, localPath, remotePath string) error {
+    log.Printf("Copying script from %s to VM %s at %s", localPath, vagrantID, remotePath)
     
     vagrantCmd := fmt.Sprintf(`
         echo "Copying file to VM..."
@@ -120,7 +133,7 @@ func (e *Executor) copyToVM(deployID string, localPath, remotePath string) error
         }`, localPath, remotePath)
 
     cmd := exec.Command("powershell", "-Command", vagrantCmd)
-    cmd.Dir = filepath.Join(e.projectRoot, "vagrant", deployID)
+    cmd.Dir = filepath.Join(e.projectRoot, "vagrant", vagrantID)
     
     output, err := cmd.CombinedOutput()
     if err != nil {
@@ -131,8 +144,8 @@ func (e *Executor) copyToVM(deployID string, localPath, remotePath string) error
     return nil
 }
 
-func (e *Executor) executeOnVM(deployID string, scriptPath string, logPath string) error {
-    log.Printf("Executing script on VM %s: %s", deployID, scriptPath)
+func (e *Executor) executeOnVM(vagrantID string, scriptPath string, logPath string) error {
+    log.Printf("Executing script on VM %s: %s", vagrantID, scriptPath)
     
     vagrantCmd := fmt.Sprintf(`
         echo "Starting script execution..."
@@ -146,7 +159,7 @@ func (e *Executor) executeOnVM(deployID string, scriptPath string, logPath strin
         "`, scriptPath, logPath)
 
     cmd := exec.Command("powershell", "-Command", vagrantCmd)
-    cmd.Dir = filepath.Join(e.projectRoot, "vagrant", deployID)
+    cmd.Dir = filepath.Join(e.projectRoot, "vagrant", vagrantID)
     
     output, err := cmd.CombinedOutput()
     if err != nil {
@@ -157,8 +170,8 @@ func (e *Executor) executeOnVM(deployID string, scriptPath string, logPath strin
     return nil
 }
 
-func (e *Executor) collectResults(deployID string, localPath string) error {
-    log.Printf("Collecting results from VM %s to %s", deployID, localPath)
+func (e *Executor) collectResults(vagrantID string, localPath string) error {
+    log.Printf("Collecting results from VM %s to %s", vagrantID, localPath)
     
     vagrantCmd := fmt.Sprintf(`
         echo "Collecting results..."
@@ -168,7 +181,7 @@ func (e *Executor) collectResults(deployID string, localPath string) error {
         }`, localPath)
 
     cmd := exec.Command("powershell", "-Command", vagrantCmd)
-    cmd.Dir = filepath.Join(e.projectRoot, "vagrant", deployID)
+    cmd.Dir = filepath.Join(e.projectRoot, "vagrant", vagrantID)
     
     output, err := cmd.CombinedOutput()
     if err != nil {
@@ -179,8 +192,8 @@ func (e *Executor) collectResults(deployID string, localPath string) error {
     return nil
 }
 
-func (e *Executor) cleanup(deployID string, remoteScriptPath string) error {
-    log.Printf("Cleaning up resources on VM %s", deployID)
+func (e *Executor) cleanup(vagrantID string, remoteScriptPath string) error {
+    log.Printf("Cleaning up resources on VM %s", vagrantID)
     
     vagrantCmd := fmt.Sprintf(`
         echo "Cleaning up..."
@@ -190,7 +203,7 @@ func (e *Executor) cleanup(deployID string, remoteScriptPath string) error {
         "`, remoteScriptPath)
 
     cmd := exec.Command("powershell", "-Command", vagrantCmd)
-    cmd.Dir = filepath.Join(e.projectRoot, "vagrant", deployID)
+    cmd.Dir = filepath.Join(e.projectRoot, "vagrant", vagrantID)
     
     output, err := cmd.CombinedOutput()
     if err != nil {

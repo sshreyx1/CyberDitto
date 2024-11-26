@@ -4,34 +4,37 @@ package emulation
 
 import (
     "cyberditto-backend/pkg/vagrant"
+    "cyberditto-backend/internal/core/deploy"  // Add import for deploy package
     "encoding/csv"
     "fmt"
     "io"
     "log"
     "os"
-	"os/exec"
+    "os/exec"
     "path/filepath"
     "sync"
     "time"
-	"strings"
+    "strings"
 )
 
 type Service struct {
-    executions  map[string]*Execution
-    executor    *Executor
-    vagrant     *vagrant.Manager
-    mutex       sync.RWMutex
-    baseDir     string
+    executions map[string]*Execution
+    executor *Executor
+    vagrant *vagrant.Manager
+    deployService *deploy.Service
+    mutex sync.RWMutex
+    baseDir string
     projectRoot string
 }
 
-func NewService(projectRoot string) *Service {
+func NewService(projectRoot string, deployService *deploy.Service) *Service {
     vagrantMgr := vagrant.NewManager()
     return &Service{
-        executions:  make(map[string]*Execution),
-        executor:    NewExecutor(vagrantMgr, projectRoot),
-        vagrant:     vagrantMgr,
-        baseDir:     filepath.Join(projectRoot, "emulation_results"),
+        executions: make(map[string]*Execution),
+        executor: NewExecutor(vagrantMgr, projectRoot, deployService),
+        vagrant: vagrantMgr,
+        deployService: deployService,
+        baseDir: filepath.Join(projectRoot, "emulation_results"),
         projectRoot: projectRoot,
     }
 }
