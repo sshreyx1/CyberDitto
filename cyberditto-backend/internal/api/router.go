@@ -38,5 +38,7 @@ func SetupRouter() http.Handler {
 	api.HandleFunc("/deploy/{id}/cancel", h.CancelDeploy).Methods("POST")
 	api.HandleFunc("/deployments", h.GetAllDeployments).Methods("GET")
 
+	api.HandleFunc("/dashboard-data", handlers.GetDashboardData).Methods("GET")
+	api.HandleFunc("/generate-pdf", handlers.GeneratePDF).Methods("GET")
 	return corsMiddleware.Handler(r)
 }

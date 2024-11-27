@@ -1,10 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import './Benchmark.css';
 import { FaClipboardCheck, FaExclamationTriangle, FaChartBar, FaTools } from 'react-icons/fa';
 
 const Benchmark: React.FC = () => {
     const [selectedBenchmark, setSelectedBenchmark] = useState('windows-server-2019');
+    const [benchmarkData, setBenchmarkData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchBenchmarkData = async () => {
+            try {
+                const response = await fetch('/api/dashboard-data');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch benchmark data');
+                }
+                const data = await response.json();
+                console.log('Raw Benchmark API Response:', data);
+                setBenchmarkData(data);
+            } catch (err: any) {
+                console.error('Error fetching benchmark data:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBenchmarkData();
+    }, []);
+
+    if (loading) return <div>Loading benchmark data...</div>;
+    if (error) return <div>Error: {error}</div>;
+
+    // Use aggregateMetrics from fetched benchmarkData
+    const aggregateMetrics = benchmarkData?.aggregateMetrics || {
+        averageCompliance: 0,
+        totalSuccess: 0,
+        totalFailure: 0,
+    };
 
     return (
         <div className="app-benchmark">
@@ -14,7 +48,7 @@ const Benchmark: React.FC = () => {
                     <h1>CIS Benchmark Assessment</h1>
                     <p className="app-benchmark-subtitle">Windows Security Configuration Analysis</p>
                 </div>
-                
+
                 <div className="app-benchmark-grid">
                     {/* Benchmark Selection Card */}
                     <div className="app-benchmark-card">
@@ -32,9 +66,13 @@ const Benchmark: React.FC = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Benchmark Type</label>
-                                    <select value={selectedBenchmark} onChange={(e) => setSelectedBenchmark(e.target.value)}>
-                                        <option value="windows-server-2019">Windows Server 2019</option>
-                                        <option value="windows-server-2016">Windows Server 2016</option>
+                                    <select
+                                        value={selectedBenchmark}
+                                        onChange={(e) => setSelectedBenchmark(e.target.value)}
+                                    >
+                                        <option value="windows-enterprise-10">
+                                            Windows Enterprise 10
+                                        </option>
                                         <option value="windows-10">Windows 10</option>
                                     </select>
                                 </div>
@@ -50,27 +88,6 @@ const Benchmark: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Compliance Issues Card */}
-                    <div className="app-benchmark-card">
-                        <div className="app-benchmark-card-header">
-                            <FaExclamationTriangle className="card-icon" /> Critical Findings
-                        </div>
-                        <div className="app-benchmark-card-content">
-                            <div className="findings-list">
-                                <div className="finding-item critical">
-                                    <span className="finding-title">Password Policy Non-Compliant</span>
-                                    <p className="finding-description">Minimum password length below recommended value</p>
-                                    <span className="finding-severity">High Risk</span>
-                                </div>
-                                <div className="finding-item warning">
-                                    <span className="finding-title">Audit Policy Incomplete</span>
-                                    <p className="finding-description">Security event logging not fully configured</p>
-                                    <span className="finding-severity">Medium Risk</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Compliance Score Card */}
                     <div className="app-benchmark-card">
                         <div className="app-benchmark-card-header">
@@ -79,23 +96,25 @@ const Benchmark: React.FC = () => {
                         <div className="app-benchmark-card-content">
                             <div className="compliance-summary">
                                 <div className="compliance-score">
-                                    <span className="score">78%</span>
+                                    <span className="score">
+                                        {aggregateMetrics.averageCompliance.toFixed(0)}%
+                                    </span>
                                     <span className="score-label">Overall Compliance</span>
                                 </div>
                                 <div className="compliance-breakdown">
                                     <div className="breakdown-item">
                                         <span className="category">Account Policies</span>
                                         <div className="progress-bar">
-                                            <div className="progress" style={{width: '85%'}}></div>
+                                            <div
+                                                className="progress"
+                                                style={{
+                                                    width: `${aggregateMetrics.averageCompliance.toFixed(0)}%`,
+                                                }}
+                                            ></div>
                                         </div>
-                                        <span className="percentage">85%</span>
-                                    </div>
-                                    <div className="breakdown-item">
-                                        <span className="category">Security Options</span>
-                                        <div className="progress-bar">
-                                            <div className="progress" style={{width: '70%'}}></div>
-                                        </div>
-                                        <span className="percentage">70%</span>
+                                        <span className="percentage">
+                                            {aggregateMetrics.averageCompliance.toFixed(0)}%
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -108,18 +127,30 @@ const Benchmark: React.FC = () => {
                             <FaTools className="card-icon" /> Remediation Actions
                         </div>
                         <div className="app-benchmark-card-content">
-                            <div className="remediation-list">
-                                <div className="remediation-item">
-                                    <span className="remediation-title">Update Password Policy</span>
-                                    <p className="remediation-steps">Run PowerShell script to update group policy settings</p>
-                                    <button className="remediate-button">Apply Fix</button>
+                            {benchmarkData?.remediationActions?.length > 0 ? (
+                                <div className="remediation-list">
+                                    {benchmarkData.remediationActions.map(
+                                        (action: any, index: number) => (
+                                            <div className="remediation-item" key={index}>
+                                                <span className="remediation-title">
+                                                    {action.title || 'Unknown Issue'}
+                                                </span>
+                                                <p className="remediation-steps">
+                                                    {action.steps ||
+                                                        'No steps provided for remediation.'}
+                                                </p>
+                                                <button className="remediate-button">
+                                                    {action.buttonText || 'Apply Fix'}
+                                                </button>
+                                            </div>
+                                        )
+                                    )}
                                 </div>
-                                <div className="remediation-item">
-                                    <span className="remediation-title">Configure Audit Policy</span>
-                                    <p className="remediation-steps">Enable security event auditing via group policy</p>
-                                    <button className="remediate-button">Apply Fix</button>
+                            ) : (
+                                <div className="no-remediation-actions">
+                                    No remediation actions available at this time.
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>

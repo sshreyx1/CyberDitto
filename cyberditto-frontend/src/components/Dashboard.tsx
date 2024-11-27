@@ -1,86 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import './Dashboard.css';
-import { 
-    LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+import {
+    BarChart, Bar, PieChart, Pie, Cell,
     ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip,
     Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from 'recharts';
 
 const Dashboard: React.FC = () => {
-    const benchmarkData = [
-        { name: 'Account Policies', compliance: 85 },
-        { name: 'Local Policies', compliance: 70 },
-        { name: 'Event Log', compliance: 90 },
-        { name: 'System Services', compliance: 75 },
-        { name: 'Security Options', compliance: 88 },
-    ];
+    const [dashboardData, setDashboardData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const trafficData = [
-        { name: 'Jan', inbound: 4000, outbound: 2400 },
-        { name: 'Feb', inbound: 3000, outbound: 1398 },
-        { name: 'Mar', inbound: 2000, outbound: 9800 },
-        { name: 'Apr', inbound: 2780, outbound: 3908 },
-        { name: 'May', inbound: 1890, outbound: 4800 },
-        { name: 'Jun', inbound: 2390, outbound: 3800 },
-    ];
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                const response = await fetch('/api/dashboard-data');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch dashboard data');
+                }
+                const data = await response.json();
+                console.log("Raw API Response:", data); // Log the raw response
+                setDashboardData(data);
+            } catch (err: any) {
+                console.error("Error fetching dashboard data:", err); // Debugging log
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const securityStatusData = [
-        { name: 'Secure', value: 60, color: '#10b981' },
-        { name: 'At Risk', value: 30, color: '#f59e0b' },
-        { name: 'Critical', value: 10, color: '#ef4444' },
-    ];
+        fetchDashboardData();
+    }, []);
 
-    const mitreData = [
-        { subject: 'Initial Access', A: 85, fullMark: 100 },
-        { subject: 'Execution', A: 65, fullMark: 100 },
-        { subject: 'Persistence', A: 75, fullMark: 100 },
-        { subject: 'Privilege Escalation', A: 80, fullMark: 100 },
-        { subject: 'Defense Evasion', A: 70, fullMark: 100 },
-        { subject: 'Lateral Movement', A: 85, fullMark: 100 },
-    ];
-
-    const emulationData = [
-        { name: 'APT29', success: 12, failure: 28 },
-        { name: 'APT3', success: 8, failure: 32 },
-        { name: 'FIN6', success: 15, failure: 25 },
-        { name: 'APT41', success: 10, failure: 30 },
-    ];
-
-    const endpointSecurityData = [
-        { name: 'Firewall', score: 90 },
-        { name: 'Antivirus', score: 85 },
-        { name: 'Patch Level', score: 75 },
-        { name: 'Config', score: 88 },
-        { name: 'Access Control', score: 92 },
-    ];
-
-    const CustomTooltip = ({ active, payload, label }: any) => {
-        if (active && payload && payload.length) {
-            return (
-                <div style={{ 
-                    backgroundColor: '#fff',
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                    fontFamily: "'Poppins', sans-serif"
-                }}>
-                    <p style={{ margin: '0 0 4px 0', fontWeight: 500 }}>{`${label}`}</p>
-                    {payload.map((pld: any, index: number) => (
-                        <p key={index} style={{ 
-                            margin: '4px 0', 
-                            color: pld.color || pld.stroke || '#666',
-                            fontSize: '0.875rem'
-                        }}>
-                            {`${pld.name}: ${pld.value}${pld.name === 'compliance' || pld.name === 'score' ? '%' : ''}`}
-                        </p>
-                    ))}
-                </div>
-            );
-        }
-        return null;
+    const handleGeneratePDF = () => {
+        window.open('http://localhost:8080/api/generate-pdf', '_blank');
     };
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error}</p>;
+
+    const {
+        benchmarkStatuses = {}, // Correct spelling matches the API
+        aggregateMetrics = { averageCompliance: 0, totalSuccess: 0, totalFailure: 0 },
+    } = dashboardData || {};
+
+    const cisBenchmarkData = benchmarkStatuses["CIS Benchmark"] || [];
+    const mitreAttackData = benchmarkStatuses["MITRE ATT&CK"] || [];
+
+    console.log("CIS Benchmark Data:", cisBenchmarkData); // Should now show the correct array
+    console.log("MITRE ATT&CK Data:", mitreAttackData);   // Should now show the correct array
 
     return (
         <div className="app-dashboard">
@@ -88,124 +57,96 @@ const Dashboard: React.FC = () => {
             <div className="app-dashboard-content">
                 <div className="app-dashboard-header">
                     <h1>Security Operations Dashboard</h1>
-                    <p className="app-dashboard-subtitle">CyberDitto Digital Twin Analysis</p>
+                    <p className="app-dashboard-subtitle">Adversary Emulation Analysis</p>
+                    <button
+                        onClick={handleGeneratePDF}
+                        className="app-dashboard-pdf-button"
+                    >
+                        Generate PDF Report
+                    </button>
                 </div>
-                
+
+                {/* Dashboard Grid */}
                 <div className="app-dashboard-grid">
+                    {/* Pass/Fail Chart */}
                     <div className="app-dashboard-card">
-                        <div className="app-dashboard-card-header">
-                            CIS Benchmark Compliance
-                        </div>
+                        <div className="app-dashboard-card-header">CIS Benchmark Compliance (Pass/Fail)</div>
                         <div className="app-dashboard-card-content">
                             <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={benchmarkData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
-                                    <YAxis domain={[0, 100]} />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Bar dataKey="compliance" fill="#1a73e8" radius={[4, 4, 0, 0]} />
+                                <BarChart
+                                    data={[
+                                        {
+                                            category: "Pass",
+                                            count: cisBenchmarkData.filter((item) => item.compliance === 100).length,
+                                        },
+                                        {
+                                            category: "Fail",
+                                            count: cisBenchmarkData.filter((item) => item.compliance < 100).length,
+                                        },
+                                    ]}
+                                    margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="category" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Bar dataKey="count" fill="#1a73e8" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
 
+                    {/* MITRE ATT&CK Coverage */}
                     <div className="app-dashboard-card">
-                        <div className="app-dashboard-card-header">
-                            MITRE ATT&CK Coverage
-                        </div>
+                        <div className="app-dashboard-card-header">Atomic Coverage</div>
                         <div className="app-dashboard-card-content">
                             <ResponsiveContainer width="100%" height={300}>
-                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={mitreData}>
+                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={mitreAttackData}>
                                     <PolarGrid />
-                                    <PolarAngleAxis dataKey="subject" />
-                                    <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                                    <Radar name="Coverage" dataKey="A" stroke="#1a73e8" 
-                                        fill="#1a73e8" fillOpacity={0.6} />
+                                    <PolarAngleAxis dataKey="name" />
+                                    <PolarRadiusAxis domain={[0, 100]} />
+                                    <Radar name="Coverage" dataKey="compliance" stroke="#1a73e8" fill="#1a73e8" fillOpacity={0.6} />
+                                    <Legend />
                                 </RadarChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
 
+                    {/* Security Posture */}
                     <div className="app-dashboard-card">
-                        <div className="app-dashboard-card-header">
-                            Security Posture
-                        </div>
+                        <div className="app-dashboard-card-header">Security Posture</div>
                         <div className="app-dashboard-card-content">
                             <ResponsiveContainer width="100%" height={300}>
                                 <PieChart>
-                                    <Pie 
-                                        data={securityStatusData} 
-                                        dataKey="value" 
-                                        nameKey="name" 
-                                        cx="50%" 
-                                        cy="50%" 
-                                        innerRadius={60}
-                                        outerRadius={80} 
-                                        label
+                                    <Pie
+                                        dataKey="value"
+                                        data={[
+                                            { name: "Secure", value: 60, color: "#4caf50" },
+                                            { name: "At Risk", value: 30, color: "#ffc107" },
+                                            { name: "Critical", value: 10, color: "#f44336" },
+                                        ]}
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={100}
                                     >
-                                        {securityStatusData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        {["#4caf50", "#ffc107", "#f44336"].map((color, index) => (
+                                            <Cell key={index} fill={color} />
                                         ))}
                                     </Pie>
-                                    <Tooltip content={<CustomTooltip />} />
+                                    <Tooltip />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
 
+                    {/* Summary */}
                     <div className="app-dashboard-card">
-                        <div className="app-dashboard-card-header">
-                            Adversary Emulation Results
-                        </div>
+                        <div className="app-dashboard-card-header">Summary</div>
                         <div className="app-dashboard-card-content">
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={emulationData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Legend />
-                                    <Bar dataKey="success" stackId="a" fill="#ef4444" />
-                                    <Bar dataKey="failure" stackId="a" fill="#10b981" />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-
-                    <div className="app-dashboard-card">
-                        <div className="app-dashboard-card-header">
-                            Network Traffic Analysis
-                        </div>
-                        <div className="app-dashboard-card-content">
-                            <ResponsiveContainer width="100%" height={300}>
-                                <LineChart data={trafficData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Legend />
-                                    <Line type="monotone" dataKey="inbound" stroke="#8884d8" />
-                                    <Line type="monotone" dataKey="outbound" stroke="#82ca9d" />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-
-                    <div className="app-dashboard-card">
-                        <div className="app-dashboard-card-header">
-                            Endpoint Security Scores
-                        </div>
-                        <div className="app-dashboard-card-content">
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={endpointSecurityData} layout="vertical">
-                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                                    <XAxis type="number" domain={[0, 100]} />
-                                    <YAxis dataKey="name" type="category" width={100} />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Bar dataKey="score" fill="#1a73e8" radius={[0, 4, 4, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
+                            <p>Average Compliance: {aggregateMetrics.averageCompliance.toFixed(2)}%</p>
+                            <p>Total Success: {aggregateMetrics.totalSuccess}</p>
+                            <p>Total Failure: {aggregateMetrics.totalFailure}</p>
                         </div>
                     </div>
                 </div>

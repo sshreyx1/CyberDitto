@@ -1,0 +1,94 @@
+Timestamp,Status,Tactic,Technique,Technique Name,TestNumber,Test Name,Test GUID,Executor Name
+2024-11-24 10:57:14,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,1,Scheduled Task Startup Script,fec27f65-db86-4c2d-b66c-61945aee87c2,command_prompt
+2024-11-24 10:57:15,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,2,Scheduled task Local,42f53695-ad4a-4546-abb6-7d837f644a71,command_prompt
+2024-11-24 10:57:17,Pass,execution,T1053.005,Scheduled Task/Job: Scheduled Task,3,Scheduled task Remote,2e5eac3e-327b-4a88-a0c0-c4057039a8dd,command_prompt
+2024-11-24 10:57:28,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,4,Powershell Cmdlet Scheduled Task,af9fd58f-c4ac-4bf2-a9ba-224b71ff25fd,powershell
+2024-11-24 10:57:39,Pass,execution,T1053.005,Scheduled Task/Job: Scheduled Task,5,Task Scheduler via VBA,ecd3fa21-7792-41a2-8726-2c5c673414d3,powershell
+2024-11-24 10:57:45,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,6,WMI Invoke-CimMethod Scheduled Task,e16b3b75-dc9e-4cde-a23d-dfa2d0507b3b,powershell
+2024-11-24 10:57:47,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,7,Scheduled Task Executing Base64 Encoded Commands From Registry,e895677d-4f06-49ab-91b6-ae3742d0a2ba,command_prompt
+2024-11-24 10:57:52,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,8,Import XML Schedule Task with Hidden Attribute,cd925593-fbb4-486d-8def-16cbdf944bf4,powershell
+2024-11-24 10:57:57,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,9,PowerShell Modify A Scheduled Task,dda6fc7b-c9a6-4c18-b98d-95ec6542af6d,powershell
+2024-11-24 10:58:07,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,10,"Scheduled Task (""Ghost Task"") via Registry Key Manipulation",704333ca-cc12-4bcf-9916-101844881f54,command_prompt
+2024-11-24 10:58:15,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,11,Scheduled Task Persistence via CompMgmt.msc,8fcfa3d5-ea7d-4e1c-bd3e-3c4ed315b7d2,command_prompt
+2024-11-24 10:58:17,Fail,execution,T1053.005,Scheduled Task/Job: Scheduled Task,12,Scheduled Task Persistence via Eventviewer.msc,02124c37-767e-4b76-9383-c9fc366d9d4c,command_prompt
+2024-11-24 10:58:19,Fail,execution,T1047,Windows Management Instrumentation,1,WMI Reconnaissance Users,c107778c-dcf5-47c5-af2e-1d058a3df3ea,command_prompt
+2024-11-24 10:58:20,Fail,execution,T1047,Windows Management Instrumentation,2,WMI Reconnaissance Processes,5750aa16-0e59-4410-8b9a-8a47ca2788e2,command_prompt
+2024-11-24 10:58:23,Fail,execution,T1047,Windows Management Instrumentation,3,WMI Reconnaissance Software,718aebaa-d0e0-471a-8241-c5afa69c7414,command_prompt
+2024-11-24 10:58:27,Pass,execution,T1047,Windows Management Instrumentation,4,WMI Reconnaissance List Remote Services,0fd48ef7-d890-4e93-a533-f7dedd5191d3,command_prompt
+2024-11-24 10:58:29,Fail,execution,T1047,Windows Management Instrumentation,5,WMI Execute Local Process,b3bdfc91-b33e-4c6d-a5c8-d64bee0276b3,command_prompt
+2024-11-24 10:58:32,Pass,execution,T1047,Windows Management Instrumentation,6,WMI Execute Remote Process,9c8ef159-c666-472f-9874-90c8d60d136b,command_prompt
+2024-11-24 10:58:36,Fail,execution,T1047,Windows Management Instrumentation,7,Create a Process using WMI Query and an Encoded Command,7db7a7f9-9531-4840-9b30-46220135441c,command_prompt
+2024-11-24 10:58:40,Fail,execution,T1047,Windows Management Instrumentation,8,Create a Process using obfuscated Win32_Process,10447c83-fc38-462a-a936-5102363b1c43,powershell
+2024-11-24 10:58:43,Pass,execution,T1047,Windows Management Instrumentation,9,WMI Execute rundll32,00738d2a-4651-4d76-adf2-c43a41dfb243,command_prompt
+2024-11-24 11:00:36,Pass,execution,T1047,Windows Management Instrumentation,10,Application uninstall using WMIC,c510d25b-1667-467d-8331-a56d3e9bc4ff,command_prompt
+2024-11-24 11:00:44,Fail,execution,T1129,Server Software Component,1,ESXi - Install a custom VIB on an ESXi host,7f843046-abf2-443f-b880-07a83cf968ec,command_prompt
+2024-11-24 11:00:48,Fail,execution,T1059.007,Command and Scripting Interpreter: JavaScript,1,JScript execution to gather local computer information via cscript,01d75adf-ca1b-4dd1-ac96-7c9550ad1035,command_prompt
+2024-11-24 11:02:51,Fail,execution,T1059.007,Command and Scripting Interpreter: JavaScript,2,JScript execution to gather local computer information via wscript,0709945e-4fec-4c49-9faf-c3c292a74484,command_prompt
+2024-11-24 11:02:53,Fail,execution,T1559.002,Inter-Process Communication: Dynamic Data Exchange,1,Execute Commands,f592ba2a-e9e8-4d62-a459-ef63abd819fd,manual
+2024-11-24 11:02:54,Fail,execution,T1559.002,Inter-Process Communication: Dynamic Data Exchange,2,Execute PowerShell script via Word DDE,47c21fb6-085e-4b0d-b4d2-26d72c3830b3,command_prompt
+2024-11-24 11:02:54,Fail,execution,T1559.002,Inter-Process Communication: Dynamic Data Exchange,3,DDEAUTO,cf91174c-4e74-414e-bec0-8d60a104d181,manual
+2024-11-24 11:03:05,Pass,execution,T1204.002,User Execution: Malicious File,1,OSTap Style Macro Execution,8bebc690-18c7-4549-bc98-210f7019efff,powershell
+2024-11-24 11:03:10,Fail,execution,T1204.002,User Execution: Malicious File,2,OSTap Payload Download,3f3af983-118a-4fa1-85d3-ba4daa739d80,command_prompt
+2024-11-24 11:03:20,Pass,execution,T1204.002,User Execution: Malicious File,3,Maldoc choice flags command execution,0330a5d2-a45a-4272-a9ee-e364411c4b18,powershell
+2024-11-24 11:03:30,Pass,execution,T1204.002,User Execution: Malicious File,4,OSTAP JS version,add560ef-20d6-4011-a937-2c340f930911,powershell
+2024-11-24 11:03:42,Pass,execution,T1204.002,User Execution: Malicious File,5,Office launching .bat file from AppData,9215ea92-1ded-41b7-9cd6-79f9a78397aa,powershell
+2024-11-24 11:03:53,Pass,execution,T1204.002,User Execution: Malicious File,6,Excel 4 Macro,4ea1fc97-8a46-4b4e-ba48-af43d2a98052,powershell
+2024-11-24 11:04:12,Pass,execution,T1204.002,User Execution: Malicious File,7,Headless Chrome code execution via VBA,a19ee671-ed98-4e9d-b19c-d1954a51585a,powershell
+2024-11-24 11:04:24,Fail,execution,T1204.002,User Execution: Malicious File,8,Potentially Unwanted Applications (PUA),02f35d62-9fdc-4a97-b899-a5d9a876d295,powershell
+2024-11-24 11:04:40,Pass,execution,T1204.002,User Execution: Malicious File,9,Office Generic Payload Download,5202ee05-c420-4148-bf5e-fd7f7d24850c,powershell
+2024-11-24 11:04:53,Pass,execution,T1204.002,User Execution: Malicious File,10,LNK Payload Download,581d7521-9c4b-420e-9695-2aec5241167f,powershell
+2024-11-24 11:04:55,Pass,execution,T1204.002,User Execution: Malicious File,11,Mirror Blast Emulation,24fd9719-7419-42dd-bce6-ab3463110b3c,powershell
+2024-11-24 11:05:01,Fail,execution,T1106,Native API,1,Execution through API - CreateProcess,99be2089-c52d-4a4a-b5c3-261ee42c8b62,command_prompt
+2024-11-24 11:05:13,Fail,execution,T1106,Native API,2,WinPwn - Get SYSTEM shell - Pop System Shell using CreateProcess technique,ce4e76e6-de70-4392-9efe-b281fc2b4087,powershell
+2024-11-24 11:05:17,Pass,execution,T1106,Native API,3,WinPwn - Get SYSTEM shell - Bind System Shell using CreateProcess technique,7ec5b74e-8289-4ff2-a162-b6f286a33abd,powershell
+2024-11-24 11:05:38,Fail,execution,T1106,Native API,4,WinPwn - Get SYSTEM shell - Pop System Shell using NamedPipe Impersonation technique,e1f93a06-1649-4f07-89a8-f57279a7d60e,powershell
+2024-11-24 11:05:43,Pass,execution,T1106,Native API,5,Run Shellcode via Syscall in Go,ae56083f-28d0-417d-84da-df4242da1f7c,powershell
+2024-11-24 11:07:56,Pass,execution,T1059,Command and Scripting Interpreter,1,AutoIt Script Execution,a9b93f17-31cb-435d-a462-5e838a2a6026,powershell
+2024-11-24 11:09:17,Pass,execution,T1072,Software Deployment Tools,1,Radmin Viewer Utility,b4988cad-6ed2-434d-ace5-ea2670782129,command_prompt
+2024-11-24 11:10:16,Pass,execution,T1072,Software Deployment Tools,2,PDQ Deploy RAT,e447b83b-a698-4feb-bed1-a7aaf45c3443,command_prompt
+2024-11-24 11:10:28,Pass,execution,T1072,Software Deployment Tools,3,Deploy 7-Zip Using Chocolatey,2169e8b0-2ee7-44cb-8a6e-d816a5db7d8a,powershell
+2024-11-24 11:10:31,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,1,Mimikatz,f3132740-55bc-48c4-bcc0-758a459cd027,command_prompt
+2024-11-24 11:10:41,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,2,Run BloodHound from local disk,a21bb23e-e677-4ee7-af90-6931b57b6350,powershell
+2024-11-24 11:10:44,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,3,Run Bloodhound from Memory using Download Cradle,bf8c1441-4674-4dab-8e4e-39d93d08f9b7,powershell
+2024-11-24 11:10:46,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,4,Mimikatz - Cradlecraft PsSendKeys,af1800cf-9f9d-4fd1-a709-14b1e6de020d,powershell
+2024-11-24 11:10:48,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,5,Invoke-AppPathBypass,06a220b6-7e29-4bd8-9d07-5b4d86742372,command_prompt
+2024-11-24 11:10:54,Fail,execution,T1059.001,Command and Scripting Interpreter: PowerShell,6,Powershell MsXml COM object - with prompt,388a7340-dbc1-4c9d-8e59-b75ad8c6d5da,command_prompt
+2024-11-24 11:10:55,Fail,execution,T1059.001,Command and Scripting Interpreter: PowerShell,7,Powershell XML requests,4396927f-e503-427b-b023-31049b9b09a6,command_prompt
+2024-11-24 11:10:56,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,8,Powershell invoke mshta.exe download,8a2ad40b-12c7-4b25-8521-2737b0a415af,command_prompt
+2024-11-24 11:10:57,Fail,execution,T1059.001,Command and Scripting Interpreter: PowerShell,9,Powershell Invoke-DownloadCradle,cc50fa2a-a4be-42af-a88f-e347ba0bf4d7,manual
+2024-11-24 11:11:01,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,10,PowerShell Fileless Script Execution,fa050f5e-bc75-4230-af73-b6fd7852cd73,powershell
+2024-11-24 11:11:14,Fail,execution,T1059.001,Command and Scripting Interpreter: PowerShell,11,NTFS Alternate Data Stream Access,8e5c5532-1181-4c1d-bb79-b3a9f5dbd680,powershell
+2024-11-24 11:12:47,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,12,PowerShell Session Creation and Use,7c1acec2-78fa-4305-a3e0-db2a54cddecd,powershell
+2024-11-24 11:13:06,Fail,execution,T1059.001,Command and Scripting Interpreter: PowerShell,13,ATHPowerShellCommandLineParameter -Command parameter variations,686a9785-f99b-41d4-90df-66ed515f81d7,powershell
+2024-11-24 11:13:16,Fail,execution,T1059.001,Command and Scripting Interpreter: PowerShell,14,ATHPowerShellCommandLineParameter -Command parameter variations with encoded arguments,1c0a870f-dc74-49cf-9afc-eccc45e58790,powershell
+2024-11-24 11:13:26,Fail,execution,T1059.001,Command and Scripting Interpreter: PowerShell,15,ATHPowerShellCommandLineParameter -EncodedCommand parameter variations,86a43bad-12e3-4e85-b97c-4d5cf25b95c3,powershell
+2024-11-24 11:13:36,Fail,execution,T1059.001,Command and Scripting Interpreter: PowerShell,16,ATHPowerShellCommandLineParameter -EncodedCommand parameter variations with encoded arguments,0d181431-ddf3-4826-8055-2dbf63ae848b,powershell
+2024-11-24 11:13:38,Fail,execution,T1059.001,Command and Scripting Interpreter: PowerShell,17,PowerShell Command Execution,a538de64-1c74-46ed-aa60-b995ed302598,command_prompt
+2024-11-24 11:13:40,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,18,PowerShell Invoke Known Malicious Cmdlets,49eb9404-5e0f-4031-a179-b40f7be385e3,powershell
+2024-11-24 11:13:43,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,19,PowerUp Invoke-AllChecks,1289f78d-22d2-4590-ac76-166737e1811b,powershell
+2024-11-24 11:13:46,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,20,Abuse Nslookup with DNS Records,999bff6d-dc15-44c9-9f5c-e1051bfc86e1,powershell
+2024-11-24 11:13:49,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,21,SOAPHound - Dump BloodHound Data,6a5b2a50-d037-4879-bf01-43d4d6cbf73f,powershell
+2024-11-24 11:13:52,Pass,execution,T1059.001,Command and Scripting Interpreter: PowerShell,22,SOAPHound - Build Cache,4099086c-1470-4223-8085-8186e1ed5948,powershell
+2024-11-24 11:18:08,Fail,execution,T1559,Inter-Process Communication,1,Cobalt Strike Artifact Kit pipe,bd13b9fc-b758-496a-b81a-397462f82c72,command_prompt
+2024-11-24 11:18:57,Fail,execution,T1559,Inter-Process Communication,2,Cobalt Strike Lateral Movement (psexec_psh) pipe,830c8b6c-7a70-4f40-b975-8bbe74558acd,command_prompt
+2024-11-24 11:19:47,Fail,execution,T1559,Inter-Process Communication,3,Cobalt Strike SSH (postex_ssh) pipe,d1f72fa0-5bc2-4b4b-bd1e-43b6e8cfb2e6,command_prompt
+2024-11-24 11:20:21,Fail,execution,T1559,Inter-Process Communication,4,Cobalt Strike post-exploitation pipe (4.2 and later),7a48f482-246f-4aeb-9837-21c271ebf244,command_prompt
+2024-11-24 11:20:45,Fail,execution,T1559,Inter-Process Communication,5,Cobalt Strike post-exploitation pipe (before 4.2),8dbfc15c-527b-4ab0-a272-019f469d367f,command_prompt
+2024-11-24 11:20:54,Fail,execution,T1059.003,Command and Scripting Interpreter: Windows Command Shell,1,Create and Execute Batch Script,9e8894c0-50bd-4525-a96c-d4ac78ece388,powershell
+2024-11-24 11:20:55,Fail,execution,T1059.003,Command and Scripting Interpreter: Windows Command Shell,2,Writes text to a file and displays it.,127b4afe-2346-4192-815c-69042bec570e,command_prompt
+2024-11-24 11:20:56,Fail,execution,T1059.003,Command and Scripting Interpreter: Windows Command Shell,3,Suspicious Execution via Windows Command Shell,d0eb3597-a1b3-4d65-b33b-2cda8d397f20,command_prompt
+2024-11-24 11:23:06,Fail,execution,T1059.003,Command and Scripting Interpreter: Windows Command Shell,4,Simulate BlackByte Ransomware Print Bombing,6b2903ac-8f36-450d-9ad5-b220e8a2dcb9,powershell
+2024-11-24 11:23:18,Fail,execution,T1059.003,Command and Scripting Interpreter: Windows Command Shell,5,Command Prompt read contents from CMD file and execute,df81db1b-066c-4802-9bc8-b6d030c3ba8e,command_prompt
+2024-11-24 11:23:21,Fail,execution,T1059.003,Command and Scripting Interpreter: Windows Command Shell,6,Command prompt writing script to file then executes it,00682c9f-7df4-4df8-950b-6dcaaa3ad9af,command_prompt
+2024-11-24 11:23:28,Fail,execution,T1059.005,Command and Scripting Interpreter: Visual Basic,1,Visual Basic script execution to gather local computer information,1620de42-160a-4fe5-bbaf-d3fef0181ce9,powershell
+2024-11-24 11:23:38,Pass,execution,T1059.005,Command and Scripting Interpreter: Visual Basic,2,Encoded VBS code execution,e8209d5f-e42d-45e6-9c2f-633ac4f1eefa,powershell
+2024-11-24 11:23:46,Pass,execution,T1059.005,Command and Scripting Interpreter: Visual Basic,3,Extract Memory via VBA,8faff437-a114-4547-9a60-749652a03df6,powershell
+2024-11-24 11:23:51,Pass,execution,T1569.002,System Services: Service Execution,1,Execute a Command as a Service,2382dee2-a75f-49aa-9378-f52df6ed3fb1,command_prompt
+2024-11-24 11:23:54,Fail,execution,T1569.002,System Services: Service Execution,2,Use PsExec to execute a command on a remote host,873106b7-cfed-454b-8680-fa9f6400431c,command_prompt
+2024-11-24 11:24:05,Pass,execution,T1569.002,System Services: Service Execution,4,BlackCat pre-encryption cmds with Lateral Movement,31eb7828-97d7-4067-9c1e-c6feb85edc4b,powershell
+2024-11-24 11:24:10,Fail,execution,T1569.002,System Services: Service Execution,5,Use RemCom to execute a command on a remote host,a5d8cdeb-be90-43a9-8b26-cc618deac1e0,command_prompt
+2024-11-24 11:24:10,Fail,execution,T1569.002,System Services: Service Execution,6,Snake Malware Service Create,b8db787e-dbea-493c-96cb-9272296ddc49,command_prompt
+2024-11-24 11:24:12,Fail,execution,T1569.002,System Services: Service Execution,7,Modifying ACL of Service Control Manager via SDET,bf07f520-3909-4ef5-aa22-877a50f2f77b,command_prompt
+2024-11-24 11:30:34,Pass,execution,T1569.002,System Services: Service Execution,8,Pipe Creation - PsExec Tool Execution From Suspicious Locations,004a5d68-627b-452d-af3d-43bd1fc75a3b,powershell
+2024-11-24 11:30:35,Fail,execution,T1053.002,Scheduled Task/Job: At,1,At.exe Scheduled task,4a6c0dc4-0f2a-4203-9298-a5a9bdc21ed8,command_prompt
+2024-11-24 11:30:35,SUMMARY,,,Total Tests: 92,Passed: 39,Failed: 53,,Success Rate: 42.39%

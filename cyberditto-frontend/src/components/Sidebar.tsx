@@ -50,17 +50,21 @@ const Sidebar: React.FC = () => {
         };
     }, [navigate, location.pathname]);
 
-    const handleLogout = async (e: React.MouseEvent) => {
+    const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
+        console.log('Logout button clicked');
         if (window.confirm('Are you sure you want to log out?')) {
             try {
-                await authService.logout();
-                if (mounted.current) {
-                    navigate('/login', { replace: true });
-                }
+                console.log('Calling authService.logout...');
+                authService.logout();
+                console.log('Redirecting to login...');
+                navigate('/login', { replace: true });
+                window.location.reload(); // Force UI to refresh
             } catch (error) {
                 console.error('Logout error:', error);
             }
+        } else {
+            console.log('Logout canceled by the user');
         }
     };
 
