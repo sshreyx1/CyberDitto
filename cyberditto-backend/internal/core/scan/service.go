@@ -55,6 +55,9 @@ func (s *Service) StartScan() (string, error) {
 }
 
 func (s *Service) runScan(scanID string) {
+    // Initialize scan status
+    s.updateStatus(scanID, "scanning", 0, "Starting scan...", "")
+
     outputPath, err := s.runner.RunConfigScript()
     if err != nil {
         log.Printf("Scan error: %v", err)
@@ -101,7 +104,7 @@ func (s *Service) GetStatus(scanID string) (*ScanStatus, error) {
         if progress, err := s.runner.GetProgressFile(outputDir); err == nil && progress != nil {
             return &ScanStatus{
                 Phase:    progress.Phase,
-                Progress: float64(progress.Progress),
+                Progress: float64(progress.Progress),  // Convert int to float64
                 Message:  progress.Status,
                 Stage:    progress.Stage,
             }, nil

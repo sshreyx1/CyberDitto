@@ -72,45 +72,50 @@ const DTCreate: React.FC = () => {
             const { scanId } = await digitalTwinApi.startScan();
             setScanState(prev => ({ ...prev, scanId }));
 
-            await digitalTwinApi.pollScan(
-                scanId,
-                (progress) => {
+            const pollInterval = setInterval(async () => {
+                try {
+                    const progress = await digitalTwinApi.getScanProgress(scanId);
+                    
                     setScanState(prev => ({
                         ...prev,
                         status: progress.phase,
                         progress: progress.progress,
                         stage: progress.stage,
-                        message: progress.message,
+                        message: progress.message || prev.message,
                         error: progress.error || ''
                     }));
 
                     if (progress.phase === 'completed') {
-                        digitalTwinApi.getScanResult(scanId)
-                            .then(result => {
-                                setScanState(prev => ({
-                                    ...prev,
-                                    result,
-                                    progress: 100,
-                                    message: 'Scan completed successfully'
-                                }));
-                            })
-                            .catch(error => {
-                                setScanState(prev => ({
-                                    ...prev,
-                                    error: 'Failed to fetch scan results'
-                                }));
-                            });
+                        clearInterval(pollInterval);
+                        const result = await digitalTwinApi.getScanResult(scanId);
+                        setScanState(prev => ({
+                            ...prev,
+                            result,
+                            progress: 100,
+                            message: 'Scan completed successfully'
+                        }));
                     }
-                },
-                (error) => {
+
+                    if (progress.phase === 'error' || progress.error) {
+                        clearInterval(pollInterval);
+                        setScanState(prev => ({
+                            ...prev,
+                            status: 'error',
+                            error: progress.error || 'Scan failed',
+                            progress: 0
+                        }));
+                    }
+                } catch (error) {
+                    clearInterval(pollInterval);
                     setScanState(prev => ({
                         ...prev,
                         status: 'error',
-                        error: error.message,
+                        error: error instanceof Error ? error.message : 'Failed to check scan progress',
                         progress: 0
                     }));
                 }
-            );
+            }, 2000);
+
         } catch (error) {
             setScanState(prev => ({
                 ...prev,
@@ -231,7 +236,7 @@ const DTCreate: React.FC = () => {
                                 </div>
                                 {(scanState.stage || scanState.message) && (
                                     <div className="progress-message">
-                                        <Activity className="spin" />
+                                        <Activity/>
                                         <span>{scanState.stage ? `${scanState.stage} - ${scanState.message}` : scanState.message}</span>
                                     </div>
                                 )}
@@ -250,19 +255,73 @@ const DTCreate: React.FC = () => {
                                 <h3>Scan Results</h3>
                                 <div className="result-grid">
                                     <div className="result-section">
-                                        <h4>System Info</h4>
-                                        <p>OS: {scanState.result.systemInfo.osVersion}</p>
-                                        <p>CPU: {scanState.result.systemInfo.cpuModel}</p>
+                                        <h4>System Information</h4>
+                                        <p>Operating System: {scanState.result.systemInfo.osName}</p>
+                                        <p>OS Version: {scanState.result.systemInfo.osVersion}</p>
+                                        <p>CPU Model: {scanState.result.systemInfo.cpuModel}</p>
                                         <p>Memory: {digitalTwinApi.formatMemory(scanState.result.systemInfo.memory)}</p>
-                                        <p>OS: {scanState.result.systemInfo.osName}</p>
+                                        <p>Disk Space: {digitalTwinApi.formatDiskSpace(scanState.result.systemInfo.diskSpace)}</p>
+                                        <p>Last Boot Time: {new Date(scanState.result.systemInfo.lastBootTime).toLocaleString()}</p>
                                     </div>
 
                                     <div className="result-section">
-                                        <h4>Security Info</h4>
-                                        <p>Firewall: {scanState.result.securityInfo.firewall.enabled ? 'Enabled' : 'Disabled'}</p>
-                                        <p>Firewall Rules: {scanState.result.securityInfo.firewall.rules}</p>
-                                        <p>Windows Defender: {scanState.result.securityInfo.antivirus.windowsDefender.enabled ? 'Active' : 'Inactive'}</p>
-                                        <p>Updates: {scanState.result.securityInfo.updates.length} recent updates</p>
+                                        <h4>Network Information</h4>
+                                        <h5>Network Interfaces</h5>
+                                        {scanState.result.networkInfo.interfaces.map((iface, index) => (
+                                            <div key={index} className="network-interface">
+                                                <p>Interface: {iface.name}</p>
+                                                <p>IP Address: {iface.ipAddress}</p>
+                                                <p>MAC Address: {iface.macAddress}</p>
+                                                <p>Link Speed: {iface.linkSpeed}</p>
+                                                <p>DNS Servers: {iface.dnsServers.join(', ')}</p>
+                                            </div>
+                                        ))}
+                                        <h5>Open Ports</h5>
+                                        <div className="network-ports">
+                                            {scanState.result.networkInfo.openPorts.slice(0, 5).map((port, index) => (
+                                                <p key={index}>Port {port.LocalPort}: {port.State} ({port.RemoteAddress})</p>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="result-section">
+                                        <h4>Security Information</h4>
+                                        <div className="security-subsection">
+                                            <h5>Firewall</h5>
+                                            <p>Status: {scanState.result.securityInfo.firewall.enabled ? 'Enabled' : 'Disabled'}</p>
+                                            <p>Total Rules: {scanState.result.securityInfo.firewall.rules}</p>
+                                            <h6>Inbound Rules Sample</h6>
+                                            <ul>
+                                                {scanState.result.securityInfo.firewall.inboundRules.slice(0, 5).map((rule, index) => (
+                                                    <li key={index}>{rule.DisplayName} ({rule.Action})</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        <div className="security-subsection">
+                                            <h5>Windows Defender</h5>
+                                            <p>Status: {scanState.result.securityInfo.antivirus.windowsDefender.enabled ? 'Active' : 'Inactive'}</p>
+                                            <p>Real-time Protection: {scanState.result.securityInfo.antivirus.windowsDefender.realTimeProtection ? 'Enabled' : 'Disabled'}</p>
+                                            <p>Behavior Monitor: {scanState.result.securityInfo.antivirus.windowsDefender.behaviorMonitor ? 'Enabled' : 'Disabled'}</p>
+                                            <p>Network Protection: {scanState.result.securityInfo.antivirus.windowsDefender.networkProtection ? 'Enabled' : 'Disabled'}</p>
+                                        </div>
+
+                                        <div className="security-subsection">
+                                            <h5>Recent Updates</h5>
+                                            <ul>
+                                                {scanState.result.securityInfo.updates.map((update, index) => (
+                                                    <li key={index}>
+                                                        {update.HotFixID} - Installed: {new Date(update.InstalledOn).toLocaleDateString()}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        <div className="security-subsection">
+                                            <h5>UAC Settings</h5>
+                                            <p>Status: {scanState.result.securityInfo.uac.enabled ? 'Enabled' : 'Disabled'}</p>
+                                            <p>Consent Level: {scanState.result.securityInfo.uac.level.ConsentPromptBehaviorAdmin}</p>
+                                        </div>
                                     </div>
 
                                     <button
@@ -307,7 +366,7 @@ const DTCreate: React.FC = () => {
                                     </span>
                                 </div>
                                 <div className="progress-message">
-                                    <Activity className="spin" />
+                                    <Activity/>
                                     <span>{deployState.message}</span>
                                 </div>
                             </div>
