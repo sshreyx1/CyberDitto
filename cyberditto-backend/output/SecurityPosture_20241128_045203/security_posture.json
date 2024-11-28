@@ -1,0 +1,2598 @@
+{
+    "systemInfo":  {
+                       "osVersion":  "10.0.26100",
+                       "osName":  "Microsoft Windows 11 Home",
+                       "memory":  16969424896,
+                       "diskSpace":  1022870155264,
+                       "lastBootTime":  "11/27/2024 16:38:50",
+                       "cpuModel":  "11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz"
+                   },
+    "monitoring":  {
+                       "runningProcesses":  [
+                                                {
+                                                    "ProcessName":  "AdobeUpdateService",
+                                                    "Id":  5032,
+                                                    "CPU":  null,
+                                                    "WorkingSet":  2277376
+                                                },
+                                                {
+                                                    "ProcessName":  "AggregatorHost",
+                                                    "Id":  11808,
+                                                    "CPU":  null,
+                                                    "WorkingSet":  6610944
+                                                },
+                                                {
+                                                    "ProcessName":  "ApplicationFrameHost",
+                                                    "Id":  17020,
+                                                    "CPU":  4.0625,
+                                                    "WorkingSet":  54124544
+                                                },
+                                                {
+                                                    "ProcessName":  "AppProvisioningPlugin",
+                                                    "Id":  19156,
+                                                    "CPU":  null,
+                                                    "WorkingSet":  8695808
+                                                },
+                                                {
+                                                    "ProcessName":  "audiodg",
+                                                    "Id":  23136,
+                                                    "CPU":  255.015625,
+                                                    "WorkingSet":  93245440
+                                                },
+                                                {
+                                                    "ProcessName":  "AutoModeDetect",
+                                                    "Id":  17688,
+                                                    "CPU":  0.59375,
+                                                    "WorkingSet":  13930496
+                                                },
+                                                {
+                                                    "ProcessName":  "backgroundTaskHost",
+                                                    "Id":  4160,
+                                                    "CPU":  0.109375,
+                                                    "WorkingSet":  16916480
+                                                },
+                                                {
+                                                    "ProcessName":  "backgroundTaskHost",
+                                                    "Id":  4468,
+                                                    "CPU":  0.265625,
+                                                    "WorkingSet":  5701632
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  1808,
+                                                    "CPU":  10.03125,
+                                                    "WorkingSet":  109842432
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  2500,
+                                                    "CPU":  3.5625,
+                                                    "WorkingSet":  21630976
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  7180,
+                                                    "CPU":  290.6875,
+                                                    "WorkingSet":  191078400
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  7480,
+                                                    "CPU":  0.125,
+                                                    "WorkingSet":  8802304
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  9104,
+                                                    "CPU":  506.25,
+                                                    "WorkingSet":  307216384
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  9224,
+                                                    "CPU":  6.328125,
+                                                    "WorkingSet":  75235328
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  10100,
+                                                    "CPU":  92.578125,
+                                                    "WorkingSet":  59121664
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  10568,
+                                                    "CPU":  76.921875,
+                                                    "WorkingSet":  101703680
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  12120,
+                                                    "CPU":  1.75,
+                                                    "WorkingSet":  51826688
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  12172,
+                                                    "CPU":  130.640625,
+                                                    "WorkingSet":  237215744
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  14556,
+                                                    "CPU":  88.6875,
+                                                    "WorkingSet":  257994752
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  15204,
+                                                    "CPU":  380.203125,
+                                                    "WorkingSet":  276578304
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  17132,
+                                                    "CPU":  101.5,
+                                                    "WorkingSet":  165593088
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  19048,
+                                                    "CPU":  96.140625,
+                                                    "WorkingSet":  223068160
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  19472,
+                                                    "CPU":  0.125,
+                                                    "WorkingSet":  33353728
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  20256,
+                                                    "CPU":  60.25,
+                                                    "WorkingSet":  298975232
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  20460,
+                                                    "CPU":  71.765625,
+                                                    "WorkingSet":  222683136
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  21580,
+                                                    "CPU":  802.125,
+                                                    "WorkingSet":  506376192
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  22608,
+                                                    "CPU":  106.9375,
+                                                    "WorkingSet":  229261312
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  23192,
+                                                    "CPU":  1,
+                                                    "WorkingSet":  22343680
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  23764,
+                                                    "CPU":  547.359375,
+                                                    "WorkingSet":  280997888
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  24044,
+                                                    "CPU":  1.515625,
+                                                    "WorkingSet":  45309952
+                                                },
+                                                {
+                                                    "ProcessName":  "chrome",
+                                                    "Id":  24080,
+                                                    "CPU":  30.703125,
+                                                    "WorkingSet":  145137664
+                                                },
+                                                {
+                                                    "ProcessName":  "cmd",
+                                                    "Id":  2696,
+                                                    "CPU":  0.015625,
+                                                    "WorkingSet":  6619136
+                                                },
+                                                {
+                                                    "ProcessName":  "cmd",
+                                                    "Id":  19696,
+                                                    "CPU":  0.03125,
+                                                    "WorkingSet":  6537216
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  4684,
+                                                    "CPU":  6.375,
+                                                    "WorkingSet":  100995072
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  7880,
+                                                    "CPU":  0.453125,
+                                                    "WorkingSet":  83095552
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  12348,
+                                                    "CPU":  0.921875,
+                                                    "WorkingSet":  91574272
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  13804,
+                                                    "CPU":  12.765625,
+                                                    "WorkingSet":  97103872
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  15672,
+                                                    "CPU":  14.484375,
+                                                    "WorkingSet":  153214976
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  17108,
+                                                    "CPU":  10.125,
+                                                    "WorkingSet":  87605248
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  17380,
+                                                    "CPU":  133.375,
+                                                    "WorkingSet":  318599168
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  19024,
+                                                    "CPU":  39.25,
+                                                    "WorkingSet":  132370432
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  21316,
+                                                    "CPU":  3.609375,
+                                                    "WorkingSet":  84807680
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  22624,
+                                                    "CPU":  0.109375,
+                                                    "WorkingSet":  31997952
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  23372,
+                                                    "CPU":  1.5,
+                                                    "WorkingSet":  48730112
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  24684,
+                                                    "CPU":  0.171875,
+                                                    "WorkingSet":  104087552
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  25152,
+                                                    "CPU":  30.484375,
+                                                    "WorkingSet":  113246208
+                                                },
+                                                {
+                                                    "ProcessName":  "Code",
+                                                    "Id":  25504,
+                                                    "CPU":  5.359375,
+                                                    "WorkingSet":  93102080
+                                                },
+                                                {
+                                                    "ProcessName":  "conhost",
+                                                    "Id":  804,
+                                                    "CPU":  0.015625,
+                                                    "WorkingSet":  7176192
+                                                },
+                                                {
+                                                    "ProcessName":  "conhost",
+                                                    "Id":  4664,
+                                                    "CPU":  0.078125,
+                                                    "WorkingSet":  9388032
+                                                },
+                                                {
+                                                    "ProcessName":  "conhost",
+                                                    "Id":  8260,
+                                                    "CPU":  0.15625,
+                                                    "WorkingSet":  8122368
+                                                }
+                                            ],
+                       "scheduledTasks":  [
+                                              {
+                                                  "TaskName":  "Adobe-Genuine-Software-Integrity-Scheduler-1.0",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "AdobeGCInvoker-1.0",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "McAfeeLogon",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "OneDrive Per-Machine Standalone Update Task",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "OneDrive Reporting Task-S-1-5-21-1483970401-1622042041-1109605681-1001",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WinZip - Deduplicator - Documents - shrey",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WinZip - Deduplicator - Downloads - shrey",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WinZip - Deduplicator - Pictures - shrey",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WinZip Update Notifier 1",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WinZip Update Notifier 2",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WinZip Update Notifier 3",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WinZip Updater - shrey",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Lenovo UDC Diagnostic Scan",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Lenovo\\UDC\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Lenovo UDC Idle Monitor",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Lenovo\\UDC\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Office Automatic Updates 2.0",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Office\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Office ClickToRun Service Monitor",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Office\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Office Feature Updates",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Office\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Office Feature Updates Logon",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Office\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Office Performance Monitor",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Office\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Office Serviceability Manager",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Office\\"
+                                              },
+                                              {
+                                                  "TaskName":  "BackgroundDownload",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\VisualStudio\\Updates\\"
+                                              },
+                                              {
+                                                  "TaskName":  ".NET Framework NGEN v4.0.30319",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\.NET Framework\\"
+                                              },
+                                              {
+                                                  "TaskName":  ".NET Framework NGEN v4.0.30319 64",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\.NET Framework\\"
+                                              },
+                                              {
+                                                  "TaskName":  "AD RMS Rights Policy Template Management (Manual)",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Active Directory Rights Management Services Client\\"
+                                              },
+                                              {
+                                                  "TaskName":  "MareBackup",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Application Experience\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Microsoft Compatibility Appraiser",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Application Experience\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Microsoft Compatibility Appraiser Exp",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Application Experience\\"
+                                              },
+                                              {
+                                                  "TaskName":  "PcaPatchDbTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Application Experience\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SdbinstMergeDbTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Application Experience\\"
+                                              },
+                                              {
+                                                  "TaskName":  "StartupAppTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Application Experience\\"
+                                              },
+                                              {
+                                                  "TaskName":  "appuriverifierdaily",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\ApplicationData\\"
+                                              },
+                                              {
+                                                  "TaskName":  "appuriverifierinstall",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\ApplicationData\\"
+                                              },
+                                              {
+                                                  "TaskName":  "CleanupTemporaryState",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\ApplicationData\\"
+                                              },
+                                              {
+                                                  "TaskName":  "DsSvcCleanup",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\ApplicationData\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Backup",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\AppListBackup\\"
+                                              },
+                                              {
+                                                  "TaskName":  "BackupNonMaintenance",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\AppListBackup\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Proxy",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Autochk\\"
+                                              },
+                                              {
+                                                  "TaskName":  "BitLocker Encrypt All Drives",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\BitLocker\\"
+                                              },
+                                              {
+                                                  "TaskName":  "BitLocker MDM policy Refresh",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\BitLocker\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UninstallDeviceTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Bluetooth\\"
+                                              },
+                                              {
+                                                  "TaskName":  "BgTaskRegistrationMaintenanceTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\BrokerInfrastructure\\"
+                                              },
+                                              {
+                                                  "TaskName":  "maintenancetasks",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\capabilityaccessmanager\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UserTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\CertificateServicesClient\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UserTask-Roam",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\CertificateServicesClient\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ProactiveScan",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Chkdsk\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SyspartRepair",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Chkdsk\\"
+                                              },
+                                              {
+                                                  "TaskName":  "CreateObjectTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\CloudExperienceHost\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Backup",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\CloudRestore\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Restore",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\CloudRestore\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UnifiedConsentSyncTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\ConsentUX\\UnifiedConsent\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Consolidator",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UsbCeip",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Data Integrity Check And Scan",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Data Integrity Scan\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Data Integrity Scan",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Data Integrity Scan\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Data Integrity Scan for Crash Recovery",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Data Integrity Scan\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ScheduledDefrag",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Defrag\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Device",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Device Information\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Device User",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Device Information\\"
+                                              },
+                                              {
+                                                  "TaskName":  "RecommendedTroubleshootingScanner",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Diagnosis\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Scheduled",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Diagnosis\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UnexpectedCodepath",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Diagnosis\\"
+                                              },
+                                              {
+                                                  "TaskName":  "DirectXDatabaseUpdater",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\DirectX\\"
+                                              },
+                                              {
+                                                  "TaskName":  "DXGIAdapterCache",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\DirectX\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SilentCleanup",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\DiskCleanup\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Microsoft-Windows-DiskDiagnosticDataCollector",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\DiskDiagnostic\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Diagnostics",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\DiskFootprint\\"
+                                              },
+                                              {
+                                                  "TaskName":  "StorageSense",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\DiskFootprint\\"
+                                              },
+                                              {
+                                                  "TaskName":  "dusmtask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\DUSM\\"
+                                              },
+                                              {
+                                                  "TaskName":  "EDP App Launch Task",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\EDP\\"
+                                              },
+                                              {
+                                                  "TaskName":  "EDP Auth Task",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\EDP\\"
+                                              },
+                                              {
+                                                  "TaskName":  "EDP Inaccessible Credentials Task",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\EDP\\"
+                                              },
+                                              {
+                                                  "TaskName":  "StorageCardEncryption Task",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\EDP\\"
+                                              },
+                                              {
+                                                  "TaskName":  "PushLaunch",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\EnterpriseMgmt\\7A70221F-0C90-43A9-B85C-8BE29A6E1522\\"
+                                              },
+                                              {
+                                                  "TaskName":  "PushRenewal",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\EnterpriseMgmt\\7A70221F-0C90-43A9-B85C-8BE29A6E1522\\"
+                                              },
+                                              {
+                                                  "TaskName":  "PushUpgrade",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\EnterpriseMgmt\\7A70221F-0C90-43A9-B85C-8BE29A6E1522\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ExploitGuard MDM policy Refresh",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\ExploitGuard\\"
+                                              },
+                                              {
+                                                  "TaskName":  "DmClient",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Feedback\\Siuf\\"
+                                              },
+                                              {
+                                                  "TaskName":  "DmClientOnScenarioDownload",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Feedback\\Siuf\\"
+                                              },
+                                              {
+                                                  "TaskName":  "File History (maintenance mode)",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\FileHistory\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ReconcileFeatures",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Flighting\\FeatureConfig\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UsageDataFlushing",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Flighting\\FeatureConfig\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UsageDataReceiver",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Flighting\\FeatureConfig\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UsageDataReporting",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Flighting\\FeatureConfig\\"
+                                              },
+                                              {
+                                                  "TaskName":  "RefreshCache",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Flighting\\OneSettings\\"
+                                              },
+                                              {
+                                                  "TaskName":  "InputSettingsRestoreDataAvailable",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\input\\"
+                                              },
+                                              {
+                                                  "TaskName":  "LocalUserSyncDataAvailable",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\input\\"
+                                              },
+                                              {
+                                                  "TaskName":  "MouseSyncDataAvailable",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\input\\"
+                                              },
+                                              {
+                                                  "TaskName":  "PenSyncDataAvailable",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\input\\"
+                                              },
+                                              {
+                                                  "TaskName":  "syncpensettings",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\input\\"
+                                              },
+                                              {
+                                                  "TaskName":  "TouchpadSyncDataAvailable",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\input\\"
+                                              },
+                                              {
+                                                  "TaskName":  "RestoreDevice",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\InstallService\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ScanForUpdates",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\InstallService\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ScanForUpdatesAsUser",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\InstallService\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Synchronize Language Settings",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\International\\"
+                                              },
+                                              {
+                                                  "TaskName":  "La57Cleanup",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Kernel\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Installation",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\LanguageComponentsInstaller\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ReconcileLanguageResources",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\LanguageComponentsInstaller\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Notifications",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Location\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WindowsActionDialog",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Location\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WinSAT",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Maintenance\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Cellular",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Management\\Provisioning\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Logon",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Management\\Provisioning\\"
+                                              },
+                                              {
+                                                  "TaskName":  "MapsToastTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Maps\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ProcessMemoryDiagnosticEvents",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\MemoryDiagnostic\\"
+                                              },
+                                              {
+                                                  "TaskName":  "LPRemove",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\MUI\\"
+                                              },
+                                              {
+                                                  "TaskName":  "NcsiIdentifyUserProxies",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Network Connectivity Status Indicator\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WiFiTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\NlaSvc\\"
+                                              },
+                                              {
+                                                  "TaskName":  "RequestTrace",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\PerformanceTrace\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SecureBootEncodeUEFI",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\PI\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Device Install Group Policy",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Plug and Play\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Device Install Reboot Required",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Plug and Play\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Sysprep Generalize Drivers",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Plug and Play\\"
+                                              },
+                                              {
+                                                  "TaskName":  "AnalyzeSystem",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Power Efficiency Diagnostics\\"
+                                              },
+                                              {
+                                                  "TaskName":  "EduPrintProv",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Printing\\"
+                                              },
+                                              {
+                                                  "TaskName":  "PrinterCleanupTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Printing\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Initialization",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\ReFsDedupSvc\\"
+                                              },
+                                              {
+                                                  "TaskName":  "RegIdleBackup",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Registry\\"
+                                              },
+                                              {
+                                                  "TaskName":  "IntelligentPwdlessTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Security\\Pwdless\\"
+                                              },
+                                              {
+                                                  "TaskName":  "StartComponentCleanup",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Servicing\\"
+                                              },
+                                              {
+                                                  "TaskName":  "CreateObjectTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Shell\\"
+                                              },
+                                              {
+                                                  "TaskName":  "FamilySafetyMonitor",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Shell\\"
+                                              },
+                                              {
+                                                  "TaskName":  "FamilySafetyRefreshTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Shell\\"
+                                              },
+                                              {
+                                                  "TaskName":  "IndexerAutomaticMaintenance",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Shell\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ThemesSyncedImageDownload",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Shell\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UninstallSMB1ClientTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\SMB\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UninstallSMB1ServerTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\SMB\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SpaceAgentTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\SpacePort\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SpaceManagerTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\SpacePort\\"
+                                              },
+                                              {
+                                                  "TaskName":  "MaintenanceTasks",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\StateRepository\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Storage Tiers Management Initialization",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Storage Tiers Management\\"
+                                              },
+                                              {
+                                                  "TaskName":  "EnableLicenseAcquisition",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Subscription\\"
+                                              },
+                                              {
+                                                  "TaskName":  "PowerGridForecastTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Sustainability\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SustainabilityTelemetry",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Sustainability\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ResPriStaticDbSync",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Sysmain\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WsSwapAssessmentTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Sysmain\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SR",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\SystemRestore\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Interactive",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Task Manager\\"
+                                              },
+                                              {
+                                                  "TaskName":  "MsCtfMonitor",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\TextServicesFramework\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ForceSynchronizeTime",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Time Synchronization\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SynchronizeTime",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Time Synchronization\\"
+                                              },
+                                              {
+                                                  "TaskName":  "SynchronizeTimeZone",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Time Zone\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UPnPHostConfig",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\UPnP\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Usb-Notifications",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\USB\\"
+                                              },
+                                              {
+                                                  "TaskName":  "WiFiTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\WCM\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Windows Defender Cache Maintenance",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Windows Defender\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Windows Defender Cleanup",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Windows Defender\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Windows Defender Verification",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Windows Defender\\"
+                                              },
+                                              {
+                                                  "TaskName":  "QueueReporting",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Windows Error Reporting\\"
+                                              },
+                                              {
+                                                  "TaskName":  "BfeOnServiceStartTypeChange",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Windows Filtering Platform\\"
+                                              },
+                                              {
+                                                  "TaskName":  "UpdateLibrary",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Windows Media Sharing\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Calibration Loader",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\WindowsColorSystem\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Scheduled Start",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\WindowsUpdate\\"
+                                              },
+                                              {
+                                                  "TaskName":  "CDSSync",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\WlanSvc\\"
+                                              },
+                                              {
+                                                  "TaskName":  "MoProfileManagement",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\WlanSvc\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Work Folders Logon Synchronization",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Work Folders\\"
+                                              },
+                                              {
+                                                  "TaskName":  "Work Folders Maintenance Work",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\Work Folders\\"
+                                              },
+                                              {
+                                                  "TaskName":  "NotificationTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\WwanSvc\\"
+                                              },
+                                              {
+                                                  "TaskName":  "OobeDiscovery",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\Windows\\WwanSvc\\"
+                                              },
+                                              {
+                                                  "TaskName":  "XblGameSaveTask",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\Microsoft\\XblGameSave\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ManifestUpdate",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\MySQL\\Installer\\"
+                                              },
+                                              {
+                                                  "TaskName":  "ExpressZipDowngrade",
+                                                  "State":  3,
+                                                  "TaskPath":  "\\NCH Software\\"
+                                              }
+                                          ],
+                       "startupPrograms":  [
+                                               {
+                                                   "Name":  "OneDrive",
+                                                   "Command":  "\"C:\\Program Files\\Microsoft OneDrive\\OneDrive.exe\" /background",
+                                                   "Location":  "HKU\\S-1-5-21-1483970401-1622042041-1109605681-1001\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "SHREYA_SENTHIL\\shrey"
+                                               },
+                                               {
+                                                   "Name":  "com.squirrel.Teams.Teams",
+                                                   "Command":  "C:\\Users\\shrey\\AppData\\Local\\Microsoft\\Teams\\Update.exe --processStart \"Teams.exe\" --process-start-args \"--system-initiated\"",
+                                                   "Location":  "HKU\\S-1-5-21-1483970401-1622042041-1109605681-1001\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "SHREYA_SENTHIL\\shrey"
+                                               },
+                                               {
+                                                   "Name":  "Discord",
+                                                   "Command":  "\"C:\\Users\\shrey\\AppData\\Local\\Discord\\Update.exe\" --processStart Discord.exe",
+                                                   "Location":  "HKU\\S-1-5-21-1483970401-1622042041-1109605681-1001\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "SHREYA_SENTHIL\\shrey"
+                                               },
+                                               {
+                                                   "Name":  "Airtame",
+                                                   "Command":  "C:\\Program Files (x86)\\Airtame\\Airtame.exe --hidden",
+                                                   "Location":  "HKU\\S-1-5-21-1483970401-1622042041-1109605681-1001\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "SHREYA_SENTHIL\\shrey"
+                                               },
+                                               {
+                                                   "Name":  "MicrosoftEdgeAutoLaunch_4B56FFCE6CDD66F4E673AA76E6B2A829",
+                                                   "Command":  "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --win-session-start",
+                                                   "Location":  "HKU\\S-1-5-21-1483970401-1622042041-1109605681-1001\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "SHREYA_SENTHIL\\shrey"
+                                               },
+                                               {
+                                                   "Name":  "Docker Desktop",
+                                                   "Command":  "C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe -Autostart",
+                                                   "Location":  "HKU\\S-1-5-21-1483970401-1622042041-1109605681-1001\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "SHREYA_SENTHIL\\shrey"
+                                               },
+                                               {
+                                                   "Name":  "Microsoft.Lists",
+                                                   "Command":  "C:\\Program Files\\Microsoft OneDrive\\24.216.1027.0003\\Microsoft.SharePoint.exe",
+                                                   "Location":  "HKU\\S-1-5-21-1483970401-1622042041-1109605681-1001\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "SHREYA_SENTHIL\\shrey"
+                                               },
+                                               {
+                                                   "Name":  "Figma Agent",
+                                                   "Command":  "\"C:\\Users\\shrey\\AppData\\Local\\FigmaAgent\\figma_agent.exe\"",
+                                                   "Location":  "HKU\\S-1-5-21-1483970401-1622042041-1109605681-1001\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "SHREYA_SENTHIL\\shrey"
+                                               },
+                                               {
+                                                   "Name":  "WinZip Preloader",
+                                                   "Command":  "C:\\PROGRA~1\\WinZip\\WZPREL~1.EXE ",
+                                                   "Location":  "Common Startup",
+                                                   "User":  "Public"
+                                               },
+                                               {
+                                                   "Name":  "SecurityHealth",
+                                                   "Command":  "%windir%\\system32\\SecurityHealthSystray.exe",
+                                                   "Location":  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "Public"
+                                               },
+                                               {
+                                                   "Name":  "RtkAudUService",
+                                                   "Command":  "\"C:\\WINDOWS\\System32\\DriverStore\\FileRepository\\realtekservice.inf_amd64_a1020546271138b9\\RtkAudUService64.exe\" -background",
+                                                   "Location":  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "Public"
+                                               },
+                                               {
+                                                   "Name":  "AdobeGCInvoker-1.0",
+                                                   "Command":  "\"C:\\Program Files (x86)\\Common Files\\Adobe\\AdobeGCClient\\AGCInvokerUtility.exe\"",
+                                                   "Location":  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "Public"
+                                               },
+                                               {
+                                                   "Name":  "WinZip UN",
+                                                   "Command":  "\"C:\\Program Files\\WinZip\\WZUpdateNotifier.exe\" -show",
+                                                   "Location":  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "Public"
+                                               },
+                                               {
+                                                   "Name":  "KeePass 2 PreLoad",
+                                                   "Command":  "\"C:\\Program Files\\KeePass Password Safe 2\\KeePass.exe\" --preload",
+                                                   "Location":  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                                                   "User":  "Public"
+                                               }
+                                           ]
+                   },
+    "securityInfo":  {
+                         "firewall":  {
+                                          "outboundRules":  [
+                                                                {
+                                                                    "DisplayName":  "Wi-Fi Direct Spooler Use (Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  4
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (SSDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (WSD Events-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Remote Assistance (TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  3
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Packet Too Big (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Connected Devices Platform (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  3
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Connected Devices Platform - WiFi Direct Transport (TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  4
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "mDNS (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  1
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Parameter Problem (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Connected Devices Platform (TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  3
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Router Solicitation (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Remote Assistance (SSDP UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  3
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Remote Assistance (SSDP TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  3
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (UPnP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Multicast Listener Report v2 (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Windows Device Management Enrolment Service (TCP out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "mDNS (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  4
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Multicast Listener Done (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Windows Device Management Certificate Installer (TCP out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Teredo (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "WFD ASP Coordination Protocol (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Group Policy (LSASS-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  1
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Recommended Troubleshooting Client (HTTP/HTTPS Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (Pub WSD-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Wireless Display (TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Wireless Display (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Remote Assistance (RA Server TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  1
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Router Advertisement (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - IPHTTPS (TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Internet Group Management Protocol (IGMP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - DNS (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (NB-Datagram-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Microsoft Media Foundation Network Source OUT [TCP ALL]",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Neighbour Discovery Advertisement (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "AllJoyn Router (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  3
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Windows Device Management Device Enroller (TCP out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Multicast Listener Query (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (LLMNR-UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Time Exceeded (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "AllJoyn Router (TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  3
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Proximity sharing over TCP (TCP sharing-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Multicast Listener Report (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Wi-Fi Direct Network Discovery (Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  4
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Dynamic Host Configuration Protocol (DHCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Remote Assistance (PNRP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  3
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "WFD Driver-only (TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Connected User Experiences and Telemetry",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Wi-Fi Direct Scan Service Use (Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  4
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "mDNS (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Neighbour Discovery Solicitation (ICMPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - IPv6 (IPv6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "WFD Driver-only (UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (WSD EventsSecure-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Group Policy (NP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  1
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (WSD-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Windows Device Management Sync Client (TCP out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Dynamic Host Configuration Protocol for IPv6 (DHCPV6-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (UPnPHost-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Network Discovery (NB-Name-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Core Networking - Group Policy (TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  1
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Cast to Device functionality (qWave-TCP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  6
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Cast to Device streaming server (RTP-Streaming-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  4
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Cast to Device streaming server (RTP-Streaming-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  2
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Cast to Device functionality (qWave-UDP-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  6
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Cast to Device streaming server (RTP-Streaming-Out)",
+                                                                    "Action":  2,
+                                                                    "Profile":  1
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Movies \u0026 TV",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Lenovo Companion",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "@{MicrosoftWindows.Client.CBS_1000.22700.1041.0_x64__cw5n1h2txyewy?ms-resource://MicrosoftWindows.Client.CBS/resources/ProductPkgDisplayName}",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "@{Microsoft.Windows.StartMenuExperienceHost_10.0.22621.4249_neutral_neutral_cw5n1h2txyewy?ms-resource://Microsoft.Windows.StartMenuExperienceHost/StartMenuExperienceHost/PkgDisplayName}",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "@{MicrosoftWindows.Client.Core_1000.22700.1011.0_x64__cw5n1h2txyewy?ms-resource://MicrosoftWindows.Client.Core/resources/ProductPkgDisplayName}",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Windows Clock",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Store Experience Host",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "MSN Weather",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Windows Camera",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Microsoft Whiteboard",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Xbox Identity Provider",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "@{MicrosoftWindows.Client.LKG_1000.22621.3880.0_x64__cw5n1h2txyewy?ms-resource://MicrosoftWindows.Client.LKG/resources/ProductPkgDisplayName}",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Adobe Notification Client",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Windows Maps",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Captive Portal Flow",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Microsoft People",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Lenovo Hotkeys",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Microsoft To Do",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Microsoft Tips",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Mixed Reality Portal",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "Xbox Game Bar Plugin",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                },
+                                                                {
+                                                                    "DisplayName":  "@{Microsoft.LockApp_10.0.22621.3235_neutral__cw5n1h2txyewy?ms-resource://Microsoft.LockApp/resources/AppDisplayName}",
+                                                                    "Action":  2,
+                                                                    "Profile":  0
+                                                                }
+                                                            ],
+                                          "inboundRules":  [
+                                                               {
+                                                                   "DisplayName":  "Wi-Fi Direct Spooler Use (In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - IPv6 (IPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Delivery Optimization (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Router Advertisement (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Destination Unreachable Fragmentation Needed (ICMPv4-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Dynamic Host Configuration Protocol (DHCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (WSD-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Dynamic Host Configuration Protocol for IPv6(DHCPV6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Wi-Fi Direct Scan Service Use (In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (WSD-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (WSD Events-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Neighbour Discovery Solicitation (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Remote Assistance (DCOM-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  1
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (WSD EventsSecure-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Remote Assistance (RA Server TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  1
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (UPnP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Microsoft Media Foundation Network Source IN [UDP 5004-5009]",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Windows Remote Management (HTTP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Delivery Optimization (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Router Solicitation (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Wireless Display Infrastructure Back Channel (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (Pub-WSD-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Remote Assistance (PNRP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "DIAL protocol server (HTTP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  1
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Neighbour Discovery Advertisement (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Microsoft Media Foundation Network Source IN [TCP 554]",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (NB-Name-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Parameter Problem (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Teredo (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "WFD Driver-only (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "WFD Driver-only (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Remote Assistance (SSDP UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (SSDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Connected Devices Platform (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Connected Devices Platform (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "mDNS (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (LLMNR-UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Packet Too Big (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - IPHTTPS (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "AllJoyn Router (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "AllJoyn Router (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Multicast Listener Done (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Destination Unreachable (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Network Discovery (NB-Datagram-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Connected Devices Platform - WiFi Direct Transport (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Windows Remote Management (HTTP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Wi-Fi Direct Network Discovery (In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Wireless Display (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Remote Assistance (SSDP TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Proximity sharing over TCP (TCP sharing-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Internet Group Management Protocol (IGMP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "WFD ASP Coordination Protocol (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Multicast Listener Report v2 (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Multicast Listener Query (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Multicast Listener Report (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "DIAL protocol server (HTTP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Core Networking - Time Exceeded (ICMPv6-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "mDNS (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  1
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Remote Assistance (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "mDNS (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device streaming server (RTCP-Streaming-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device streaming server (RTCP-Streaming-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  1
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device streaming server (RTSP-Streaming-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  1
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device functionality (qWave-UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  6
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device streaming server (HTTP-Streaming-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device functionality (qWave-TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  6
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device SSDP Discovery (UDP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device UPnP Events (TCP-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device streaming server (RTSP-Streaming-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  2
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device streaming server (RTCP-Streaming-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device streaming server (HTTP-Streaming-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  1
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device streaming server (HTTP-Streaming-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Cast to Device streaming server (RTSP-Streaming-In)",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "main.exe",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Movies \u0026 TV",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Lenovo Companion",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "@{MicrosoftWindows.Client.CBS_1000.22700.1041.0_x64__cw5n1h2txyewy?ms-resource://MicrosoftWindows.Client.CBS/resources/ProductPkgDisplayName}",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "@{Microsoft.Windows.StartMenuExperienceHost_10.0.22621.4249_neutral_neutral_cw5n1h2txyewy?ms-resource://Microsoft.Windows.StartMenuExperienceHost/StartMenuExperienceHost/PkgDisplayName}",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "@{MicrosoftWindows.Client.Core_1000.22700.1011.0_x64__cw5n1h2txyewy?ms-resource://MicrosoftWindows.Client.Core/resources/ProductPkgDisplayName}",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Windows Clock",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Store Experience Host",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "MSN Weather",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Windows Camera",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Node.js JavaScript Runtime",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Node.js JavaScript Runtime",
+                                                                   "Action":  2,
+                                                                   "Profile":  4
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Microsoft Teams (personal)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Microsoft Teams (personal)",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "@{MicrosoftWindows.Client.LKG_1000.22621.3880.0_x64__cw5n1h2txyewy?ms-resource://MicrosoftWindows.Client.LKG/resources/ProductPkgDisplayName}",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Adobe Notification Client",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "Microsoft To Do",
+                                                                   "Action":  2,
+                                                                   "Profile":  3
+                                                               },
+                                                               {
+                                                                   "DisplayName":  "@{Microsoft.Win32WebViewHost_10.0.22621.1_neutral_neutral_cw5n1h2txyewy?ms-resource://Windows.Win32WebViewHost/resources/DisplayName}",
+                                                                   "Action":  2,
+                                                                   "Profile":  0
+                                                               }
+                                                           ],
+                                          "rules":  897,
+                                          "enabled":  true
+                                      },
+                         "uac":  {
+                                     "level":  {
+                                                   "ConsentPromptBehaviorAdmin":  5
+                                               },
+                                     "enabled":  true
+                                 },
+                         "updates":  [
+                                         {
+                                             "HotFixID":  "KB5048295",
+                                             "InstalledOn":  {
+                                                                 "value":  "\/Date(1732204800000)\/",
+                                                                 "DateTime":  "Friday, November 22, 2024 12:00:00 AM"
+                                                             }
+                                         },
+                                         {
+                                             "HotFixID":  "KB5046740",
+                                             "InstalledOn":  {
+                                                                 "value":  "\/Date(1732204800000)\/",
+                                                                 "DateTime":  "Friday, November 22, 2024 12:00:00 AM"
+                                                             }
+                                         },
+                                         {
+                                             "HotFixID":  "KB5048162",
+                                             "InstalledOn":  {
+                                                                 "value":  "\/Date(1732204800000)\/",
+                                                                 "DateTime":  "Friday, November 22, 2024 12:00:00 AM"
+                                                             }
+                                         }
+                                     ],
+                         "antivirus":  {
+                                           "windowsDefender":  {
+                                                                   "realTimeProtection":  true,
+                                                                   "behaviorMonitor":  true,
+                                                                   "networkProtection":  true,
+                                                                   "antispyware":  true,
+                                                                   "ioavProtection":  true,
+                                                                   "enabled":  true
+                                                               }
+                                       }
+                     },
+    "networkInfo":  {
+                        "interfaces":  [
+                                           {
+                                               "macAddress":  "F8-B5-4D-8F-BC-C7",
+                                               "linkSpeed":  "78 Mbps",
+                                               "name":  "Wi-Fi",
+                                               "ipAddress":  "192.168.18.22",
+                                               "dnsServers":  [
+                                                                  "fe80::1",
+                                                                  "fe80::1",
+                                                                  "192.168.18.1"
+                                                              ]
+                                           }
+                                       ],
+                        "services":  [
+                                         "AdobeUpdateService",
+                                         "Appinfo",
+                                         "AppXSvc",
+                                         "AudioEndpointBuilder",
+                                         "Audiosrv",
+                                         "BDESVC",
+                                         "BFE",
+                                         "BITS",
+                                         "BrokerInfrastructure",
+                                         "Browser",
+                                         "bthserv",
+                                         "camsvc",
+                                         "cbdhsvc_448cbfc",
+                                         "CDPSvc",
+                                         "CDPUserSvc_448cbfc",
+                                         "ClickToRunSvc",
+                                         "client_service",
+                                         "COMSysApp",
+                                         "CoreMessagingRegistrar",
+                                         "cplspcon",
+                                         "CryptSvc",
+                                         "DcomLaunch",
+                                         "DeviceAssociationService",
+                                         "DeviceInstall",
+                                         "DevicesFlowUserSvc_448cbfc",
+                                         "Dhcp",
+                                         "DiagTrack",
+                                         "DispBrokerDesktopSvc",
+                                         "DisplayEnhancementService",
+                                         "Dnscache",
+                                         "DolbyDAXAPI",
+                                         "DoSvc",
+                                         "DPS",
+                                         "DsSvc",
+                                         "DusmSvc",
+                                         "EapHost",
+                                         "EFS",
+                                         "esifsvc",
+                                         "EventLog",
+                                         "EventSystem",
+                                         "fdPHost",
+                                         "FDResPub",
+                                         "FMAPOService",
+                                         "FontCache",
+                                         "ftnlsv3hv",
+                                         "ftscanmgrhv",
+                                         "GamingServices",
+                                         "GamingServicesNet",
+                                         "gpsvc",
+                                         "hns",
+                                         "HvHost",
+                                         "igccservice",
+                                         "igfxCUIService2.0.0.0",
+                                         "ImControllerService",
+                                         "InstallService",
+                                         "IntelAudioService",
+                                         "InventorySvc",
+                                         "iphlpsvc",
+                                         "jhi_service",
+                                         "KeyIso",
+                                         "LanmanServer",
+                                         "LanmanWorkstation",
+                                         "LenovoFnAndFunctionKeys",
+                                         "LenovoVantageService",
+                                         "lfsvc",
+                                         "LicenseManager",
+                                         "LITSSVC",
+                                         "lmhosts",
+                                         "LMS",
+                                         "LSM",
+                                         "McAfee WebAdvisor",
+                                         "McAPExe",
+                                         "mccspsvc",
+                                         "MDCoreSvc",
+                                         "mfemms",
+                                         "mfevtp",
+                                         "ModuleCoreService",
+                                         "mpssvc",
+                                         "MSDTC",
+                                         "NcbService",
+                                         "NcdAutoSetup",
+                                         "Netman",
+                                         "netprofm",
+                                         "NetSetupSvc",
+                                         "NgcCtnrSvc",
+                                         "NgcSvc",
+                                         "NPSMSvc_448cbfc",
+                                         "nsi",
+                                         "nvagent",
+                                         "OneSyncSvc_448cbfc",
+                                         "PcaSvc",
+                                         "PDFProFiltSrvPP",
+                                         "PEFService",
+                                         "PenService_448cbfc",
+                                         "PhoneSvc",
+                                         "PlugPlay",
+                                         "PolicyAgent",
+                                         "Power",
+                                         "ProfSvc",
+                                         "RasMan",
+                                         "RmSvc",
+                                         "RpcEptMapper",
+                                         "RpcLocator",
+                                         "RpcSs",
+                                         "RstMwService",
+                                         "RtkAudioUniversalService",
+                                         "SamSs",
+                                         "Schedule",
+                                         "SecurityHealthService",
+                                         "SENS",
+                                         "SensorService",
+                                         "SensrSvc",
+                                         "SharedAccess",
+                                         "ShellHWDetection",
+                                         "SmartNoteService",
+                                         "Spooler",
+                                         "SSDPSRV",
+                                         "SstpSvc",
+                                         "StateRepository",
+                                         "StiSvc",
+                                         "StorSvc",
+                                         "SysMain",
+                                         "SystemEventsBroker",
+                                         "TbtP2pShortcutService",
+                                         "TextInputManagementService",
+                                         "Themes",
+                                         "TimeBrokerSvc",
+                                         "TISmartAmpService",
+                                         "TokenBroker",
+                                         "TrkWks",
+                                         "UDCService",
+                                         "UdkUserSvc_448cbfc",
+                                         "USBAppControl",
+                                         "UserManager",
+                                         "UsoSvc",
+                                         "VaultSvc",
+                                         "VMUSBArbService",
+                                         "vmwetlm",
+                                         "vmwsprrdpwks",
+                                         "W32Time",
+                                         "Wcmsvc",
+                                         "WdiSystemHost",
+                                         "WdNisSvc",
+                                         "webthreatdefusersvc_448cbfc",
+                                         "WinDefend",
+                                         "WinHttpAutoProxySvc",
+                                         "Winmgmt",
+                                         "WinRM",
+                                         "WlanSvc",
+                                         "wmiApSrv",
+                                         "WMIRegistrationService",
+                                         "WorkflowAppControl",
+                                         "WpnService",
+                                         "WpnUserService_448cbfc",
+                                         "wscsvc",
+                                         "WSearch",
+                                         "WSLService",
+                                         "WTabletServiceISD",
+                                         "YMC"
+                                     ],
+                        "dnsServers":  [
+                                           "fec0:0:0:ffff::1",
+                                           "fec0:0:0:ffff::2",
+                                           "fec0:0:0:ffff::3",
+                                           "fec0:0:0:ffff::1",
+                                           "fec0:0:0:ffff::2",
+                                           "fec0:0:0:ffff::3",
+                                           "192.168.18.1",
+                                           "fe80::1",
+                                           "fe80::1",
+                                           "fec0:0:0:ffff::1",
+                                           "fec0:0:0:ffff::2",
+                                           "fec0:0:0:ffff::3"
+                                       ],
+                        "openPorts":  [
+                                          {
+                                              "LocalPort":  135,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  1584
+                                          },
+                                          {
+                                              "LocalPort":  139,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  4
+                                          },
+                                          {
+                                              "LocalPort":  445,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  4
+                                          },
+                                          {
+                                              "LocalPort":  5040,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  2664
+                                          },
+                                          {
+                                              "LocalPort":  5173,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  15248
+                                          },
+                                          {
+                                              "LocalPort":  5357,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  4
+                                          },
+                                          {
+                                              "LocalPort":  5985,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  4
+                                          },
+                                          {
+                                              "LocalPort":  6646,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  7228
+                                          },
+                                          {
+                                              "LocalPort":  7680,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  10360
+                                          },
+                                          {
+                                              "LocalPort":  8080,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  25176
+                                          },
+                                          {
+                                              "LocalPort":  8097,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  15124
+                                          },
+                                          {
+                                              "LocalPort":  25236,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  15124
+                                          },
+                                          {
+                                              "LocalPort":  42050,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  8136
+                                          },
+                                          {
+                                              "LocalPort":  44950,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  23016
+                                          },
+                                          {
+                                              "LocalPort":  44960,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  23016
+                                          },
+                                          {
+                                              "LocalPort":  47001,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  4
+                                          },
+                                          {
+                                              "LocalPort":  49664,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  1180
+                                          },
+                                          {
+                                              "LocalPort":  49665,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  1076
+                                          },
+                                          {
+                                              "LocalPort":  49666,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  2300
+                                          },
+                                          {
+                                              "LocalPort":  49667,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  3116
+                                          },
+                                          {
+                                              "LocalPort":  49668,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  4348
+                                          },
+                                          {
+                                              "LocalPort":  49669,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  7776
+                                          },
+                                          {
+                                              "LocalPort":  49670,
+                                              "RemoteAddress":  "::",
+                                              "State":  2,
+                                              "OwningProcess":  1152
+                                          },
+                                          {
+                                              "LocalPort":  54950,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  6280
+                                          },
+                                          {
+                                              "LocalPort":  57621,
+                                              "RemoteAddress":  "0.0.0.0",
+                                              "State":  2,
+                                              "OwningProcess":  15124
+                                          }
+                                      ]
+                    }
+}

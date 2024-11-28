@@ -10,14 +10,20 @@ import {
     ArrowRight
 } from 'lucide-react';
 import { digitalTwinApi } from '../services/DigitalTwin';
-import type { ScanStatus, DeploymentStatus, ScanResult } from '../services/DigitalTwin';
+import type { 
+    ScanProgress, 
+    DeploymentStatus, 
+    ScanResult
+} from '../services/DigitalTwin';
 import Sidebar from './Sidebar';
 import './DT-Create.css';
 
 interface ScanState {
     scanId: string;
-    status: ScanStatus['phase'];
+    status: 'idle' | 'scanning' | 'processing' | 'completed' | 'error';
     progress: number;
+    stage?: string;
+    message?: string;
     error: string;
     result: ScanResult | null;
 }
@@ -34,7 +40,6 @@ interface DeployState {
 
 const DTCreate: React.FC = () => {
     const navigate = useNavigate();
-    const POLLING_INTERVAL = 2000;
 
     const [scanState, setScanState] = React.useState<ScanState>({
         scanId: '',
@@ -55,61 +60,66 @@ const DTCreate: React.FC = () => {
     });
 
     const startScan = async () => {
-        setScanState(prev => ({ ...prev, status: 'scanning', progress: 0 }));
+        setScanState(prev => ({
+            ...prev,
+            status: 'scanning',
+            progress: 0,
+            error: '',
+            message: 'Starting security scan...'
+        }));
+
         try {
-            const response = await fetch('/api/scan', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const data = await response.json();
-            setScanState(prev => ({ ...prev, scanId: data.scan_id }));
-            pollScanStatus(data.scan_id);
+            const { scanId } = await digitalTwinApi.startScan();
+            setScanState(prev => ({ ...prev, scanId }));
+
+            await digitalTwinApi.pollScan(
+                scanId,
+                (progress) => {
+                    setScanState(prev => ({
+                        ...prev,
+                        status: progress.phase,
+                        progress: progress.progress,
+                        stage: progress.stage,
+                        message: progress.message,
+                        error: progress.error || ''
+                    }));
+
+                    if (progress.phase === 'completed') {
+                        digitalTwinApi.getScanResult(scanId)
+                            .then(result => {
+                                setScanState(prev => ({
+                                    ...prev,
+                                    result,
+                                    progress: 100,
+                                    message: 'Scan completed successfully'
+                                }));
+                            })
+                            .catch(error => {
+                                setScanState(prev => ({
+                                    ...prev,
+                                    error: 'Failed to fetch scan results'
+                                }));
+                            });
+                    }
+                },
+                (error) => {
+                    setScanState(prev => ({
+                        ...prev,
+                        status: 'error',
+                        error: error.message,
+                        progress: 0
+                    }));
+                }
+            );
         } catch (error) {
             setScanState(prev => ({
                 ...prev,
                 status: 'error',
-                error: error instanceof Error ? error.message : 'Failed to start scan'
+                error: error instanceof Error ? error.message : 'Failed to start scan',
+                progress: 0
             }));
         }
     };
-
-    const pollScanStatus = React.useCallback(async (scanId: string) => {
-        const checkStatus = async () => {
-            try {
-                const response = await fetch(`/api/scan/${scanId}/status`);
-                const status = await response.json();
-
-                setScanState(prev => ({
-                    ...prev,
-                    status: status.phase,
-                    progress: status.progress,
-                    error: status.error || ''
-                }));
-
-                if (status.phase === 'completed') {
-                    const resultResponse = await fetch(`/api/scan/${scanId}/result`);
-                    const result = await resultResponse.json();
-                    setScanState(prev => ({ ...prev, result }));
-                    return true;
-                } else if (status.phase === 'error') {
-                    return true;
-                }
-                return false;
-            } catch (error) {
-                console.error('Scan status check error:', error);
-                return true;
-            }
-        };
-
-        const interval = setInterval(async () => {
-            const shouldStop = await checkStatus();
-            if (shouldStop) {
-                clearInterval(interval);
-            }
-        }, POLLING_INTERVAL);
-
-        return () => clearInterval(interval);
-    }, []);
 
     const deployDigitalTwin = async () => {
         if (!scanState.scanId) return;
@@ -124,59 +134,35 @@ const DTCreate: React.FC = () => {
         }));
 
         try {
-            const response = await fetch('/api/deploy', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ scan_id: scanState.scanId })
-            });
-            const deployData = await response.json();
-            const deploymentId = deployData.deployment_id;
-
+            const deploymentId = await digitalTwinApi.deployDigitalTwin(scanState.scanId);
             setDeployState(prev => ({
                 ...prev,
                 deploymentId,
                 message: 'Initializing virtual environment...'
             }));
 
-            // Poll deployment status
-            const checkStatus = async () => {
-                try {
-                    const statusResponse = await fetch(`/api/deploy/${deploymentId}/status`);
-                    const status = await statusResponse.json();
-
+            await digitalTwinApi.pollDeploymentStatus(
+                deploymentId,
+                (status) => {
                     setDeployState(prev => ({
                         ...prev,
                         status: status.status,
                         progress: status.progress,
                         error: status.error || '',
                         vagrantId: status.vagrantId || '',
-                        message: status.message || '',
+                        message: status.message || 'Processing...',
                         success: status.status === 'running'
                     }));
-
-                    return ['running', 'error', 'stopped'].includes(status.status);
-                } catch (error) {
+                },
+                (error) => {
                     setDeployState(prev => ({
                         ...prev,
                         status: 'error',
-                        error: error instanceof Error ? error.message : 'Failed to check deployment status',
+                        error: error.message,
                         success: false
                     }));
-                    return true;
                 }
-            };
-
-            const interval = setInterval(async () => {
-                const shouldStop = await checkStatus();
-                if (shouldStop) {
-                    clearInterval(interval);
-                }
-            }, POLLING_INTERVAL);
-
-            return () => clearInterval(interval);
-
+            );
         } catch (error) {
             setDeployState(prev => ({
                 ...prev,
@@ -231,16 +217,24 @@ const DTCreate: React.FC = () => {
                         </button>
 
                         {scanState.status !== 'idle' && (
-                            <div className="progress-container">
-                                <div className="progress-bar">
-                                    <div
-                                        className="progress-fill"
-                                        style={{ width: `${scanState.progress}%` }}
-                                    />
+                            <div className="progress-section">
+                                <div className="progress-container">
+                                    <div className="progress-bar">
+                                        <div
+                                            className="progress-fill"
+                                            style={{ width: `${scanState.progress}%` }}
+                                        />
+                                    </div>
+                                    <span className="progress-text">
+                                        {Math.round(scanState.progress)}%
+                                    </span>
                                 </div>
-                                <span className="progress-text">
-                                    {Math.round(scanState.progress)}%
-                                </span>
+                                {(scanState.stage || scanState.message) && (
+                                    <div className="progress-message">
+                                        <Activity className="spin" />
+                                        <span>{scanState.stage ? `${scanState.stage} - ${scanState.message}` : scanState.message}</span>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -259,32 +253,22 @@ const DTCreate: React.FC = () => {
                                         <h4>System Info</h4>
                                         <p>OS: {scanState.result.systemInfo.osVersion}</p>
                                         <p>CPU: {scanState.result.systemInfo.cpuModel}</p>
-                                        <p>
-                                            Memory:{' '}
-                                            {Math.round(
-                                                scanState.result.systemInfo.memory /
-                                                (1024 * 1024 * 1024)
-                                            )}{' '}
-                                            GB
-                                        </p>
+                                        <p>Memory: {digitalTwinApi.formatMemory(scanState.result.systemInfo.memory)}</p>
+                                        <p>OS: {scanState.result.systemInfo.osName}</p>
                                     </div>
 
                                     <div className="result-section">
-                                        <h4>Network Info</h4>
-                                        <p>
-                                            Interfaces:{' '}
-                                            {scanState.result.networkInfo.interfaces.length}
-                                        </p>
-                                        <p>
-                                            Open Ports:{' '}
-                                            {scanState.result.networkInfo.openPorts.length}
-                                        </p>
+                                        <h4>Security Info</h4>
+                                        <p>Firewall: {scanState.result.securityInfo.firewall.enabled ? 'Enabled' : 'Disabled'}</p>
+                                        <p>Firewall Rules: {scanState.result.securityInfo.firewall.rules}</p>
+                                        <p>Windows Defender: {scanState.result.securityInfo.antivirus.windowsDefender.enabled ? 'Active' : 'Inactive'}</p>
+                                        <p>Updates: {scanState.result.securityInfo.updates.length} recent updates</p>
                                     </div>
 
                                     <button
                                         className="dt-button"
                                         onClick={deployDigitalTwin}
-                                        disabled={deployState.status === 'deploying' || deployState.success || deployState.status !== 'idle'} // Modified condition
+                                        disabled={deployState.status === 'deploying' || deployState.success || deployState.status !== 'idle'}
                                     >
                                         {deployState.status === 'deploying' ? (
                                             <>
@@ -310,16 +294,22 @@ const DTCreate: React.FC = () => {
                                 <h2>Deployment Status</h2>
                             </div>
 
-                            <div className="progress-container">
-                                <div className="progress-bar">
-                                    <div
-                                        className="progress-fill"
-                                        style={{ width: `${deployState.progress}%` }}
-                                    />
+                            <div className="progress-section">
+                                <div className="progress-container">
+                                    <div className="progress-bar">
+                                        <div
+                                            className="progress-fill"
+                                            style={{ width: `${deployState.progress}%` }}
+                                        />
+                                    </div>
+                                    <span className="progress-text">
+                                        {Math.round(deployState.progress)}%
+                                    </span>
                                 </div>
-                                <span className="progress-text">
-                                    {Math.round(deployState.progress)}%
-                                </span>
+                                <div className="progress-message">
+                                    <Activity className="spin" />
+                                    <span>{deployState.message}</span>
+                                </div>
                             </div>
 
                             {deployState.error && (

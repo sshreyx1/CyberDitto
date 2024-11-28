@@ -21,24 +21,33 @@ interface ProcessedDeployment {
     error: string;
     ScanResult?: ScanResult;
     scanResult: ScanResult | null;
- }
+}
 
 interface SystemInfo {
     osVersion: string;
     cpuModel: string;
     memory: number;
     diskSpace: number;
+    lastBootTime: string;
+    osName: string;
 }
 
 interface NetworkInterface {
     name: string;
     ipAddress: string;
     macAddress: string;
+    linkSpeed: string;
+    dnsServers: string[];
 }
 
 interface NetworkInfo {
     interfaces: NetworkInterface[];
-    openPorts: number[];
+    openPorts: {
+        LocalPort: number;
+        RemoteAddress: string;
+        State: string;
+        OwningProcess: number;
+    }[];
     dnsServers: string[];
     services: string[];
 }
@@ -47,27 +56,59 @@ interface SecurityInfo {
     firewall: {
         enabled: boolean;
         rules: number;
+        inboundRules: {
+            DisplayName: string;
+            Action: string;
+            Profile: string;
+        }[];
+        outboundRules: {
+            DisplayName: string;
+            Action: string;
+            Profile: string;
+        }[];
     };
-    antivirus: string[];
-    updates: string[];
+    antivirus: {
+        windowsDefender: {
+            enabled: boolean;
+            realTimeProtection: boolean;
+            antispyware: boolean;
+            behaviorMonitor: boolean;
+            ioavProtection: boolean;
+            networkProtection: boolean;
+        };
+    };
+    updates: {
+        HotFixID: string;
+        InstalledOn: string;
+    }[];
     uac: {
         enabled: boolean;
+        level: {
+            ConsentPromptBehaviorAdmin: number;
+        };
     };
 }
 
 interface ScanResult {
-    id: string;
+    id?: string;
     systemInfo: SystemInfo;
     networkInfo: NetworkInfo;
     securityInfo: SecurityInfo;
-    createdAt: string;
+    createdAt?: string;
 }
 
-interface ScanStatus {
+interface ScanResponse {
+    scan_id: string;
+    requires_elevation: boolean;
+}
+
+interface ScanProgress {
     phase: 'idle' | 'scanning' | 'processing' | 'completed' | 'error';
+    stage?: string;
     progress: number;
     message?: string;
     error?: string;
+    details?: string;
 }
 
 interface ResourceUsage {
@@ -110,11 +151,6 @@ interface DeploymentInfo {
     lastActive?: string;
 }
 
-interface ScanResponse {
-    scan_id: string;
-    requires_elevation: boolean;
-}
-
 interface DeployResponse {
     deployment_id: string;
 }
@@ -154,7 +190,7 @@ const processDeployment = (deployment: DeploymentInfo): ProcessedDeployment => {
         ScanResult: deployment.ScanResult,
         scanResult: deployment.ScanResult || deployment.scanResult || null
     };
- };
+};
 
 const getDefaultMessage = (status: string = ''): string => {
     switch (status.toLowerCase()) {
@@ -167,13 +203,13 @@ const getDefaultMessage = (status: string = ''): string => {
         case 'initializing': return 'Initializing environment...';
         default: return 'Unknown status';
     }
- };
+};
 
 class DigitalTwinApi {
     private readonly baseUrl: string = '/api';
     private readonly maxRetries: number = 2;
     private readonly retryDelay: number = 1000;
-    private readonly pollInterval: number = 5000;
+    private readonly pollInterval: number = 2000;
     private activePolls: Set<string> = new Set();
     private deploymentStore: Map<string, ProcessedDeployment> = new Map();
 
@@ -244,6 +280,88 @@ class DigitalTwinApi {
         throw new Error('Failed to connect to server after multiple attempts');
     }
 
+    async startScan(): Promise<{ scanId: string }> {
+        const response = await this.retryFetch(`${this.baseUrl}/scan`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await this.handleResponse<ScanResponse>(response);
+        return { scanId: data.scan_id };
+    }
+
+    async getScanProgress(scanId: string): Promise<ScanProgress> {
+        const response = await this.retryFetch(`${this.baseUrl}/scan/${scanId}/status`);
+        const data = await this.handleResponse<any>(response);
+        
+        return {
+            phase: data.phase || 'error',
+            stage: data.stage,
+            progress: data.progress || 0,
+            message: data.status || data.message,
+            error: data.error
+        };
+    }
+
+    async getScanResult(scanId: string): Promise<ScanResult> {
+        const response = await this.retryFetch(`${this.baseUrl}/scan/${scanId}/result`);
+        return await this.handleResponse<ScanResult>(response);
+    }
+
+    async pollScan(
+        scanId: string,
+        onProgress: (progress: ScanProgress) => void,
+        onError: (error: Error) => void
+    ): Promise<void> {
+        let lastProgress = -1;
+        let lastStage = '';
+
+        const poll = async () => {
+            try {
+                const progress = await this.getScanProgress(scanId);
+                
+                // Only update if progress has changed
+                if (progress.progress !== lastProgress || progress.stage !== lastStage) {
+                    lastProgress = progress.progress;
+                    lastStage = progress.stage || '';
+                    onProgress(progress);
+                }
+
+                if (progress.phase === 'completed') {
+                    try {
+                        const result = await this.getScanResult(scanId);
+                        onProgress({
+                            phase: 'completed',
+                            progress: 100,
+                            message: 'Scan completed successfully',
+                            stage: 'Complete'
+                        });
+                    } catch (error) {
+                        onError(error instanceof Error ? error : new Error('Failed to get scan results'));
+                    }
+                    return true;
+                } else if (progress.phase === 'error' || progress.error) {
+                    onError(new Error(progress.error || 'Scan failed'));
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                onError(error instanceof Error ? error : new Error('Failed to check scan status'));
+                return true;
+            }
+        };
+
+        return new Promise((resolve) => {
+            const interval = setInterval(async () => {
+                const shouldStop = await poll();
+                if (shouldStop) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, this.pollInterval);
+        });
+    }
+
     async getAllDeployments(): Promise<ProcessedDeployment[]> {
         try {
             const response = await this.retryFetch(`${this.baseUrl}/deployments`);
@@ -290,7 +408,7 @@ class DigitalTwinApi {
                 ...data,
                 status: data.status || 'error',
                 progress: data.progress || 0,
-                message: data.message || this.getDefaultMessage(data.status),
+                message: data.message || getDefaultMessage(data.status),
                 resourceUsage: {
                     cpu: data.resourceUsage?.cpu ?? 0,
                     memory: data.resourceUsage?.memory ?? 0,
@@ -318,28 +436,22 @@ class DigitalTwinApi {
                 progress: 0,
                 message: error instanceof Error ? error.message : 'Unknown error',
                 error: 'Failed to get deployment status',
-                resourceUsage: {
-                    cpu: 0,
-                    memory: 0,
-                    disk: 0
-                }
+                resourceUsage: { cpu: 0, memory: 0, disk: 0 }
             };
         } finally {
             this.activePolls.delete(deploymentId);
         }
     }
 
-    private getDefaultMessage(status: string = ''): string {
-        switch (status.toLowerCase()) {
-            case 'running': return 'Virtual environment is running';
-            case 'stopped': return 'Virtual environment is stopped';
-            case 'error': return 'Error in virtual environment';
-            case 'saved': return 'Virtual environment is saved';
-            case 'deploying': return 'Deploying virtual environment...';
-            case 'preparing': return 'Preparing deployment...';
-            case 'initializing': return 'Initializing environment...';
-            default: return 'Unknown status';
-        }
+    async deployDigitalTwin(scanId: string): Promise<string> {
+        const response = await this.retryFetch(`${this.baseUrl}/deploy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scan_id: scanId })
+        });
+
+        const data = await this.handleResponse<DeployResponse>(response);
+        return data.deployment_id;
     }
 
     async startInstance(deploymentId: string): Promise<void> {
@@ -356,7 +468,8 @@ class DigitalTwinApi {
                     this.deploymentStore.set(deploymentId, {
                         ...deployment,
                         status: 'running',
-                        progress: 100
+                        progress: 100,
+                        message: 'Virtual environment is running'
                     });
                 }
             }
@@ -380,7 +493,8 @@ class DigitalTwinApi {
                     this.deploymentStore.set(deploymentId, {
                         ...deployment,
                         status: 'stopped',
-                        progress: 0
+                        progress: 0,
+                        message: 'Virtual environment is stopped'
                     });
                 }
             }
@@ -410,31 +524,46 @@ class DigitalTwinApi {
         maxAttempts = 120
     ): Promise<void> {
         let attempts = 0;
-        let interval = this.pollInterval;
+        let lastStatus = '';
+        let lastProgress = -1;
 
         const poll = async () => {
             if (attempts >= maxAttempts) {
                 onError(new Error('Deployment timed out'));
-                return;
+                return true;
             }
 
             try {
                 const status = await this.getDeploymentStatus(deploymentId);
-                onStatus(status);
+                
+                // Only trigger callback if status has changed
+                if (status.status !== lastStatus || status.progress !== lastProgress) {
+                    lastStatus = status.status;
+                    lastProgress = status.progress;
+                    onStatus(status);
+                }
 
                 if (['running', 'error', 'stopped'].includes(status.status)) {
-                    return;
+                    return true;
                 }
 
                 attempts++;
-                interval = Math.min(interval * 1.5, 10000);
-                setTimeout(poll, interval);
+                return false;
             } catch (error) {
                 onError(error instanceof Error ? error : new Error('Polling error'));
+                return true;
             }
         };
 
-        await poll();
+        return new Promise((resolve) => {
+            const interval = setInterval(async () => {
+                const shouldStop = await poll();
+                if (shouldStop) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, this.pollInterval);
+        });
     }
 
     formatResourceUsage(usage: number): string {
@@ -485,7 +614,7 @@ export type {
     NetworkInfo,
     SecurityInfo,
     ScanResult,
-    ScanStatus,
+    ScanProgress,
     ResourceUsage,
     DeploymentStatus,
     DeploymentInfo,
