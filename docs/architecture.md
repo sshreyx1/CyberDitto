@@ -9,7 +9,7 @@ Modular monolith (one Go control-plane binary: API + workers), hexagonal/ports-a
 ## Current state (Phase 0)
 
 - `services/api`: Go module scaffold with a health endpoint (`cmd/api`), `internal/domain` package started. No persistence, auth, or lab integration yet — those are Phase 1–2.
-- `apps/web`: not yet scaffolded (next action, tracked in `docs/PROGRESS.md`).
+- `apps/web`: Next.js 16.4.3 + React 19.3.1 + Tailwind v4 scaffold, App Router, one placeholder page. Builds clean (`next build`). No console/marketing pages yet — those are Phase 1+/Phase 7.
 - `api/openapi.yaml`: health endpoint only so far.
 
 ## Where decisions live

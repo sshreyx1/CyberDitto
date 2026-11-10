@@ -10,16 +10,36 @@ tasks:
       - task: test
 
   dev:
+    desc: Run the Go control-plane API and the web app together.
+    deps: [dev:api, dev:web]
+
+  dev:api:
     desc: Run the Go control-plane API locally.
     dir: "{{.GO_API_DIR}}"
     cmds:
       - go run ./cmd/api
 
+  dev:web:
+    desc: Run the Next.js web app locally.
+    cmds:
+      - pnpm --filter @cyberditto/web dev
+
   build:
+    desc: Build the Go binaries and the web app.
+    cmds:
+      - task: build:api
+      - task: build:web
+
+  build:api:
     desc: Build all Go binaries.
+    dir: "{{.GO_API_DIR}}"
     cmds:
       - go build ./...
-    dir: "{{.GO_API_DIR}}"
+
+  build:web:
+    desc: Build the Next.js web app.
+    cmds:
+      - pnpm --filter @cyberditto/web build
 
   test:
     desc: Run Go unit tests with race detection.
@@ -34,9 +54,10 @@ tasks:
       - go vet ./...
 
   lint:
-    desc: Run go vet (golangci-lint added once wired up in CI image).
+    desc: Run go vet and typecheck the web app (golangci-lint/eslint added once wired up in CI image).
     cmds:
       - task: vet
+      - pnpm --filter @cyberditto/web typecheck
 
   gen:
     desc: Regenerate server/client code from api/openapi.yaml (wired up in a later phase).
@@ -49,7 +70,7 @@ tasks:
       - echo "demo mode not wired up yet (Phase 1)"
 
   e2e:
-    desc: Run Playwright e2e tests (wired up once apps/web exists).
+    desc: Run Playwright e2e tests (wired up in Phase 1).
     cmds:
       - echo "e2e not wired up yet (Phase 1)"
 
