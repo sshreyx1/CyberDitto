@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Rejects AI-attribution trailers/footers. Enabled by `git config core.hooksPath .githooks`
+# (done once for this repo during Phase 0 bootstrap).
+msg_file="$1"
+
+if grep -Eiq '^(co-authored-by:.*(claude|anthropic|noreply@anthropic\.com)|claude-session:)|generated with .?claude|🤖 generated' "$msg_file"; then
+  echo "✖ Commit rejected: remove AI attribution lines (see docs/MASTER_PLAN.md §12)." >&2
+  exit 1
+fi

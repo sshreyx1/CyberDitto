@@ -1,0 +1,59 @@
+version: "3"
+
+vars:
+  GO_API_DIR: services/api
+
+tasks:
+  default:
+    cmds:
+      - task: lint
+      - task: test
+
+  dev:
+    desc: Run the Go control-plane API locally.
+    dir: "{{.GO_API_DIR}}"
+    cmds:
+      - go run ./cmd/api
+
+  build:
+    desc: Build all Go binaries.
+    cmds:
+      - go build ./...
+    dir: "{{.GO_API_DIR}}"
+
+  test:
+    desc: Run Go unit tests with race detection.
+    dir: "{{.GO_API_DIR}}"
+    cmds:
+      - go test ./... -race -count=1
+
+  vet:
+    desc: Run go vet.
+    dir: "{{.GO_API_DIR}}"
+    cmds:
+      - go vet ./...
+
+  lint:
+    desc: Run go vet (golangci-lint added once wired up in CI image).
+    cmds:
+      - task: vet
+
+  gen:
+    desc: Regenerate server/client code from api/openapi.yaml (wired up in a later phase).
+    cmds:
+      - echo "codegen not wired up yet (Phase 1)"
+
+  demo:
+    desc: Run the app against the fake/demo providers (wired up once the demo exists).
+    cmds:
+      - echo "demo mode not wired up yet (Phase 1)"
+
+  e2e:
+    desc: Run Playwright e2e tests (wired up once apps/web exists).
+    cmds:
+      - echo "e2e not wired up yet (Phase 1)"
+
+  release:
+    desc: Build release artifacts (wired up in Phase 8).
+    cmds:
+      - echo "release not wired up yet (Phase 8)"

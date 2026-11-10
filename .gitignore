@@ -1,0 +1,51 @@
+# --- Secrets / env ---
+.env
+.env.*
+!.env.example
+.secrets/
+secrets/
+*.pem
+*.key
+!**/testdata/**/*.key
+
+# --- Legacy / repo hygiene guard (Phase 0 §0.4.5) ---
+**/legacy/**
+security_posture.json
+*.vagrant*
+.vagrant/
+
+# --- Node / web ---
+node_modules/
+.next/
+out/
+dist/
+build/
+.turbo/
+.pnpm-store/
+*.tsbuildinfo
+.vercel/
+.env.local
+
+# --- Go ---
+/bin/
+/services/*/bin/
+*.exe
+*.test
+*.out
+coverage.out
+coverage.html
+
+# --- Data / local state (never commit real scan output) ---
+.data/
+fixtures/real/
+*.snapshot.json
+!fixtures/**/*.json
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# --- Generated (regenerate via `task gen`, do not hand-edit) ---
+packages/api-client/generated/

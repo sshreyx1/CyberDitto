@@ -1,0 +1,52 @@
+openapi: 3.1.0
+info:
+  title: CyberDitto API
+  version: 0.1.0
+  description: >
+    Control-plane API for CyberDitto. This is the source of truth for the
+    server types and the generated TypeScript client (see docs/MASTER_PLAN.md
+    §5.4). Grows one endpoint group at a time per the phase roadmap in
+    docs/MASTER_PLAN.md §10 — only `/healthz` exists so far (Phase 0).
+servers:
+  - url: /api/v1
+paths:
+  /healthz:
+    get:
+      operationId: getHealth
+      summary: Liveness check.
+      responses:
+        "200":
+          description: Service is up.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+components:
+  schemas:
+    Health:
+      type: object
+      required: [status, version]
+      properties:
+        status:
+          type: string
+          example: ok
+        version:
+          type: string
+          example: dev
+    Problem:
+      description: RFC 9457 problem+json error shape (docs/MASTER_PLAN.md §5.15).
+      type: object
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
