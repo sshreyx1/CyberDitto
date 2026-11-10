@@ -66,7 +66,7 @@ Everything marked `(verify)` is a decision made from research on the date above.
 #### 0.5.2 Decisions already made for you (do not ask; record in ADRs; change only with a written reason)
 | Topic | Decision |
 |---|---|
-| Licence | **MIT** (continuity with v1) |
+| Licence | ~~MIT (continuity with v1)~~ — **superseded 2026-11-10: All Rights Reserved, owner instruction.** Repo stays public; code is not open source. See `docs/adr/0001-license-and-repo-identity.md`. |
 | Repo | `https://github.com/sshreyx1/CyberDitto`, branch `main` protected after Phase 0; default branch stays `main` |
 | Host dev OS | Windows 11 host; develop in WSL2/devcontainer; real-lab provider = Hyper-V |
 | Phase order | §10 as written. Phases 0 to 5 are the product; 6 to 8 make it shine |
@@ -782,7 +782,7 @@ Settings          └ Workspace, members/roles, AI & privacy, integrations, API 
 4. **Bento grid:** Fidelity score, ATT&CK heatmap, evidence-weighted risk, Copilot, safe-by-design lab, reports/exports.
 5. **Interactive mini-demo:** scrubbable before/after (failed control + successful technique → fix → re-test blocked).
 6. **Copilot section:** short looping chat with approval card.
-7. **Security & safety section** (the invariants as a checklist), architecture diagram, "open source" block with stars/CI/Scorecard badges.
+7. **Security & safety section** (the invariants as a checklist), architecture diagram, ~~"open source" block with stars/CI/Scorecard badges~~ — **superseded 2026-11-10**: the project is not open source (see `docs/adr/0001-license-and-repo-identity.md`); this becomes a "public code, CI/Scorecard/supply-chain transparency" block instead — stars/forks framing dropped, CI/Scorecard/signed-release badges kept since those are about code quality and build integrity, not a license grant.
 8. **Footer CTA**, docs links, AUP/Privacy/Security links.
 
 **Docs:** MDX-based (**Fumadocs** or Nextra; pick via ADR) with quickstart, concepts, architecture, API reference (generated from OpenAPI), safety model, runbooks, FAQ. Includes the **"Ask Ditto" docs chatbot** (§7.2) with search fallback.
@@ -965,6 +965,8 @@ Settings          └ Workspace, members/roles, AI & privacy, integrations, API 
 
 ### 12.1 `.claude/settings.json` (commit this file in the repo)
 
+> **Amendment (2026-11-10):** the owner asked for `.claude/` to be removed from the repo; it no longer exists as committed config. The attribution rule it encoded is still enforced independently (the commit-msg hook in §12.3 + `commit-hygiene.yml` + the standing owner instruction above); the `permissions.deny` guardrails this file carried (blocking force-push, remote changes, `gh repo delete`, etc.) are not currently replaced by anything else — see `docs/PROGRESS.md`. The JSON below is kept as a reference for what it contained, not as a file to recreate unless asked.
+
 ```json
 {
   "attribution": {
@@ -1037,7 +1039,7 @@ On GitHub enable **"Keep my email addresses private"** and **"Block command line
 
 ## 13. Portfolio packaging ("a proper project to show")
 
-- **README** (top-notch): logo, one-line pitch, 60-second GIF of the closed loop, badges (CI, Scorecard, release, license), "Why", architecture diagram, feature table, quickstart (demo mode in 3 commands; lab mode link), safety model summary, roadmap, contributing, licence, and the **v1 → v2 story** (what was learned; honest limits).
+- **README** (top-notch): logo, one-line pitch, 60-second GIF of the closed loop, badges (CI, Scorecard, release — **not an open-source license badge, per the 2026-11-10 all-rights-reserved relicensing, `docs/adr/0001`**), "Why", architecture diagram, feature table, quickstart (demo mode in 3 commands; lab mode link), safety model summary, roadmap, a note that the code is public for viewing but all rights reserved, and the **v1 → v2 story** (what was learned; honest limits).
 - **Live demo** link (`/demo`) at the very top of the README.
 - **Docs:** architecture, ADR index, threat model, safety invariants, outcome-classification methodology, scoring explainer.
 - **Demo video** (60 to 90 s, no fluff) + 3 short blog posts.
@@ -1053,7 +1055,7 @@ On GitHub enable **"Keep my email addresses private"** and **"Block command line
 
 | # | Item | Notes |
 |---|---|---|
-| 1 | **Licence** | v1 used MIT. Keep MIT, or Apache-2.0 for the patent grant? (Decide in Phase 0.) |
+| 1 | **Licence** | **Resolved 2026-11-10**, owner instruction: All Rights Reserved, not MIT/Apache-2.0 — repo public, code not open source. See `docs/adr/0001-license-and-repo-identity.md`. |
 | 2 | **Hardware** | v1 scan showed a 16 GB laptop with Hyper-V-capable setup. One twin is fine; Wazuh adds weight. Decide: Wazuh on same host (trimmed) vs a second box vs `native`-only lite mode for MVP. |
 | 3 | **Windows images** | Evaluation media expire; licences constrain redistribution. Decide the supported image sources. |
 | 4 | **Outcome classification accuracy** | Heuristic by nature. Validate on real runs, publish methodology and known false-positive/negative cases. |
