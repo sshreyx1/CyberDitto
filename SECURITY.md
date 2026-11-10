@@ -20,4 +20,4 @@ Out of scope: third-party dependencies (report upstream), and anything requiring
 
 ## Safe harbor
 
-Good-faith security research against this open-source project's own code (not against any instance someone else is operating without your permission) is welcome and will not be treated as a hostile act.
+Good-faith security research against this project's own published code (not against any instance someone else is operating without your permission) is welcome and will not be treated as a hostile act, regardless of the project's all-rights-reserved license (see `LICENSE`) — that license governs reuse of the code, not security reporting.

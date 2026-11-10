@@ -4,7 +4,7 @@ Running index of decisions taken autonomously during the build. Full rationale a
 
 | # | Decision | ADR |
 |---|---|---|
-| 1 | MIT license kept; repo-local commit identity uses GitHub no-reply address | [0001](adr/0001-license-and-repo-identity.md) |
+| 1 | License changed to **All Rights Reserved** (owner instruction, 2026-11-10; repo stays public, code is not open source); repo-local commit identity uses GitHub no-reply address | [0001](adr/0001-license-and-repo-identity.md) |
 | 2 | Go 1.26, stdlib routing, modular-monolith/hexagonal layering | [0002](adr/0002-backend-stack.md) |
 | 3 | Server-side sessions + Argon2id + passkeys/TOTP, no client-signed tokens | [0003](adr/0003-auth.md) |
 | 4 | PostgreSQL for state + queue (River), SSE for realtime | [0004](adr/0004-queue-and-data.md) |

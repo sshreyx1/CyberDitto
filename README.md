@@ -22,4 +22,4 @@ CyberDitto runs attack tooling. It only ever targets an isolated lab "twin" VM o
 
 ## License
 
-[MIT](LICENSE)
+All rights reserved — see [`LICENSE`](LICENSE). This code is published for viewing and portfolio-review purposes only; no permission is granted to use, copy, modify, or redistribute it.
