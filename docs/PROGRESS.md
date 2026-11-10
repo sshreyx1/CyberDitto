@@ -22,7 +22,7 @@
 - [ ] Monorepo scaffold, JS/TS side (`apps/web`, `packages/*`, pnpm workspace + Turborepo) — **not started**. `pnpm` is not installed on this machine (Node v24.14.0 is). **Next action.**
 - [ ] Devcontainer, `deploy/compose/dev.yml` dev stack — not started (no Postgres/MinIO consumer exists yet; follows the web scaffold and Phase 1 auth/DB work)
 - [ ] `lefthook` pre-commit hooks (gofmt/goimports/golangci-lint/eslint/prettier/tsc) — not installed locally; the attribution guard above already runs via a plain git hook independent of lefthook. Full lefthook wiring is a near-term follow-up once the JS toolchain exists.
-- [ ] First real commit + push to `main`, confirm `git log` on GitHub shows only fresh history under the no-reply identity — **next action after this checklist**
+- [x] First real commits pushed to `main`; confirmed via `gh api` that `git log` on GitHub shows only fresh history, correct author (`174120481+sshreyx1@users.noreply.github.com`), and no attribution text in any commit message; `ci` and `security` workflows both green on GitHub Actions (`fdb7e56`)
 
 ## Important environment note (read before running Go tests on this Windows host)
 
