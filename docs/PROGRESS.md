@@ -32,6 +32,8 @@ wsl -e bash -lc 'export PATH=$HOME/sdk/go/bin:$PATH && cd /mnt/c/Users/shreya/Do
 ```
 GitHub Actions (Linux runners) are unaffected by this and are the authoritative CI signal either way.
 
+**First CI run caught a real issue**: `security.yml`'s `govulncheck` job failed on the first push because `go.mod`/`go.work` were pinned to `go1.26.3` (the version installed on this host), which has 14 stdlib vulnerabilities already fixed in `go1.26.10` (released 2026-10-19). Re-pinned to `go1.26.10` everywhere (go.mod, go.work, both CI workflows), re-verified `build`/`vet`/`test`/`govulncheck` clean via a `go1.26.10` toolchain installed in WSL2, and recorded the reasoning in `docs/adr/0002-backend-stack.md`.
+
 ## Next action
 
 1. Enable `pnpm` (via Corepack, bundled with Node 24) and scaffold `apps/web` as a minimal Next.js 16 app (health/placeholder page) plus `packages/{ui,config}` stubs and the root `pnpm-workspace.yaml` + `turbo.json`.
