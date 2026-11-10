@@ -37,6 +37,7 @@ GitHub Actions (Linux runners) are unaffected by this and are the authoritative 
 ## Owner-directed changes (2026-11-10, after initial Phase 0 push)
 
 - **License changed to All Rights Reserved** (was MIT). Repo stays public; code is explicitly not open source. Updated: `LICENSE`, `README.md`, `CONTRIBUTING.md` (no longer invites external PRs), `SECURITY.md` wording, `docs/adr/0001-license-and-repo-identity.md` (amended), `docs/DECISIONS.md`. Mentions of "open source"/Scorecard badges/contribution flow elsewhere in `docs/MASTER_PLAN.md` (§8.6, §13) are superseded by this ADR — treat the ADR as authoritative over those passages.
+- **Caldera brought into main v2.0 scope** (was deferred to stretch). Now an in-scope Phase 4 deliverable alongside Atomic Red Team — see `docs/adr/0011-caldera-in-scope.md`. No code impact yet (Phase 4 is still several phases away); recorded now so the Phase 4 plan is built around it from the start rather than retrofitted.
 - **`.claude/` removed** at the owner's request. Note for future sessions: this previously carried the `attribution: {commit: "", pr: "", sessionUrl: false}` config and a `permissions.deny` list (blocking force-push, remote changes, `gh repo delete`, etc.) — the no-attribution rule is still enforced independently by `.githooks/commit-msg` + `commit-hygiene.yml` + the owner's standing chat instruction, but the `permissions.deny` guardrails no longer exist as repo-committed config. Nothing else currently depends on `.claude/` existing.
 
 ## Next action

@@ -71,7 +71,7 @@ Everything marked `(verify)` is a decision made from research on the date above.
 | Host dev OS | Windows 11 host; develop in WSL2/devcontainer; real-lab provider = Hyper-V |
 | Phase order | §10 as written. Phases 0 to 5 are the product; 6 to 8 make it shine |
 | Compliance engine | `native` first (Phase 3), `wazuh-sca` adapter second behind a compose profile; lite mode (native only) is a first-class supported mode |
-| Caldera | Deferred to stretch (§11). Not in v2.0 |
+| Caldera | ~~Deferred to stretch (§11). Not in v2.0~~ — **superseded 2026-11-10, owner instruction: in scope for Phase 4**, alongside Atomic Red Team, not deferred. See `docs/adr/0011-caldera-in-scope.md`. |
 | Docs framework | Fumadocs unless a blocking problem appears (ADR) |
 | Analytics | Plausible or Umami, self-hostable, no cookies |
 | Website hosting | Static + edge friendly (Vercel/Cloudflare Pages); config for both, deploy only when the owner supplies credentials (OWNER_TODO) |
@@ -630,7 +630,7 @@ Error format: RFC 9457 problem+json. Every mutating call writes an `AUDIT_EVENT`
 6. The twin agent executes only catalog-signed tests or signed remediation plans.
 7. The catalog is pinned to a commit SHA and verified (hash manifest). Updating the pin is a reviewed change.
 8. AI-generated tests/scripts are `draft` and never auto-executable.
-9. Optional Caldera integration runs in its own container/VM on the lab network only, **patched to a release that fixes CVE-2025-27364**, never exposed beyond the lab.
+9. Caldera integration (in-scope for Phase 4, `docs/adr/0011`) runs in its own container/VM on the lab network only, **patched to a release that fixes CVE-2025-27364**, never exposed beyond the lab.
 10. The product shows a persistent "Authorised testing only" notice and ships an Acceptable Use Policy.
 
 ### 6.5 Data protection and privacy
@@ -883,15 +883,16 @@ Settings          └ Workspace, members/roles, AI & privacy, integrations, API 
 
 **Accept:** assessment on a real twin matches an independent spot-check of 10 controls; scores reproducible; "unknown" handled honestly.
 
-### Phase 4: Emulation, telemetry, ATT&CK (≈ 3 weeks)
+### Phase 4: Emulation, telemetry, ATT&CK (≈ 3 weeks, now including Caldera — see below)
 - [ ] Atomic catalog importer (pinned SHA, hash manifest, risk tiers, denylist) + ATT&CK data import (pinned)
 - [ ] Twin-agent `RunAtomic` with prerequisites, cleanup, run/test markers
-- [ ] Sysmon + Wazuh telemetry pipeline; `TelemetrySource`; **outcome classifier** with documented heuristics validated on real runs
-- [ ] Policy engine preflight (all §6.4 invariants), kill switch, authorisation acknowledgement
-- [ ] UI: scenario library, run builder + preflight panel, live console, ATT&CK matrix heatmap, technique drawer, Navigator export
-- [ ] 6 to 10 curated **benign/intrusive** scenarios (credential access simulation, persistence, discovery, defence-evasion basics, etc.)
+- [ ] **Caldera integration (in scope per `docs/adr/0011-caldera-in-scope.md`, owner instruction 2026-11-10):** Caldera server pinned to a release ≥ 5.1.0 (verify the actual latest patched release at build time, per §0.3) that fixes CVE-2025-27364, run in its own container/VM on the lab network only, never exposed beyond it; Sandcat agent + `emu` plugin evaluated for inclusion under the same pin/verify rules as the Atomic catalog; a second `AttackCatalog`/execution adapter so Caldera operations and Atomic tests share one preflight, risk-tier, and outcome-classification pipeline
+- [ ] Sysmon + Wazuh telemetry pipeline; `TelemetrySource`; **outcome classifier** with documented heuristics validated on real runs, covering both engines
+- [ ] Policy engine preflight (all §6.4 invariants, including invariant 9 for Caldera), kill switch, authorisation acknowledgement
+- [ ] UI: scenario library, run builder + preflight panel (shows which engine a scenario uses), live console, ATT&CK matrix heatmap, technique drawer, Navigator export
+- [ ] 6 to 10 curated **benign/intrusive** scenarios (credential access simulation, persistence, discovery, defence-evasion basics, etc.), drawing on both Atomic Red Team and Caldera/CTID plans where appropriate
 
-**Accept:** a run of ≥ 20 benign tests produces classified outcomes with evidence; invariant tests prove destructive tests and non-twin targets are impossible; kill switch verified.
+**Accept:** a run of ≥ 20 benign tests across both engines produces classified outcomes with evidence; invariant tests prove destructive tests and non-twin targets are impossible for *both* Atomic and Caldera execution paths; kill switch verified for both; Caldera's own isolation (own container/VM, no route beyond the lab network) is verified by an automated probe, not just asserted.
 
 ### Phase 5: Correlation, remediation, re-test, reports (≈ 3 weeks)
 - [ ] Control↔technique mapping content with provenance; correlation engine; gap priority with factor breakdown
@@ -1061,7 +1062,7 @@ On GitHub enable **"Keep my email addresses private"** and **"Block command line
 | 4 | **Outcome classification accuracy** | Heuristic by nature. Validate on real runs, publish methodology and known false-positive/negative cases. |
 | 5 | **CIS content licensing** | Avoid bundling CIS text; reference IDs; confirm terms. |
 | 6 | **Website hosting + domain** | Vercel/Cloudflare Pages + a cheap domain. Plausible/Umami analytics. |
-| 7 | **Caldera integration** | Include as optional advanced mode (needs isolation + patched version) or defer to stretch? |
+| 7 | **Caldera integration** | **Resolved 2026-11-10**, owner instruction: included in Phase 4's main build (not deferred), isolated + patched per `docs/adr/0011-caldera-in-scope.md`. |
 | 8 | **Scope creep** | Hold the line: Phases 0 to 5 are the product; 6 to 8 make it shine; §11 is optional. |
 | 9 | **Anthropic API cost** | Budgets/caps in config; Haiku-class for the public bot. |
 | 10 | **Legal** | AUP, disclaimer, authorisation acknowledgement are product features, not afterthoughts. |
