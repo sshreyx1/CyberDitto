@@ -15,6 +15,25 @@ jobs:
     defaults:
       run:
         working-directory: services/api
+    services:
+      postgres:
+        image: postgres:18.6-alpine
+        env:
+          POSTGRES_USER: cyberditto
+          POSTGRES_PASSWORD: ci_admin_password
+          POSTGRES_DB: cyberditto
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cyberditto -d cyberditto"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CD_DATABASE_URL: postgres://cyberditto:ci_admin_password@localhost:5432/cyberditto?sslmode=disable
+      CD_APP_DB_PASSWORD: ci_app_password
+      CD_TEST_DATABASE_URL: postgres://cyberditto_app:ci_app_password@localhost:5432/cyberditto?sslmode=disable
+      CD_TEST_ADMIN_DATABASE_URL: postgres://cyberditto:ci_admin_password@localhost:5432/cyberditto?sslmode=disable
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -26,8 +45,14 @@ jobs:
         run: go build ./...
       - name: Vet
         run: go vet ./...
+      - name: Run migrations
+        run: go run ./cmd/migrate up
+      - name: Grant the app role LOGIN (docs/adr/0003, §6.2 non-superuser app role)
+        run: go run ./cmd/migrate grant-app-login
       - name: Test
         run: go test ./... -race -count=1
+      - name: Integration test (docs/adr/0012)
+        run: go test -tags integration ./... -race -count=1
 
   web:
     name: Web build / typecheck

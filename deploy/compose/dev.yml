@@ -1,0 +1,27 @@
+name: cyberditto-dev
+
+services:
+  postgres:
+    image: postgres:18.6-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cyberditto
+      POSTGRES_PASSWORD: dev_only_password_change_me
+      POSTGRES_DB: cyberditto
+      CD_APP_DB_PASSWORD: dev_only_app_password_change_me
+    ports:
+      - "5432:5432"
+    volumes:
+      # Postgres 18+ images expect a single mount at /var/lib/postgresql
+      # (data lives in a version-specific subdirectory under it), not the
+      # older .../postgresql/data convention.
+      - cyberditto_pg_data:/var/lib/postgresql
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cyberditto -d cyberditto"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  cyberditto_pg_data:
