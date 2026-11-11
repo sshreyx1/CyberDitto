@@ -18,8 +18,9 @@ import (
 // leaving either one unset: a pooled connection's custom GUC does not
 // reliably read back as SQL NULL via current_setting(..., true) once it has
 // been touched earlier in the connection's lifetime by another request (a
-// bare SET LOCAL/set_config revert can leave it as '' instead of unset on
-// some Postgres versions), and casting '' to uuid raises a hard error. The
+// bare SET LOCAL/set_config revert can leave it as an empty string instead
+// of unset on some Postgres versions), and casting an empty string to uuid
+// raises a hard error. The
 // nil UUID can never match a real workspace_id/user_id, so it is a safe
 // "no match intended" sentinel for whichever of the two is not in scope.
 func withWorkspaceContext(ctx context.Context, pool *pgxpool.Pool, workspaceID uuid.UUID, userID *uuid.UUID, fn func(q *pgdb.Queries) error) error {

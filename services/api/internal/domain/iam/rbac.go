@@ -7,15 +7,15 @@ package iam
 type Capability string
 
 const (
-	CapViewWorkspace     Capability = "workspace:view"
-	CapManageMembers     Capability = "members:manage"
-	CapManageAssets      Capability = "assets:manage"
-	CapViewAssets        Capability = "assets:view"
-	CapManageTwins       Capability = "twins:manage"
-	CapViewTwins         Capability = "twins:view"
-	CapRunEmulation      Capability = "emulation:run"      // requires Approver, see Can
-	CapApplyRemediation  Capability = "remediation:apply"  // requires Approver, see Can
-	CapViewAuditLog      Capability = "audit:view"
+	CapViewWorkspace    Capability = "workspace:view"
+	CapManageMembers    Capability = "members:manage"
+	CapManageAssets     Capability = "assets:manage"
+	CapViewAssets       Capability = "assets:view"
+	CapManageTwins      Capability = "twins:manage"
+	CapViewTwins        Capability = "twins:view"
+	CapRunEmulation     Capability = "emulation:run"     // requires Approver, see Can
+	CapApplyRemediation Capability = "remediation:apply" // requires Approver, see Can
+	CapViewAuditLog     Capability = "audit:view"
 )
 
 // roleCapabilities is the base grant per role, before the Approver overlay.
@@ -36,7 +36,7 @@ var roleCapabilities = map[Role]map[Capability]bool{
 	},
 	RoleAnalyst: {
 		CapViewWorkspace: true,
-		CapManageAssets: true, CapViewAssets: true,
+		CapManageAssets:  true, CapViewAssets: true,
 		CapManageTwins: true, CapViewTwins: true,
 		CapRunEmulation: true, CapApplyRemediation: true,
 	},

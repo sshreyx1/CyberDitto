@@ -43,6 +43,17 @@ func NewService(repo ports.IAMRepository, auditRepo ports.AuditRepository, hashe
 	return &Service{repo: repo, audit: auditRepo, hasher: hasher, tokens: tokens, now: time.Now}
 }
 
+// IsInitialized reports whether the first-run owner account has already
+// been created, so the web app can decide whether to show the setup wizard
+// or the login page without needing a session.
+func (s *Service) IsInitialized(ctx context.Context) (bool, error) {
+	count, err := s.repo.CountUsers(ctx)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
 type SetupResult struct {
 	Workspace  iam.Workspace
 	User       iam.User
