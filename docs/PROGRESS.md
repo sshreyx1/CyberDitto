@@ -71,6 +71,10 @@ GitHub Actions (Linux runners) are unaffected by this and are the authoritative 
 - **Caldera brought into main v2.0 scope** (was deferred to stretch). Now an in-scope Phase 4 deliverable alongside Atomic Red Team — see `docs/adr/0011-caldera-in-scope.md`. No code impact yet (Phase 4 is still several phases away); recorded now so the Phase 4 plan is built around it from the start rather than retrofitted.
 - **`.claude/` removed** at the owner's request. Note for future sessions: this previously carried the `attribution: {commit: "", pr: "", sessionUrl: false}` config and a `permissions.deny` list (blocking force-push, remote changes, `gh repo delete`, etc.) — the no-attribution rule is still enforced independently by `.githooks/commit-msg` + `commit-hygiene.yml` + the owner's standing chat instruction, but the `permissions.deny` guardrails no longer exist as repo-committed config. Nothing else currently depends on `.claude/` existing.
 
+## Owner-directed changes (2026-11-21)
+
+- **`CODE_OF_CONDUCT.md` and `CONTRIBUTING.md` removed.** This is a solo portfolio project, not one accepting outside contributions, and the all-rights-reserved license already makes that explicit — a contributor workflow and conduct policy for a project that doesn't take PRs was dead weight. `README.md` rewritten to lead with product/architecture/security content instead of repo-hygiene boilerplate (diagrams reused from `docs/MASTER_PLAN.md §5`; no screenshots yet since there's no real UI to show honestly — the README's own Status section says so directly).
+
 ## Next action
 
 1. HTTP transport layer: `POST /api/v1/auth/setup`, `/auth/login`, `/auth/logout`, `GET /api/v1/me`, session-cookie middleware (httpOnly/Secure/SameSite, `__Host-` prefix), CSRF protection on state-changing requests, rate limiting on auth endpoints, wire into `cmd/api/main.go` (DB pool, services, router). Update `api/openapi.yaml` with these paths.
