@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { api, ApiError, type Assessment, type FindingStatus } from "@/lib/api";
+import { GapsView } from "@/components/gaps-view";
 
 const STATUS_ORDER: FindingStatus[] = ["fail", "unknown", "pass", "not_applicable"];
 const SEVERITY_ORDER = { high: 0, medium: 1, low: 2 } as const;
@@ -26,6 +27,7 @@ export default function AssessmentDetailPage() {
   const [a, setA] = useState<Assessment | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FindingStatus | "all">("all");
+  const [view, setView] = useState<"findings" | "gaps">("findings");
 
   useEffect(() => {
     api
@@ -68,6 +70,22 @@ export default function AssessmentDetailPage() {
         </p>
       </div>
 
+      <div className="flex gap-2 border-b border-white/10 pb-2 text-sm">
+        {(["findings", "gaps"] as const).map((v) => (
+          <button
+            key={v}
+            onClick={() => setView(v)}
+            className={`rounded-md px-3 py-1 ${view === v ? "bg-white/10 text-zinc-100" : "text-zinc-400"}`}
+          >
+            {v === "findings" ? "Findings" : "Prioritised gaps"}
+          </button>
+        ))}
+      </div>
+
+      {view === "gaps" ? (
+        <GapsView assessmentId={a.id} />
+      ) : (
+        <>
       <div className="flex gap-2 text-sm">
         {(["all", ...STATUS_ORDER] as const).map((s) => (
           <button
@@ -125,6 +143,8 @@ export default function AssessmentDetailPage() {
           </li>
         ))}
       </ul>
+        </>
+      )}
     </div>
   );
 }

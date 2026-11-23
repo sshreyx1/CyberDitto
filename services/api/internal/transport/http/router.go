@@ -11,6 +11,7 @@ import (
 	appassessments "github.com/sshreyx1/cyberditto/services/api/internal/app/assessments"
 	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
 	appemulation "github.com/sshreyx1/cyberditto/services/api/internal/app/emulation"
+	appgaps "github.com/sshreyx1/cyberditto/services/api/internal/app/gaps"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 	"github.com/sshreyx1/cyberditto/services/api/internal/domain"
@@ -42,6 +43,7 @@ type Deps struct {
 	Twins          *apptwins.Service
 	Assessments    *appassessments.Service
 	Emulation      *appemulation.Service
+	Gaps           *appgaps.Service
 	Secure         bool // true in prod (HTTPS); controls cookie Secure/__Host- (see cookies.go)
 	AllowedOrigins []string
 }
@@ -72,6 +74,8 @@ func NewRouter(deps Deps) http.Handler {
 	mux.Handle("GET /api/v1/assessments", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.list)))
 	mux.Handle("GET /api/v1/assessments/{id}", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.get)))
 	mux.Handle("GET /api/v1/assessments/{id}/diff", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.diff)))
+	gh := &gapHandlers{svc: deps.Gaps}
+	mux.Handle("GET /api/v1/assessments/{id}/gaps", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(gh.forAssessment)))
 	mux.Handle("GET /api/v1/assets/{id}/assessments", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.listForAsset)))
 	mux.Handle("GET /api/v1/controls", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.controls)))
 

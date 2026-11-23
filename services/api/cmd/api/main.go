@@ -17,6 +17,7 @@ import (
 	appassessments "github.com/sshreyx1/cyberditto/services/api/internal/app/assessments"
 	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
 	appemulation "github.com/sshreyx1/cyberditto/services/api/internal/app/emulation"
+	appgaps "github.com/sshreyx1/cyberditto/services/api/internal/app/gaps"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 	transporthttp "github.com/sshreyx1/cyberditto/services/api/internal/transport/http"
@@ -71,8 +72,11 @@ func main() {
 		// refuses every run while the catalog is unverified.
 		slog.Error("attack catalog failed verification; emulation runs will be refused", "detail", detail)
 	}
-	emulationSvc := appemulation.NewService(catalog, postgres.NewRunRepo(pool), twinRepo, provider, labProvider, auditRepo)
-	assessmentsSvc := appassessments.NewService(postgres.NewAssessmentRepo(pool), assetRepo, twinRepo, auditRepo)
+	runRepo := postgres.NewRunRepo(pool)
+	emulationSvc := appemulation.NewService(catalog, runRepo, twinRepo, provider, labProvider, auditRepo)
+	assessmentRepo := postgres.NewAssessmentRepo(pool)
+	assessmentsSvc := appassessments.NewService(assessmentRepo, assetRepo, twinRepo, auditRepo)
+	gapsSvc := appgaps.NewService(assessmentRepo, twinRepo, runRepo)
 
 	router := transporthttp.NewRouter(transporthttp.Deps{
 		IAM:            iamSvc,
@@ -80,6 +84,7 @@ func main() {
 		Twins:          twinsSvc,
 		Assessments:    assessmentsSvc,
 		Emulation:      emulationSvc,
+		Gaps:           gapsSvc,
 		Secure:         secure,
 		AllowedOrigins: allowedOrigins,
 	})

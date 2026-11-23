@@ -15,6 +15,7 @@ import (
 	appassessments "github.com/sshreyx1/cyberditto/services/api/internal/app/assessments"
 	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
 	appemulation "github.com/sshreyx1/cyberditto/services/api/internal/app/emulation"
+	appgaps "github.com/sshreyx1/cyberditto/services/api/internal/app/gaps"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 )
@@ -32,12 +33,15 @@ func testDepsWithIAMRepo() (Deps, *fake.IAMRepo) {
 	assetRepo := fake.NewAssetRepo()
 	twinRepo := fake.NewTwinRepo()
 	provider := &fake.LabProvider{StepDelay: time.Millisecond}
+	assessmentRepo := fake.NewAssessmentRepo(assetRepo)
+	runRepo := fake.NewRunRepo()
 	return Deps{
 		IAM:            appiam.NewService(iamRepo, audit, argon2.New(), token.New()),
 		Assets:         appassets.NewService(assetRepo, audit),
 		Twins:          apptwins.NewService(twinRepo, assetRepo, provider, "fake", audit),
-		Assessments:    appassessments.NewService(fake.NewAssessmentRepo(assetRepo), assetRepo, twinRepo, audit),
-		Emulation:      appemulation.NewService(atomic.Load(), fake.NewRunRepo(), twinRepo, provider, "fake", audit),
+		Assessments:    appassessments.NewService(assessmentRepo, assetRepo, twinRepo, audit),
+		Emulation:      appemulation.NewService(atomic.Load(), runRepo, twinRepo, provider, "fake", audit),
+		Gaps:           appgaps.NewService(assessmentRepo, twinRepo, runRepo),
 		Secure:         false,
 		AllowedOrigins: []string{"http://localhost:3000"},
 	}, iamRepo

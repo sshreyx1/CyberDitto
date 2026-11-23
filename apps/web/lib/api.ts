@@ -230,6 +230,36 @@ export interface EmulationRun {
   finished_at: string | null;
 }
 
+export interface GapFactor {
+  name: string;
+  value: number;
+  explanation: string;
+}
+
+export interface Gap {
+  control_id: string;
+  title: string;
+  category: string;
+  severity: Severity;
+  reason: string;
+  remediation: string;
+  priority: number;
+  factors: GapFactor[];
+  techniques: {
+    technique_id: string;
+    evidence: "untested" | "succeeded" | "blocked";
+    observations: { run_id: string; test_name: string; outcome: Outcome }[];
+  }[];
+}
+
+export interface GapsResult {
+  assessment_id: string;
+  snapshot_id: string;
+  evidence_base: { twins: string[] | null; runs: number; observations: number };
+  formula: string;
+  gaps: Gap[];
+}
+
 export const api = {
   setupStatus: () => request<{ initialized: boolean }>("/api/v1/auth/setup-status"),
 
@@ -270,6 +300,8 @@ export const api = {
   listAssessments: () => request<{ assessments: Assessment[] }>("/api/v1/assessments"),
 
   getAssessment: (id: string) => request<Assessment>(`/api/v1/assessments/${id}`),
+
+  getGaps: (assessmentId: string) => request<GapsResult>(`/api/v1/assessments/${assessmentId}/gaps`),
 
   listAssetAssessments: (assetId: string) =>
     request<{ assessments: Assessment[] }>(`/api/v1/assets/${assetId}/assessments`),

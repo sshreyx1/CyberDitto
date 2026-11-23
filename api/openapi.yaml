@@ -308,6 +308,23 @@ paths:
                 $ref: "#/components/schemas/Assessment"
         "404":
           description: Not found.
+  /api/v1/assessments/{id}/gaps:
+    get:
+      operationId: getAssessmentGaps
+      summary: >
+        The assessment's failed controls, each joined with the ATT&CK
+        techniques it makes easier and any observed emulation outcomes from
+        twins of the same snapshot, ranked by priority = severity × evidence
+        × prevalence × exposure with every factor explained (requires
+        assessments:view). Evidence is 1.0 only for a technique observed
+        succeeding; untested (including fake-provider runs) is 0.3.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK.
+        "404":
+          description: Not found.
   /api/v1/controls:
     get:
       operationId: getControls
