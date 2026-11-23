@@ -5,9 +5,12 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
+	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 	"github.com/sshreyx1/cyberditto/services/api/internal/domain"
+	"github.com/sshreyx1/cyberditto/services/api/internal/domain/iam"
 )
 
 // maxRequestBodyBytes caps JSON request bodies (docs/MASTER_PLAN.md §6.3:
@@ -15,11 +18,22 @@ import (
 // own, higher limit once that endpoint exists.
 const maxRequestBodyBytes = 1 << 20 // 1 MiB
 
+// authRateLimit bounds setup/login attempts per caller IP
+// (docs/MASTER_PLAN.md §6.3, docs/PROGRESS.md's "Phase 1 next action" item).
+// 10 attempts per minute is generous enough for a real user who mistypes a
+// password a few times, tight enough to make online password guessing or
+// setup-race attempts expensive.
+const (
+	authRateLimitAttempts = 10
+	authRateLimitWindow   = time.Minute
+)
+
 // Deps are the application services the HTTP transport depends on. Deps
 // hold ports/app-layer types only — no adapters are constructed here
 // (docs/MASTER_PLAN.md §5.1: transport depends on app, not on adapters).
 type Deps struct {
 	IAM            *appiam.Service
+	Twins          *apptwins.Service
 	Secure         bool // true in prod (HTTPS); controls cookie Secure/__Host- (see cookies.go)
 	AllowedOrigins []string
 }
@@ -30,11 +44,21 @@ func NewRouter(deps Deps) http.Handler {
 	mux.HandleFunc("GET /healthz", handleHealthz)
 
 	auth := &authHandlers{svc: deps.IAM, secure: deps.Secure}
+	authLimiter := newRateLimiter(authRateLimitAttempts, authRateLimitWindow)
 	mux.HandleFunc("GET /api/v1/auth/setup-status", handleSetupStatus(deps.IAM))
-	mux.HandleFunc("POST /api/v1/auth/setup", auth.setup)
-	mux.HandleFunc("POST /api/v1/auth/login", auth.login)
+	mux.HandleFunc("POST /api/v1/auth/setup", rateLimit(authLimiter, auth.setup))
+	mux.HandleFunc("POST /api/v1/auth/login", rateLimit(authLimiter, auth.login))
 	mux.HandleFunc("POST /api/v1/auth/logout", auth.logout)
 	mux.Handle("GET /api/v1/me", requireAuth(http.HandlerFunc(auth.me)))
+
+	tw := &twinHandlers{svc: deps.Twins}
+	mux.Handle("POST /api/v1/twins", requireCapability(iam.CapManageTwins)(http.HandlerFunc(tw.create)))
+	mux.Handle("GET /api/v1/twins", requireCapability(iam.CapViewTwins)(http.HandlerFunc(tw.list)))
+	mux.Handle("GET /api/v1/twins/{id}", requireCapability(iam.CapViewTwins)(http.HandlerFunc(tw.get)))
+	mux.Handle("GET /api/v1/twins/{id}/events", requireCapability(iam.CapViewTwins)(http.HandlerFunc(tw.events)))
+	mux.Handle("POST /api/v1/twins/{id}/start", requireCapability(iam.CapManageTwins)(http.HandlerFunc(tw.start)))
+	mux.Handle("POST /api/v1/twins/{id}/stop", requireCapability(iam.CapManageTwins)(http.HandlerFunc(tw.stop)))
+	mux.Handle("POST /api/v1/twins/{id}/destroy", requireCapability(iam.CapManageTwins)(http.HandlerFunc(tw.destroy)))
 
 	var handler http.Handler = mux
 	handler = sessionAuth(deps.IAM, deps.Secure)(handler)

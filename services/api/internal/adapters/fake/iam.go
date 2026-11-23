@@ -86,6 +86,24 @@ func (r *IAMRepo) CreateMembership(ctx context.Context, workspaceID, userID uuid
 	return m, nil
 }
 
+// SetMembershipRole is test-support only (no ports interface exposes it):
+// Phase 1 has no "manage members" HTTP handler yet, so HTTP-level authZ
+// tests that need a non-owner role have no other way to get one. Real
+// membership management lands with CapManageMembers's first handler.
+func (r *IAMRepo) SetMembershipRole(workspaceID, userID uuid.UUID, role iam.Role, approver bool) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for id, m := range r.memberships {
+		if m.WorkspaceID == workspaceID && m.UserID == userID {
+			m.Role = role
+			m.Approver = approver
+			r.memberships[id] = m
+			return nil
+		}
+	}
+	return errNotFound
+}
+
 func (r *IAMRepo) GetMembershipsForUser(ctx context.Context, userID uuid.UUID) ([]iam.Membership, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

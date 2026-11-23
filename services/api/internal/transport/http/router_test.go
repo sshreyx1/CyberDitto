@@ -6,16 +6,19 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/argon2"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/fake"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/token"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
+	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 )
 
 func testDeps() Deps {
-	svc := appiam.NewService(fake.NewIAMRepo(), fake.NewAuditRepo(), argon2.New(), token.New())
-	return Deps{IAM: svc, Secure: false, AllowedOrigins: []string{"http://localhost:3000"}}
+	iamSvc := appiam.NewService(fake.NewIAMRepo(), fake.NewAuditRepo(), argon2.New(), token.New())
+	twinsSvc := apptwins.NewService(fake.NewTwinRepo(), fake.LabProvider{StepDelay: time.Millisecond}, fake.NewAuditRepo())
+	return Deps{IAM: iamSvc, Twins: twinsSvc, Secure: false, AllowedOrigins: []string{"http://localhost:3000"}}
 }
 
 func TestHealthz(t *testing.T) {

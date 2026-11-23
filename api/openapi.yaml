@@ -106,7 +106,153 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /api/v1/twins:
+    post:
+      operationId: postTwins
+      summary: Create a twin and start its build (requires twins:manage).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                snapshot_id:
+                  type: string
+                  format: uuid
+                  description: >
+                    Optional in Phase 1 (Assets/Snapshots upload doesn't
+                    exist yet); a synthetic one is generated if omitted.
+      responses:
+        "201":
+          description: Twin created; build started in the background.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Twin"
+        "403":
+          description: Role lacks twins:manage.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getTwins
+      summary: List twins in the caller's workspace (requires twins:view).
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [twins]
+                properties:
+                  twins:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Twin"
+  /api/v1/twins/{id}:
+    get:
+      operationId: getTwin
+      summary: Get one twin (requires twins:view).
+      parameters:
+        - $ref: "#/components/parameters/TwinId"
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Twin"
+        "404":
+          description: Not found (or belongs to another workspace).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/twins/{id}/events:
+    get:
+      operationId: getTwinEvents
+      summary: >
+        Server-Sent Events stream of this twin's lifecycle events (build
+        progress, start/stop/destroy), replaying everything recorded so far
+        before switching to live events (requires twins:view).
+      parameters:
+        - $ref: "#/components/parameters/TwinId"
+      responses:
+        "200":
+          description: text/event-stream of TwinEvent payloads.
+          content:
+            text/event-stream:
+              schema:
+                $ref: "#/components/schemas/TwinEvent"
+  /api/v1/twins/{id}/start:
+    post:
+      operationId: postTwinStart
+      summary: Start a Ready or Stopped twin (requires twins:manage).
+      parameters:
+        - $ref: "#/components/parameters/TwinId"
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Twin"
+        "409":
+          description: Twin is not in a state that can be started.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/twins/{id}/stop:
+    post:
+      operationId: postTwinStop
+      summary: Stop a Running twin (requires twins:manage).
+      parameters:
+        - $ref: "#/components/parameters/TwinId"
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Twin"
+        "409":
+          description: Twin is not in a state that can be stopped.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/twins/{id}/destroy:
+    post:
+      operationId: postTwinDestroy
+      summary: Permanently destroy a twin (requires twins:manage).
+      parameters:
+        - $ref: "#/components/parameters/TwinId"
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Twin"
+        "409":
+          description: Twin is already destroyed.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
 components:
+  parameters:
+    TwinId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
   schemas:
     Health:
       type: object
@@ -146,6 +292,49 @@ components:
           enum: [owner, admin, analyst, viewer]
         approver:
           type: boolean
+    Twin:
+      type: object
+      required: [id, workspace_id, snapshot_id, provider, state, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspace_id:
+          type: string
+          format: uuid
+        snapshot_id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+          example: fake
+        state:
+          type: string
+          enum: [requested, imaging, provisioning, applying, verifying, ready, running, stopped, failed, destroyed]
+        fidelity_score:
+          type: number
+          nullable: true
+          description: Not populated until the Phase 2 real lab provider lands.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    TwinEvent:
+      type: object
+      required: [sequence, state, message, created_at]
+      properties:
+        sequence:
+          type: integer
+          description: Per-twin, strictly increasing; use as the SSE event id.
+        state:
+          type: string
+        message:
+          type: string
+        created_at:
+          type: string
+          format: date-time
     Problem:
       description: RFC 9457 problem+json error shape (docs/MASTER_PLAN.md §5.15).
       type: object
