@@ -47,6 +47,13 @@ func withWorkspaceContext(ctx context.Context, pool *pgxpool.Pool, workspaceID u
 	return tx.Commit(ctx)
 }
 
+// advisoryLock serialises writers on key until the enclosing transaction
+// ends. Used where "read max, then insert max+1" must not race (snapshot
+// versions, twin event sequences).
+func advisoryLock(ctx context.Context, q *pgdb.Queries, key string) error {
+	return q.AdvisoryXactLock(ctx, key)
+}
+
 // withUserContext is for RLS lookups that are scoped by user rather than by
 // an already-known workspace (e.g. "which workspaces am I a member of").
 func withUserContext(ctx context.Context, pool *pgxpool.Pool, userID uuid.UUID, fn func(q *pgdb.Queries) error) error {

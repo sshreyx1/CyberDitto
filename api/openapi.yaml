@@ -106,23 +106,160 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  /api/v1/twins:
+  /api/v1/assets:
     post:
-      operationId: postTwins
-      summary: Create a twin and start its build (requires twins:manage).
+      operationId: postAssets
+      summary: Register an asset (requires assets:manage).
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+      responses:
+        "201":
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Asset"
+        "400":
+          description: Invalid name.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getAssets
+      summary: List assets in the caller's workspace (requires assets:view).
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [assets]
+                properties:
+                  assets:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Asset"
+  /api/v1/assets/{id}:
+    get:
+      operationId: getAsset
+      summary: Get one asset (requires assets:view).
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Asset"
+        "404":
+          description: Not found (or belongs to another workspace).
+  /api/v1/assets/{id}/snapshots:
+    post:
+      operationId: postAssetSnapshot
+      summary: >
+        Upload a collector snapshot as the asset's next immutable version
+        (requires assets:manage). The body is the collector's output file
+        exactly as written, max 5 MiB.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - name: X-Snapshot-SHA256
+          in: header
+          required: false
+          description: The digest the collector printed; if present, the body must match it.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectorDocument"
+      responses:
+        "201":
+          description: Stored.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SnapshotSummary"
+        "400":
+          description: Not a valid collector document.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Asset not found.
+        "413":
+          description: Larger than 5 MiB.
+        "422":
+          description: Body does not match X-Snapshot-SHA256.
+    get:
+      operationId: getAssetSnapshots
+      summary: List an asset's snapshot versions, newest first, without bodies (requires assets:view).
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [snapshots]
+                properties:
+                  snapshots:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SnapshotSummary"
+  /api/v1/snapshots/{id}:
+    get:
+      operationId: getSnapshot
+      summary: Get one snapshot including its document (requires assets:view).
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SnapshotSummary"
+                  - type: object
+                    required: [data]
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CollectorDocument"
+        "404":
+          description: Not found.
+  /api/v1/twins:
+    post:
+      operationId: postTwins
+      summary: Create a twin from a snapshot and start its build (requires twins:manage).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [snapshot_id]
               properties:
                 snapshot_id:
                   type: string
                   format: uuid
-                  description: >
-                    Optional in Phase 1 (Assets/Snapshots upload doesn't
-                    exist yet); a synthetic one is generated if omitted.
       responses:
         "201":
           description: Twin created; build started in the background.
@@ -130,6 +267,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Twin"
+        "422":
+          description: snapshot_id does not reference a snapshot in this workspace.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "403":
           description: Role lacks twins:manage.
           content:
@@ -246,6 +389,13 @@ paths:
                 $ref: "#/components/schemas/Problem"
 components:
   parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
     TwinId:
       name: id
       in: path
@@ -292,6 +442,76 @@ components:
           enum: [owner, admin, analyst, viewer]
         approver:
           type: boolean
+    Asset:
+      type: object
+      required: [id, workspace_id, name, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspace_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    SnapshotSummary:
+      type: object
+      required: [id, asset_id, version, sha256, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        asset_id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        sha256:
+          type: string
+          description: Hex SHA-256 of the exact bytes received.
+        created_at:
+          type: string
+          format: date-time
+    CollectorDocument:
+      description: >
+        services/collector output, schema version 1. Each field has exactly
+        one of value (the category was read) or error (it could not be;
+        the category is unknown, never defaulted).
+      type: object
+      additionalProperties: false
+      required: [schema_version, hostname, collected_at, fields]
+      properties:
+        schema_version:
+          type: string
+          enum: ["1"]
+        hostname:
+          type: string
+        collected_at:
+          type: string
+          format: date-time
+        fields:
+          type: object
+          minProperties: 1
+          additionalProperties:
+            type: object
+            additionalProperties: false
+            required: [source, collected_at]
+            properties:
+              source:
+                type: string
+              collected_at:
+                type: string
+                format: date-time
+              value: {}
+              error:
+                type: string
     Twin:
       type: object
       required: [id, workspace_id, snapshot_id, provider, state, created_at, updated_at]

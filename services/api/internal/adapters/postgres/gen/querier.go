@@ -12,6 +12,7 @@ import (
 )
 
 type Querier interface {
+	AdvisoryXactLock(ctx context.Context, lockKey string) error
 	CountUsers(ctx context.Context) (int64, error)
 	CreateAsset(ctx context.Context, arg CreateAssetParams) (Asset, error)
 	CreateMembership(ctx context.Context, arg CreateMembershipParams) (Membership, error)
@@ -30,11 +31,14 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (User, error)
 	InsertAuditEvent(ctx context.Context, arg InsertAuditEventParams) (AuditEvent, error)
+	InsertTwinEvent(ctx context.Context, arg InsertTwinEventParams) (TwinEvent, error)
 	ListAssets(ctx context.Context, workspaceID uuid.UUID) ([]Asset, error)
 	ListAuditEvents(ctx context.Context, arg ListAuditEventsParams) ([]AuditEvent, error)
-	ListSnapshotsForAsset(ctx context.Context, arg ListSnapshotsForAssetParams) ([]Snapshot, error)
+	ListSnapshotSummariesForAsset(ctx context.Context, arg ListSnapshotSummariesForAssetParams) ([]ListSnapshotSummariesForAssetRow, error)
+	ListTwinEvents(ctx context.Context, arg ListTwinEventsParams) ([]TwinEvent, error)
 	ListTwins(ctx context.Context, workspaceID uuid.UUID) ([]Twin, error)
 	NextSnapshotVersion(ctx context.Context, assetID uuid.UUID) (int32, error)
+	NextTwinEventSequence(ctx context.Context, twinID uuid.UUID) (int32, error)
 	RevokeAllSessionsForUser(ctx context.Context, userID uuid.UUID) error
 	RevokeSession(ctx context.Context, id uuid.UUID) error
 	UpdateTwinFidelity(ctx context.Context, arg UpdateTwinFidelityParams) (Twin, error)

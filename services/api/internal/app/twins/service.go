@@ -6,6 +6,7 @@ package twins
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -14,41 +15,56 @@ import (
 	"github.com/sshreyx1/cyberditto/services/api/internal/ports"
 )
 
+var (
+	ErrInvalidTransition = errors.New("twins: invalid state transition")
+	// ErrSnapshotNotFound means the snapshot a twin should be built from
+	// doesn't exist in the caller's workspace.
+	ErrSnapshotNotFound = errors.New("twins: snapshot not found")
+)
+
 type Service struct {
-	repo     ports.TwinRepository
-	provider ports.LabProvider
-	audit    ports.AuditRepository
+	repo      ports.TwinRepository
+	snapshots ports.AssetRepository
+	provider  ports.LabProvider
+	audit     ports.AuditRepository
+	// providerName is recorded on each twin so a stored twin always says
+	// which adapter built it.
+	providerName string
 
 	mu   sync.Mutex
 	subs map[uuid.UUID]map[chan twin.Event]struct{} // twinID -> live SSE subscribers
 }
 
-func NewService(repo ports.TwinRepository, provider ports.LabProvider, audit ports.AuditRepository) *Service {
+func NewService(repo ports.TwinRepository, snapshots ports.AssetRepository, provider ports.LabProvider, providerName string, audit ports.AuditRepository) *Service {
 	return &Service{
-		repo: repo, provider: provider, audit: audit,
+		repo: repo, snapshots: snapshots, provider: provider, providerName: providerName, audit: audit,
 		subs: map[uuid.UUID]map[chan twin.Event]struct{}{},
 	}
 }
 
-// Create records a new twin and starts its build in the background,
-// returning as soon as the Requested record exists — the caller (an HTTP
-// handler) does not block on the build. snapshotID is not yet validated
-// against a real snapshots repository: Assets/Snapshots upload is still
-// unbuilt (docs/PROGRESS.md), so any UUID is accepted for now.
+// Create records a new twin for an existing snapshot and starts its build
+// in the background, returning as soon as the Requested record exists.
 func (s *Service) Create(ctx context.Context, actorID, workspaceID, snapshotID uuid.UUID) (twin.Twin, error) {
-	t, err := s.repo.Create(ctx, workspaceID, snapshotID, "fake")
+	if _, err := s.snapshots.GetSnapshot(ctx, workspaceID, snapshotID); err != nil {
+		if errors.Is(err, ports.ErrNotFound) {
+			return twin.Twin{}, ErrSnapshotNotFound
+		}
+		return twin.Twin{}, fmt.Errorf("twins: look up snapshot: %w", err)
+	}
+
+	t, err := s.repo.Create(ctx, workspaceID, snapshotID, s.providerName)
 	if err != nil {
 		return twin.Twin{}, fmt.Errorf("twins: create: %w", err)
 	}
 
-	if _, err := s.audit.Record(ctx, workspaceID, &actorID, "twin.create", "twin", t.ID.String(), nil); err != nil {
+	if _, err := s.audit.Record(ctx, workspaceID, &actorID, "twin.create", "twin", t.ID.String(),
+		map[string]any{"snapshot_id": snapshotID.String(), "provider": s.providerName}); err != nil {
 		return twin.Twin{}, fmt.Errorf("twins: audit create: %w", err)
 	}
 
 	// The build must outlive this request: detach from the request's
-	// context (which is cancelled the moment the HTTP handler returns)
-	// but keep it otherwise, so a build started by one request isn't
-	// silently killed when that response is written.
+	// context (cancelled the moment the handler returns) but keep its
+	// values.
 	go s.runBuild(context.WithoutCancel(ctx), t)
 
 	return t, nil
@@ -60,32 +76,29 @@ func (s *Service) runBuild(ctx context.Context, t twin.Twin) {
 		if !twin.CanTransition(current, to) {
 			return fmt.Errorf("twins: provider requested invalid transition %s -> %s", current, to)
 		}
-		updated, err := s.repo.UpdateState(ctx, t.ID, to)
+		updated, err := s.repo.UpdateState(ctx, t.WorkspaceID, t.ID, to)
 		if err != nil {
 			return err
 		}
 		current = updated.State
-		s.recordEvent(ctx, t.ID, to, message)
+		s.recordEvent(ctx, t.WorkspaceID, t.ID, to, message)
 		return nil
 	}
 
 	s.provider.Build(ctx, t.ID, step)
 
-	// A build that didn't reach Ready (cancelled, or the provider stopped
-	// early on a step error) must not be left in a non-terminal,
-	// non-"ready" limbo forever — mark it Failed so the console can show
-	// that and a retry path (create a new twin) is the only way forward,
-	// per the state machine's "no resuming a failed build" rule
-	// (internal/domain/twin).
+	// A build that didn't reach Ready must not sit in a half-built state
+	// forever; mark it Failed. There is no "resume" edge out of Failed
+	// (internal/domain/twin), so the way forward is a new twin.
 	if current != twin.StateReady && twin.CanTransition(current, twin.StateFailed) {
-		if _, err := s.repo.UpdateState(ctx, t.ID, twin.StateFailed); err == nil {
-			s.recordEvent(ctx, t.ID, twin.StateFailed, "build did not complete")
+		if _, err := s.repo.UpdateState(ctx, t.WorkspaceID, t.ID, twin.StateFailed); err == nil {
+			s.recordEvent(ctx, t.WorkspaceID, t.ID, twin.StateFailed, "build did not complete")
 		}
 	}
 }
 
-func (s *Service) recordEvent(ctx context.Context, twinID uuid.UUID, state twin.State, message string) {
-	ev, err := s.repo.AppendEvent(ctx, twin.Event{TwinID: twinID, State: state, Message: message})
+func (s *Service) recordEvent(ctx context.Context, workspaceID, twinID uuid.UUID, state twin.State, message string) {
+	ev, err := s.repo.AppendEvent(ctx, workspaceID, twin.Event{TwinID: twinID, State: state, Message: message})
 	if err != nil {
 		return
 	}
@@ -101,10 +114,9 @@ func (s *Service) List(ctx context.Context, workspaceID uuid.UUID) ([]twin.Twin,
 }
 
 // Events returns everything recorded for twinID after afterSequence, for a
-// reconnecting SSE client to catch up before it starts live-streaming
-// (docs/MASTER_PLAN.md §5.1: event-sourced runs/builds).
-func (s *Service) Events(ctx context.Context, twinID uuid.UUID, afterSequence int) ([]twin.Event, error) {
-	return s.repo.ListEvents(ctx, twinID, afterSequence)
+// reconnecting SSE client to catch up before it starts live-streaming.
+func (s *Service) Events(ctx context.Context, workspaceID, twinID uuid.UUID, afterSequence int) ([]twin.Event, error) {
+	return s.repo.ListEvents(ctx, workspaceID, twinID, afterSequence)
 }
 
 func (s *Service) Start(ctx context.Context, actorID, workspaceID, twinID uuid.UUID) (twin.Twin, error) {
@@ -119,8 +131,6 @@ func (s *Service) Destroy(ctx context.Context, actorID, workspaceID, twinID uuid
 	return s.transition(ctx, actorID, workspaceID, twinID, twin.StateDestroyed, s.provider.Destroy, "twin.destroy")
 }
 
-var ErrInvalidTransition = fmt.Errorf("twins: invalid state transition")
-
 func (s *Service) transition(ctx context.Context, actorID, workspaceID, twinID uuid.UUID, to twin.State, op func(context.Context, uuid.UUID) error, action string) (twin.Twin, error) {
 	current, err := s.repo.Get(ctx, workspaceID, twinID)
 	if err != nil {
@@ -132,22 +142,21 @@ func (s *Service) transition(ctx context.Context, actorID, workspaceID, twinID u
 	if err := op(ctx, twinID); err != nil {
 		return twin.Twin{}, err
 	}
-	updated, err := s.repo.UpdateState(ctx, twinID, to)
+	updated, err := s.repo.UpdateState(ctx, workspaceID, twinID, to)
 	if err != nil {
 		return twin.Twin{}, err
 	}
 	if _, err := s.audit.Record(ctx, workspaceID, &actorID, action, "twin", twinID.String(), nil); err != nil {
 		return twin.Twin{}, err
 	}
-	s.recordEvent(ctx, twinID, to, action)
+	s.recordEvent(ctx, workspaceID, twinID, to, action)
 	return updated, nil
 }
 
-// Subscribe registers ch to receive every future event for twinID until
-// cancel is called. The channel is buffered and publish never blocks on a
-// slow/absent reader (a dropped event is recoverable — the client can
-// always call Events with its last-seen sequence to catch up — a stalled
-// build is not).
+// Subscribe registers a channel that receives every future event for
+// twinID until cancel is called. publish never blocks on a slow reader: a
+// dropped event is recoverable (the client resumes from its last sequence
+// via Events), a stalled build is not.
 func (s *Service) Subscribe(twinID uuid.UUID) (ch <-chan twin.Event, cancel func()) {
 	c := make(chan twin.Event, 16)
 	s.mu.Lock()
@@ -160,6 +169,9 @@ func (s *Service) Subscribe(twinID uuid.UUID) (ch <-chan twin.Event, cancel func
 	return c, func() {
 		s.mu.Lock()
 		delete(s.subs[twinID], c)
+		if len(s.subs[twinID]) == 0 {
+			delete(s.subs, twinID)
+		}
 		s.mu.Unlock()
 	}
 }

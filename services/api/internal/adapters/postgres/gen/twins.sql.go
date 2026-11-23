@@ -70,6 +70,80 @@ func (q *Queries) GetTwin(ctx context.Context, arg GetTwinParams) (Twin, error) 
 	return i, err
 }
 
+const insertTwinEvent = `-- name: InsertTwinEvent :one
+INSERT INTO twin_events (workspace_id, twin_id, sequence, state, message)
+VALUES ($1, $2, $3, $4, $5) RETURNING id, workspace_id, twin_id, sequence, state, message, created_at
+`
+
+type InsertTwinEventParams struct {
+	WorkspaceID uuid.UUID `json:"workspace_id"`
+	TwinID      uuid.UUID `json:"twin_id"`
+	Sequence    int32     `json:"sequence"`
+	State       string    `json:"state"`
+	Message     string    `json:"message"`
+}
+
+func (q *Queries) InsertTwinEvent(ctx context.Context, arg InsertTwinEventParams) (TwinEvent, error) {
+	row := q.db.QueryRow(ctx, insertTwinEvent,
+		arg.WorkspaceID,
+		arg.TwinID,
+		arg.Sequence,
+		arg.State,
+		arg.Message,
+	)
+	var i TwinEvent
+	err := row.Scan(
+		&i.ID,
+		&i.WorkspaceID,
+		&i.TwinID,
+		&i.Sequence,
+		&i.State,
+		&i.Message,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const listTwinEvents = `-- name: ListTwinEvents :many
+SELECT id, workspace_id, twin_id, sequence, state, message, created_at FROM twin_events
+WHERE twin_id = $1 AND workspace_id = $2 AND sequence > $3
+ORDER BY sequence
+`
+
+type ListTwinEventsParams struct {
+	TwinID      uuid.UUID `json:"twin_id"`
+	WorkspaceID uuid.UUID `json:"workspace_id"`
+	Sequence    int32     `json:"sequence"`
+}
+
+func (q *Queries) ListTwinEvents(ctx context.Context, arg ListTwinEventsParams) ([]TwinEvent, error) {
+	rows, err := q.db.Query(ctx, listTwinEvents, arg.TwinID, arg.WorkspaceID, arg.Sequence)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []TwinEvent
+	for rows.Next() {
+		var i TwinEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorkspaceID,
+			&i.TwinID,
+			&i.Sequence,
+			&i.State,
+			&i.Message,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTwins = `-- name: ListTwins :many
 SELECT id, workspace_id, snapshot_id, provider, state, fidelity_score, created_at, updated_at FROM twins WHERE workspace_id = $1 ORDER BY created_at DESC
 `
@@ -103,6 +177,17 @@ func (q *Queries) ListTwins(ctx context.Context, workspaceID uuid.UUID) ([]Twin,
 	return items, nil
 }
 
+const nextTwinEventSequence = `-- name: NextTwinEventSequence :one
+SELECT (coalesce(max(sequence), 0) + 1)::integer FROM twin_events WHERE twin_id = $1
+`
+
+func (q *Queries) NextTwinEventSequence(ctx context.Context, twinID uuid.UUID) (int32, error) {
+	row := q.db.QueryRow(ctx, nextTwinEventSequence, twinID)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const updateTwinFidelity = `-- name: UpdateTwinFidelity :one
 UPDATE twins SET fidelity_score = $2, updated_at = now() WHERE id = $1 RETURNING id, workspace_id, snapshot_id, provider, state, fidelity_score, created_at, updated_at
 `
@@ -129,16 +214,19 @@ func (q *Queries) UpdateTwinFidelity(ctx context.Context, arg UpdateTwinFidelity
 }
 
 const updateTwinState = `-- name: UpdateTwinState :one
-UPDATE twins SET state = $2, updated_at = now() WHERE id = $1 RETURNING id, workspace_id, snapshot_id, provider, state, fidelity_score, created_at, updated_at
+UPDATE twins SET state = $3, updated_at = now()
+WHERE id = $1 AND workspace_id = $2
+RETURNING id, workspace_id, snapshot_id, provider, state, fidelity_score, created_at, updated_at
 `
 
 type UpdateTwinStateParams struct {
-	ID    uuid.UUID `json:"id"`
-	State string    `json:"state"`
+	ID          uuid.UUID `json:"id"`
+	WorkspaceID uuid.UUID `json:"workspace_id"`
+	State       string    `json:"state"`
 }
 
 func (q *Queries) UpdateTwinState(ctx context.Context, arg UpdateTwinStateParams) (Twin, error) {
-	row := q.db.QueryRow(ctx, updateTwinState, arg.ID, arg.State)
+	row := q.db.QueryRow(ctx, updateTwinState, arg.ID, arg.WorkspaceID, arg.State)
 	var i Twin
 	err := row.Scan(
 		&i.ID,

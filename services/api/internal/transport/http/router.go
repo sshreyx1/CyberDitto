@@ -5,17 +5,20 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
+	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 	"github.com/sshreyx1/cyberditto/services/api/internal/domain"
+	"github.com/sshreyx1/cyberditto/services/api/internal/domain/asset"
 	"github.com/sshreyx1/cyberditto/services/api/internal/domain/iam"
 )
 
 // maxRequestBodyBytes caps JSON request bodies (docs/MASTER_PLAN.md §6.3:
-// "request size/time limits"). Large payloads (snapshot uploads) get their
-// own, higher limit once that endpoint exists.
+// "request size/time limits"). Snapshot uploads get asset.MaxDocumentBytes
+// instead (see bodyLimit).
 const maxRequestBodyBytes = 1 << 20 // 1 MiB
 
 // authRateLimit bounds setup/login attempts per caller IP
@@ -33,6 +36,7 @@ const (
 // (docs/MASTER_PLAN.md §5.1: transport depends on app, not on adapters).
 type Deps struct {
 	IAM            *appiam.Service
+	Assets         *appassets.Service
 	Twins          *apptwins.Service
 	Secure         bool // true in prod (HTTPS); controls cookie Secure/__Host- (see cookies.go)
 	AllowedOrigins []string
@@ -50,6 +54,14 @@ func NewRouter(deps Deps) http.Handler {
 	mux.HandleFunc("POST /api/v1/auth/login", rateLimit(authLimiter, auth.login))
 	mux.HandleFunc("POST /api/v1/auth/logout", auth.logout)
 	mux.Handle("GET /api/v1/me", requireAuth(http.HandlerFunc(auth.me)))
+
+	as := &assetHandlers{svc: deps.Assets}
+	mux.Handle("POST /api/v1/assets", requireCapability(iam.CapManageAssets)(http.HandlerFunc(as.create)))
+	mux.Handle("GET /api/v1/assets", requireCapability(iam.CapViewAssets)(http.HandlerFunc(as.list)))
+	mux.Handle("GET /api/v1/assets/{id}", requireCapability(iam.CapViewAssets)(http.HandlerFunc(as.get)))
+	mux.Handle("POST /api/v1/assets/{id}/snapshots", requireCapability(iam.CapManageAssets)(http.HandlerFunc(as.uploadSnapshot)))
+	mux.Handle("GET /api/v1/assets/{id}/snapshots", requireCapability(iam.CapViewAssets)(http.HandlerFunc(as.listSnapshots)))
+	mux.Handle("GET /api/v1/snapshots/{id}", requireCapability(iam.CapViewAssets)(http.HandlerFunc(as.getSnapshot)))
 
 	tw := &twinHandlers{svc: deps.Twins}
 	mux.Handle("POST /api/v1/twins", requireCapability(iam.CapManageTwins)(http.HandlerFunc(tw.create)))
@@ -71,9 +83,18 @@ func NewRouter(deps Deps) http.Handler {
 
 func limitRequestBody(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r.Body = http.MaxBytesReader(w, r.Body, maxRequestBodyBytes)
+		r.Body = http.MaxBytesReader(w, r.Body, bodyLimit(r))
 		next.ServeHTTP(w, r)
 	})
+}
+
+// bodyLimit is the one place a route gets a larger body cap than the
+// default: snapshot uploads (POST /api/v1/assets/{id}/snapshots).
+func bodyLimit(r *http.Request) int64 {
+	if r.Method == http.MethodPost && strings.HasPrefix(r.URL.Path, "/api/v1/assets/") && strings.HasSuffix(r.URL.Path, "/snapshots") {
+		return asset.MaxDocumentBytes
+	}
+	return maxRequestBodyBytes
 }
 
 func handleHealthz(w http.ResponseWriter, r *http.Request) {

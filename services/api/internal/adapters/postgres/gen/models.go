@@ -71,6 +71,16 @@ type Twin struct {
 	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
 }
 
+type TwinEvent struct {
+	ID          uuid.UUID          `json:"id"`
+	WorkspaceID uuid.UUID          `json:"workspace_id"`
+	TwinID      uuid.UUID          `json:"twin_id"`
+	Sequence    int32              `json:"sequence"`
+	State       string             `json:"state"`
+	Message     string             `json:"message"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+}
+
 type User struct {
 	ID           uuid.UUID          `json:"id"`
 	Email        string             `json:"email"`

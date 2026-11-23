@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sshreyx1/cyberditto/services/api/internal/domain/iam"
+	"github.com/sshreyx1/cyberditto/services/api/internal/ports"
 )
 
 type IAMRepo struct {
@@ -150,8 +151,4 @@ func (r *IAMRepo) RevokeSession(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-type notFoundError struct{}
-
-func (notFoundError) Error() string { return "fake: not found" }
-
-var errNotFound error = notFoundError{}
+var errNotFound = ports.ErrNotFound

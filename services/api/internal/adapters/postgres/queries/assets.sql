@@ -12,10 +12,11 @@ INSERT INTO snapshots (workspace_id, asset_id, version, data, sha256)
 VALUES ($1, $2, $3, $4, $5) RETURNING *;
 
 -- name: NextSnapshotVersion :one
-SELECT coalesce(max(version), 0) + 1 FROM snapshots WHERE asset_id = $1;
+SELECT (coalesce(max(version), 0) + 1)::integer FROM snapshots WHERE asset_id = $1;
 
--- name: ListSnapshotsForAsset :many
-SELECT * FROM snapshots WHERE asset_id = $1 AND workspace_id = $2 ORDER BY version DESC;
+-- name: ListSnapshotSummariesForAsset :many
+SELECT id, workspace_id, asset_id, version, sha256, created_at
+FROM snapshots WHERE asset_id = $1 AND workspace_id = $2 ORDER BY version DESC;
 
 -- name: GetSnapshot :one
 SELECT * FROM snapshots WHERE id = $1 AND workspace_id = $2;

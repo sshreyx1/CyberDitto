@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createAsset = `-- name: CreateAsset :one
@@ -143,30 +144,39 @@ func (q *Queries) ListAssets(ctx context.Context, workspaceID uuid.UUID) ([]Asse
 	return items, nil
 }
 
-const listSnapshotsForAsset = `-- name: ListSnapshotsForAsset :many
-SELECT id, workspace_id, asset_id, version, data, sha256, created_at FROM snapshots WHERE asset_id = $1 AND workspace_id = $2 ORDER BY version DESC
+const listSnapshotSummariesForAsset = `-- name: ListSnapshotSummariesForAsset :many
+SELECT id, workspace_id, asset_id, version, sha256, created_at
+FROM snapshots WHERE asset_id = $1 AND workspace_id = $2 ORDER BY version DESC
 `
 
-type ListSnapshotsForAssetParams struct {
+type ListSnapshotSummariesForAssetParams struct {
 	AssetID     uuid.UUID `json:"asset_id"`
 	WorkspaceID uuid.UUID `json:"workspace_id"`
 }
 
-func (q *Queries) ListSnapshotsForAsset(ctx context.Context, arg ListSnapshotsForAssetParams) ([]Snapshot, error) {
-	rows, err := q.db.Query(ctx, listSnapshotsForAsset, arg.AssetID, arg.WorkspaceID)
+type ListSnapshotSummariesForAssetRow struct {
+	ID          uuid.UUID          `json:"id"`
+	WorkspaceID uuid.UUID          `json:"workspace_id"`
+	AssetID     uuid.UUID          `json:"asset_id"`
+	Version     int32              `json:"version"`
+	Sha256      string             `json:"sha256"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+}
+
+func (q *Queries) ListSnapshotSummariesForAsset(ctx context.Context, arg ListSnapshotSummariesForAssetParams) ([]ListSnapshotSummariesForAssetRow, error) {
+	rows, err := q.db.Query(ctx, listSnapshotSummariesForAsset, arg.AssetID, arg.WorkspaceID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Snapshot
+	var items []ListSnapshotSummariesForAssetRow
 	for rows.Next() {
-		var i Snapshot
+		var i ListSnapshotSummariesForAssetRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.WorkspaceID,
 			&i.AssetID,
 			&i.Version,
-			&i.Data,
 			&i.Sha256,
 			&i.CreatedAt,
 		); err != nil {
@@ -181,7 +191,7 @@ func (q *Queries) ListSnapshotsForAsset(ctx context.Context, arg ListSnapshotsFo
 }
 
 const nextSnapshotVersion = `-- name: NextSnapshotVersion :one
-SELECT coalesce(max(version), 0) + 1 FROM snapshots WHERE asset_id = $1
+SELECT (coalesce(max(version), 0) + 1)::integer FROM snapshots WHERE asset_id = $1
 `
 
 func (q *Queries) NextSnapshotVersion(ctx context.Context, assetID uuid.UUID) (int32, error) {

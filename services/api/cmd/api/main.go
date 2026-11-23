@@ -13,6 +13,7 @@ import (
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/fake"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/postgres"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/token"
+	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 	transporthttp "github.com/sshreyx1/cyberditto/services/api/internal/transport/http"
@@ -41,27 +42,25 @@ func main() {
 	}
 	defer pool.Close()
 
-	iamSvc := appiam.NewService(
-		postgres.NewIAMRepo(pool),
-		postgres.NewAuditRepo(pool),
-		argon2.New(),
-		token.New(),
-	)
+	auditRepo := postgres.NewAuditRepo(pool)
+	iamSvc := appiam.NewService(postgres.NewIAMRepo(pool), auditRepo, argon2.New(), token.New())
 
-	// CD_LAB_PROVIDER defaults to "fake" (.env.example): there is no real
-	// Hyper-V/libvirt/Proxmox adapter yet (docs/MASTER_PLAN.md §10 Phase 2),
-	// and twins don't persist across a restart yet either — the in-memory
-	// fake.TwinRepo is a deliberate Phase 1 scope boundary, not an oversight
-	// (docs/PROGRESS.md).
+	assetRepo := postgres.NewAssetRepo(pool)
+	assetsSvc := appassets.NewService(assetRepo, auditRepo)
+
+	// CD_LAB_PROVIDER defaults to "fake" (.env.example): the real Hyper-V
+	// adapter is owner-blocked (docs/OWNER_TODO.md items 6-7). Twins and
+	// their events persist in Postgres regardless of provider.
 	labProvider := getenv("CD_LAB_PROVIDER", "fake")
 	if labProvider != "fake" {
-		slog.Error("unsupported CD_LAB_PROVIDER (only \"fake\" exists before Phase 2)", "provider", labProvider)
+		slog.Error("unsupported CD_LAB_PROVIDER (only \"fake\" exists so far)", "provider", labProvider)
 		os.Exit(1)
 	}
-	twinsSvc := apptwins.NewService(fake.NewTwinRepo(), fake.LabProvider{}, postgres.NewAuditRepo(pool))
+	twinsSvc := apptwins.NewService(postgres.NewTwinRepo(pool), assetRepo, fake.LabProvider{}, labProvider, auditRepo)
 
 	router := transporthttp.NewRouter(transporthttp.Deps{
 		IAM:            iamSvc,
+		Assets:         assetsSvc,
 		Twins:          twinsSvc,
 		Secure:         secure,
 		AllowedOrigins: allowedOrigins,

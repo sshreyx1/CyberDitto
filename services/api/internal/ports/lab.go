@@ -33,14 +33,15 @@ type LabProvider interface {
 }
 
 // TwinRepository persists twin records and their append-only event log.
-// Workspace-scoped methods take the workspace explicitly so an adapter can
-// enforce it (Postgres RLS, in a future real adapter) rather than trusting
-// the caller (docs/MASTER_PLAN.md §6.2).
+// Every method takes the workspace explicitly so the Postgres adapter can
+// run it under RLS rather than trusting the caller (docs/MASTER_PLAN.md
+// §6.2).
 type TwinRepository interface {
 	Create(ctx context.Context, workspaceID, snapshotID uuid.UUID, provider string) (twin.Twin, error)
 	Get(ctx context.Context, workspaceID, id uuid.UUID) (twin.Twin, error)
 	List(ctx context.Context, workspaceID uuid.UUID) ([]twin.Twin, error)
-	UpdateState(ctx context.Context, id uuid.UUID, state twin.State) (twin.Twin, error)
-	AppendEvent(ctx context.Context, e twin.Event) (twin.Event, error)
-	ListEvents(ctx context.Context, twinID uuid.UUID, afterSequence int) ([]twin.Event, error)
+	UpdateState(ctx context.Context, workspaceID, id uuid.UUID, state twin.State) (twin.Twin, error)
+	// AppendEvent assigns e.Sequence (next for e.TwinID) atomically.
+	AppendEvent(ctx context.Context, workspaceID uuid.UUID, e twin.Event) (twin.Event, error)
+	ListEvents(ctx context.Context, workspaceID, twinID uuid.UUID, afterSequence int) ([]twin.Event, error)
 }

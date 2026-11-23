@@ -11,14 +11,29 @@ import (
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/argon2"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/fake"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/token"
+	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 )
 
 func testDeps() Deps {
-	iamSvc := appiam.NewService(fake.NewIAMRepo(), fake.NewAuditRepo(), argon2.New(), token.New())
-	twinsSvc := apptwins.NewService(fake.NewTwinRepo(), fake.LabProvider{StepDelay: time.Millisecond}, fake.NewAuditRepo())
-	return Deps{IAM: iamSvc, Twins: twinsSvc, Secure: false, AllowedOrigins: []string{"http://localhost:3000"}}
+	deps, _ := testDepsWithIAMRepo()
+	return deps
+}
+
+// testDepsWithIAMRepo wires every service against fake adapters and also
+// returns the fake IAM repo, so tests can change a membership's role.
+func testDepsWithIAMRepo() (Deps, *fake.IAMRepo) {
+	iamRepo := fake.NewIAMRepo()
+	audit := fake.NewAuditRepo()
+	assetRepo := fake.NewAssetRepo()
+	return Deps{
+		IAM:            appiam.NewService(iamRepo, audit, argon2.New(), token.New()),
+		Assets:         appassets.NewService(assetRepo, audit),
+		Twins:          apptwins.NewService(fake.NewTwinRepo(), assetRepo, fake.LabProvider{StepDelay: time.Millisecond}, "fake", audit),
+		Secure:         false,
+		AllowedOrigins: []string{"http://localhost:3000"},
+	}, iamRepo
 }
 
 func TestHealthz(t *testing.T) {

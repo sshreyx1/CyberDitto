@@ -6,10 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 	"github.com/sshreyx1/cyberditto/services/api/internal/domain/twin"
+	"github.com/sshreyx1/cyberditto/services/api/internal/ports"
 )
 
 type twinHandlers struct {
@@ -29,84 +31,73 @@ func twinResponse(t twin.Twin) map[string]any {
 	}
 }
 
+func writeTwinError(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, apptwins.ErrInvalidTransition):
+		writeProblem(w, http.StatusConflict, "invalid state transition", err.Error())
+	case errors.Is(err, apptwins.ErrSnapshotNotFound):
+		writeProblem(w, http.StatusUnprocessableEntity, "snapshot not found", "snapshot_id does not reference a snapshot in this workspace")
+	case errors.Is(err, ports.ErrNotFound):
+		writeProblem(w, http.StatusNotFound, "twin not found", "")
+	default:
+		writeProblem(w, http.StatusInternalServerError, "request failed", "")
+	}
+}
+
 type createTwinRequest struct {
-	// SnapshotID is optional in Phase 1: Assets/Snapshots upload doesn't
-	// exist yet (docs/PROGRESS.md), so a caller that omits it gets a
-	// synthetic one rather than being forced to fabricate a real-looking
-	// UUID client-side.
-	SnapshotID string `json:"snapshot_id,omitempty"`
+	SnapshotID string `json:"snapshot_id"`
 }
 
 func (h *twinHandlers) create(w http.ResponseWriter, r *http.Request) {
 	ac := authFromContext(r.Context())
 
 	var req createTwinRequest
-	if r.ContentLength != 0 {
-		dec := json.NewDecoder(r.Body)
-		dec.DisallowUnknownFields()
-		if err := dec.Decode(&req); err != nil {
-			writeProblem(w, http.StatusBadRequest, "invalid request body", err.Error())
-			return
-		}
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&req); err != nil {
+		writeProblem(w, http.StatusBadRequest, "invalid request body", err.Error())
+		return
 	}
-
-	snapshotID := uuid.New()
-	if req.SnapshotID != "" {
-		id, err := uuid.Parse(req.SnapshotID)
-		if err != nil {
-			writeProblem(w, http.StatusBadRequest, "invalid snapshot_id", "must be a UUID")
-			return
-		}
-		snapshotID = id
+	snapshotID, err := uuid.Parse(req.SnapshotID)
+	if err != nil {
+		writeProblem(w, http.StatusBadRequest, "invalid snapshot_id", "snapshot_id is required and must be a UUID")
+		return
 	}
 
 	t, err := h.svc.Create(r.Context(), ac.User.ID, ac.Membership.WorkspaceID, snapshotID)
 	if err != nil {
-		writeProblem(w, http.StatusInternalServerError, "create twin failed", "")
+		writeTwinError(w, err)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(twinResponse(t))
+	writeJSON(w, http.StatusCreated, twinResponse(t))
 }
 
 func (h *twinHandlers) list(w http.ResponseWriter, r *http.Request) {
 	ac := authFromContext(r.Context())
-
 	ts, err := h.svc.List(r.Context(), ac.Membership.WorkspaceID)
 	if err != nil {
-		writeProblem(w, http.StatusInternalServerError, "list twins failed", "")
+		writeTwinError(w, err)
 		return
 	}
-
 	out := make([]map[string]any, 0, len(ts))
 	for _, t := range ts {
 		out = append(out, twinResponse(t))
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(map[string]any{"twins": out})
+	writeJSON(w, http.StatusOK, map[string]any{"twins": out})
 }
 
 func (h *twinHandlers) get(w http.ResponseWriter, r *http.Request) {
 	ac := authFromContext(r.Context())
-
-	id, err := uuid.Parse(r.PathValue("id"))
-	if err != nil {
-		writeProblem(w, http.StatusBadRequest, "invalid twin id", "")
+	id, ok := pathUUID(w, r, "id")
+	if !ok {
 		return
 	}
-
 	t, err := h.svc.Get(r.Context(), ac.Membership.WorkspaceID, id)
 	if err != nil {
-		writeProblem(w, http.StatusNotFound, "twin not found", "")
+		writeTwinError(w, err)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(twinResponse(t))
+	writeJSON(w, http.StatusOK, twinResponse(t))
 }
 
 type twinOp func(ctx context.Context, actorID, workspaceID, twinID uuid.UUID) (twin.Twin, error)
@@ -121,43 +112,32 @@ func (h *twinHandlers) destroy(w http.ResponseWriter, r *http.Request) {
 
 func (h *twinHandlers) doTransition(w http.ResponseWriter, r *http.Request, op twinOp) {
 	ac := authFromContext(r.Context())
-
-	id, err := uuid.Parse(r.PathValue("id"))
-	if err != nil {
-		writeProblem(w, http.StatusBadRequest, "invalid twin id", "")
+	id, ok := pathUUID(w, r, "id")
+	if !ok {
 		return
 	}
-
 	t, err := op(r.Context(), ac.User.ID, ac.Membership.WorkspaceID, id)
 	if err != nil {
-		if errors.Is(err, apptwins.ErrInvalidTransition) {
-			writeProblem(w, http.StatusConflict, "invalid state transition", err.Error())
-			return
-		}
-		writeProblem(w, http.StatusNotFound, "twin not found", "")
+		writeTwinError(w, err)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(twinResponse(t))
+	writeJSON(w, http.StatusOK, twinResponse(t))
 }
 
-// events streams a twin's build/lifecycle progress to the browser over SSE
-// (docs/MASTER_PLAN.md §5.1: "event-sourced where it matters... UI streams
-// them via SSE"). It first replays anything already recorded, then streams
-// new events live, deduplicating by sequence number so an event published
-// in the gap between subscribing and the catch-up read is never sent twice.
+// events streams a twin's lifecycle events over SSE: it replays what's
+// recorded after the client's Last-Event-ID (EventSource sends it
+// automatically on reconnect), then streams live events, deduplicating by
+// sequence so an event published between subscribing and the catch-up read
+// is never sent twice.
 func (h *twinHandlers) events(w http.ResponseWriter, r *http.Request) {
 	ac := authFromContext(r.Context())
-
-	id, err := uuid.Parse(r.PathValue("id"))
-	if err != nil {
-		writeProblem(w, http.StatusBadRequest, "invalid twin id", "")
+	workspaceID := ac.Membership.WorkspaceID
+	id, ok := pathUUID(w, r, "id")
+	if !ok {
 		return
 	}
-	if _, err := h.svc.Get(r.Context(), ac.Membership.WorkspaceID, id); err != nil {
-		writeProblem(w, http.StatusNotFound, "twin not found", "")
+	if _, err := h.svc.Get(r.Context(), workspaceID, id); err != nil {
+		writeTwinError(w, err)
 		return
 	}
 
@@ -167,9 +147,15 @@ func (h *twinHandlers) events(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Subscribe before the catch-up read, not after: subscribing second
-	// would let an event published in between be missed entirely, rather
-	// than merely duplicated (which lastSeq below already guards against).
+	lastSeq := 0
+	if v := r.Header.Get("Last-Event-ID"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			lastSeq = n
+		}
+	}
+
+	// Subscribe before the catch-up read so nothing published in between
+	// is missed (duplicates are filtered by lastSeq below).
 	live, cancel := h.svc.Subscribe(id)
 	defer cancel()
 
@@ -178,14 +164,13 @@ func (h *twinHandlers) events(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 	w.WriteHeader(http.StatusOK)
 
-	lastSeq := 0
-	if catchUp, err := h.svc.Events(r.Context(), id, 0); err == nil {
+	if catchUp, err := h.svc.Events(r.Context(), workspaceID, id, lastSeq); err == nil {
 		for _, ev := range catchUp {
 			writeSSEEvent(w, ev)
 			lastSeq = ev.Sequence
 		}
-		flusher.Flush()
 	}
+	flusher.Flush()
 
 	ctx := r.Context()
 	for {
