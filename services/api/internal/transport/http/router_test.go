@@ -11,6 +11,7 @@ import (
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/argon2"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/fake"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/token"
+	appassessments "github.com/sshreyx1/cyberditto/services/api/internal/app/assessments"
 	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
@@ -27,10 +28,12 @@ func testDepsWithIAMRepo() (Deps, *fake.IAMRepo) {
 	iamRepo := fake.NewIAMRepo()
 	audit := fake.NewAuditRepo()
 	assetRepo := fake.NewAssetRepo()
+	twinRepo := fake.NewTwinRepo()
 	return Deps{
 		IAM:            appiam.NewService(iamRepo, audit, argon2.New(), token.New()),
 		Assets:         appassets.NewService(assetRepo, audit),
-		Twins:          apptwins.NewService(fake.NewTwinRepo(), assetRepo, fake.LabProvider{StepDelay: time.Millisecond}, "fake", audit),
+		Twins:          apptwins.NewService(twinRepo, assetRepo, fake.LabProvider{StepDelay: time.Millisecond}, "fake", audit),
+		Assessments:    appassessments.NewService(fake.NewAssessmentRepo(), assetRepo, twinRepo, audit),
 		Secure:         false,
 		AllowedOrigins: []string{"http://localhost:3000"},
 	}, iamRepo

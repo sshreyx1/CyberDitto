@@ -13,6 +13,7 @@ import (
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/fake"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/postgres"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/token"
+	appassessments "github.com/sshreyx1/cyberditto/services/api/internal/app/assessments"
 	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
@@ -56,12 +57,15 @@ func main() {
 		slog.Error("unsupported CD_LAB_PROVIDER (only \"fake\" exists so far)", "provider", labProvider)
 		os.Exit(1)
 	}
-	twinsSvc := apptwins.NewService(postgres.NewTwinRepo(pool), assetRepo, fake.LabProvider{}, labProvider, auditRepo)
+	twinRepo := postgres.NewTwinRepo(pool)
+	twinsSvc := apptwins.NewService(twinRepo, assetRepo, fake.LabProvider{}, labProvider, auditRepo)
+	assessmentsSvc := appassessments.NewService(postgres.NewAssessmentRepo(pool), assetRepo, twinRepo, auditRepo)
 
 	router := transporthttp.NewRouter(transporthttp.Deps{
 		IAM:            iamSvc,
 		Assets:         assetsSvc,
 		Twins:          twinsSvc,
+		Assessments:    assessmentsSvc,
 		Secure:         secure,
 		AllowedOrigins: allowedOrigins,
 	})

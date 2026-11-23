@@ -9,6 +9,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Assessment struct {
+	ID            uuid.UUID          `json:"id"`
+	WorkspaceID   uuid.UUID          `json:"workspace_id"`
+	SnapshotID    uuid.UUID          `json:"snapshot_id"`
+	TwinID        pgtype.UUID        `json:"twin_id"`
+	Engine        string             `json:"engine"`
+	EngineVersion string             `json:"engine_version"`
+	PostureScore  pgtype.Numeric     `json:"posture_score"`
+	Passed        int32              `json:"passed"`
+	Failed        int32              `json:"failed"`
+	Unknown       int32              `json:"unknown"`
+	NotApplicable int32              `json:"not_applicable"`
+	CreatedBy     pgtype.UUID        `json:"created_by"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+}
+
 type Asset struct {
 	ID          uuid.UUID          `json:"id"`
 	WorkspaceID uuid.UUID          `json:"workspace_id"`
@@ -28,6 +44,22 @@ type AuditEvent struct {
 	PrevHash    string             `json:"prev_hash"`
 	Hash        string             `json:"hash"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+}
+
+type Finding struct {
+	ID           uuid.UUID `json:"id"`
+	WorkspaceID  uuid.UUID `json:"workspace_id"`
+	AssessmentID uuid.UUID `json:"assessment_id"`
+	ControlID    string    `json:"control_id"`
+	Title        string    `json:"title"`
+	Category     string    `json:"category"`
+	Severity     string    `json:"severity"`
+	Status       string    `json:"status"`
+	Observed     []byte    `json:"observed"`
+	Expected     string    `json:"expected"`
+	Reason       string    `json:"reason"`
+	Remediation  string    `json:"remediation"`
+	Techniques   []string  `json:"techniques"`
 }
 
 type Membership struct {

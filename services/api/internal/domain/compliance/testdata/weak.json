@@ -1,0 +1,57 @@
+{
+  "schema_version": "1",
+  "hostname": "HOST-fixture2",
+  "collected_at": "2026-11-23T06:00:00Z",
+  "fields": {
+    "os.version": {"source": "os.version", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"product_name": "Windows 10 Pro", "display_version": "22H2", "current_build": "19045", "ubr": "0x1"}},
+    "firewall.profiles": {"source": "firewall.profiles", "collected_at": "2026-11-23T06:00:00Z",
+      "value": [
+        {"Name": "Domain", "Enabled": 1, "DefaultInboundAction": 4, "DefaultOutboundAction": 2},
+        {"Name": "Public", "Enabled": 0, "DefaultInboundAction": 2, "DefaultOutboundAction": 2}
+      ]},
+    "defender.status": {"source": "defender.status", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"AntivirusEnabled": true, "RealTimeProtectionEnabled": false, "AntispywareEnabled": true, "IoavProtectionEnabled": false, "NISEnabled": false, "AntivirusSignatureAge": 30}},
+    "security.uac": {"source": "security.uac", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System": {"present": true, "values": {"EnableLUA": "0x0", "ConsentPromptBehaviorAdmin": "0x0", "LocalAccountTokenFilterPolicy": "0x1"}}}},
+    "security.lsa": {"source": "security.lsa", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa": {"present": true, "values": {"NoLMHash": "0x0", "LmCompatibilityLevel": "0x1", "RestrictAnonymousSAM": "0x0"}}}},
+    "security.device_guard": {"source": "security.device_guard", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"vbs_status": 0, "services_configured": [], "services_running": []}},
+    "remote.rdp": {"source": "remote.rdp", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {
+        "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server": {"present": true, "values": {"fDenyTSConnections": "0x0"}},
+        "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp": {"present": true, "values": {"UserAuthentication": "0x0"}},
+        "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services": {"present": false, "values": {}}
+      }},
+    "network.smb": {"source": "network.smb", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {
+        "HKLM\\SYSTEM\\CurrentControlSet\\Services\\mrxsmb10": {"present": true, "values": {"Start": "0x2"}},
+        "HKLM\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters": {"present": true, "values": {}}
+      }},
+    "logging.powershell": {"source": "logging.powershell", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging": {"present": false, "values": {}}}},
+    "accounts.local_users": {"source": "accounts.local_users", "collected_at": "2026-11-23T06:00:00Z",
+      "value": [
+        {"name": "Administrator", "enabled": true, "rid": 500, "password_required": true, "password_never_expires": true},
+        {"name": "Guest", "enabled": true, "rid": 501, "password_required": false, "password_never_expires": true},
+        {"name": "USER-0002", "enabled": true, "rid": 1001, "password_required": false, "password_never_expires": true}
+      ]},
+    "accounts.local_admins": {"source": "accounts.local_admins", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"total": 5, "local": 5, "active_directory": 0, "azure_ad": 0, "microsoft_account": 0, "unknown": 0}},
+    "updates.hotfixes": {"source": "updates.hotfixes", "collected_at": "2026-11-23T06:00:00Z",
+      "value": [{"id": "KB4000001", "installed_on": "2026-01-01"}]},
+    "boot.secure_boot": {"source": "boot.secure_boot", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecureBoot\\State": {"present": true, "values": {"UEFISecureBootEnabled": "0x0"}}}},
+    "security.tpm": {"source": "security.tpm", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"present": false, "enabled": false, "activated": false, "spec_version": ""}},
+    "security.bitlocker": {"source": "security.bitlocker", "collected_at": "2026-11-23T06:00:00Z",
+      "value": [{"mount_point": "C:", "volume_type": "OperatingSystem", "protection_status": "Off", "encryption_method": "None", "volume_status": "FullyDecrypted"}]},
+    "remote.winrm": {"source": "remote.winrm", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WinRM\\Service": {"present": true, "values": {"AllowBasic": "0x1"}}}},
+    "security.autorun": {"source": "security.autorun", "collected_at": "2026-11-23T06:00:00Z",
+      "value": {"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer": {"present": false, "values": {}}}},
+    "network.listening_ports": {"source": "network.listening_ports", "collected_at": "2026-11-23T06:00:00Z",
+      "value": [{"address": "0.0.0.0", "port": 23, "process": "tlntsvr"}]}
+  }
+}
