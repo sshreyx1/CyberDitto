@@ -2,11 +2,18 @@ package collect
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os/exec"
 	"regexp"
 	"strings"
 )
+
+// ErrKeyNotFound means the registry key does not exist. For policy keys
+// that is real information (the policy is not configured, so Windows'
+// default applies), not a failed read, so callers report it as such
+// instead of as "unknown".
+var ErrKeyNotFound = errors.New("registry key not found")
 
 // RegistryReader abstracts a single registry key read so OSVersionCollector
 // is testable with fixed data instead of a live Windows registry
@@ -32,6 +39,10 @@ func (RegExeReader) ReadKey(ctx context.Context, key string) (map[string]string,
 	cmd := exec.CommandContext(ctx, "reg.exe", "query", key)
 	out, err := cmd.Output()
 	if err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) && strings.Contains(string(exitErr.Stderr), "unable to find the specified registry key") {
+			return nil, ErrKeyNotFound
+		}
 		return nil, fmt.Errorf("reg query %q: %w", key, err)
 	}
 	return parseRegQueryOutput(out), nil

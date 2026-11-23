@@ -7,86 +7,69 @@ import (
 	"testing"
 )
 
-func TestReplace_SameValueGetsSamePlaceholder(t *testing.T) {
-	m := NewMapper("HOST")
-
-	first, err := m.Replace("DESKTOP-ABC123")
-	if err != nil {
-		t.Fatalf("Replace: %v", err)
+func TestReplace_StablePerKindAndValue(t *testing.T) {
+	m := NewMapper()
+	a, _ := m.Replace("HOST", "DESKTOP-ABC")
+	b, _ := m.Replace("HOST", "DESKTOP-ABC")
+	if a != b || !strings.HasPrefix(a, "HOST-") {
+		t.Fatalf("Replace not stable: %q vs %q", a, b)
 	}
-	second, err := m.Replace("DESKTOP-ABC123")
-	if err != nil {
-		t.Fatalf("Replace: %v", err)
+	u, _ := m.Replace("USER", "DESKTOP-ABC")
+	if u == a || !strings.HasPrefix(u, "USER-") {
+		t.Fatalf("same value under a different kind must get its own placeholder; got %q and %q", a, u)
 	}
-	if first != second {
-		t.Errorf("Replace returned %q then %q for the same input", first, second)
-	}
-	if !strings.HasPrefix(first, "HOST-") {
-		t.Errorf("placeholder %q does not carry the HOST- prefix", first)
+	other, _ := m.Replace("HOST", "other")
+	if other == a {
+		t.Fatal("different values got the same placeholder")
 	}
 }
 
-func TestReplace_DifferentValuesGetDifferentPlaceholders(t *testing.T) {
-	m := NewMapper("HOST")
-
-	a, _ := m.Replace("host-a")
-	b, _ := m.Replace("host-b")
-	if a == b {
-		t.Errorf("two different values got the same placeholder %q", a)
+func TestReplace_EmptyPassesThroughAndBadKindRejected(t *testing.T) {
+	m := NewMapper()
+	if got, err := m.Replace("HOST", ""); err != nil || got != "" {
+		t.Fatalf("Replace(empty) = %q, %v", got, err)
+	}
+	if _, err := m.Replace("host-x", "v"); err == nil {
+		t.Fatal("a kind containing '-' or lowercase must be rejected")
 	}
 }
 
-func TestReplace_EmptyValuePassesThrough(t *testing.T) {
-	m := NewMapper("HOST")
-	got, err := m.Replace("")
-	if err != nil {
-		t.Fatalf("Replace: %v", err)
-	}
-	if got != "" {
-		t.Errorf("Replace(\"\") = %q, want empty", got)
-	}
-}
-
-func TestSaveAndLoad_RoundTripsPlaceholders(t *testing.T) {
-	dir := t.TempDir()
-	path := filepath.Join(dir, "map.json")
-
-	m := NewMapper("HOST")
-	placeholder, err := m.Replace("my-real-hostname")
-	if err != nil {
-		t.Fatalf("Replace: %v", err)
-	}
+func TestSaveAndLoad_RoundTrip(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "map.json")
+	m := NewMapper()
+	host, _ := m.Replace("HOST", "my-host")
+	user, _ := m.Replace("USER", "alice")
 	if err := m.Save(path); err != nil {
 		t.Fatalf("Save: %v", err)
 	}
-
 	info, err := os.Stat(path)
 	if err != nil {
-		t.Fatalf("stat map file: %v", err)
+		t.Fatal(err)
 	}
 	if perm := info.Mode().Perm(); perm&0o077 != 0 {
-		t.Errorf("map file permissions = %v, want no access for group/other", perm)
+		t.Errorf("map file permissions = %v, want owner-only", perm)
 	}
 
-	reloaded, err := LoadMapper(path)
+	re, err := LoadMapper(path)
 	if err != nil {
 		t.Fatalf("LoadMapper: %v", err)
 	}
-	again, err := reloaded.Replace("my-real-hostname")
-	if err != nil {
-		t.Fatalf("Replace after reload: %v", err)
+	if got, _ := re.Replace("HOST", "my-host"); got != host {
+		t.Errorf("host placeholder after reload = %q, want %q", got, host)
 	}
-	if again != placeholder {
-		t.Errorf("after reload, Replace gave %q, want the original placeholder %q", again, placeholder)
+	if got, _ := re.Replace("USER", "alice"); got != user {
+		t.Errorf("user placeholder after reload = %q, want %q", got, user)
 	}
 }
 
-func TestLoadMapper_MissingFileStartsEmpty(t *testing.T) {
-	m, err := LoadMapper(filepath.Join(t.TempDir(), "does-not-exist.json"))
-	if err != nil {
-		t.Fatalf("LoadMapper on a missing file should not error: %v", err)
+func TestLoadMapper_MissingFileAndMalformed(t *testing.T) {
+	dir := t.TempDir()
+	if _, err := LoadMapper(filepath.Join(dir, "none.json")); err != nil {
+		t.Fatalf("missing file should start empty: %v", err)
 	}
-	if _, err := m.Replace("anything"); err != nil {
-		t.Fatalf("Replace on a freshly-created mapper: %v", err)
+	bad := filepath.Join(dir, "bad.json")
+	_ = os.WriteFile(bad, []byte(`{"mapping":{"nodash":"x"}}`), 0o600)
+	if _, err := LoadMapper(bad); err == nil {
+		t.Fatal("malformed placeholder in map must be rejected")
 	}
 }

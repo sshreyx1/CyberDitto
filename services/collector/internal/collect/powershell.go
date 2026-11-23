@@ -3,8 +3,10 @@ package collect
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os/exec"
+	"strings"
 )
 
 // PowerShellRunner executes a fixed PowerShell script and returns its
@@ -26,9 +28,32 @@ func (SystemPowerShell) Run(ctx context.Context, script string) ([]byte, error) 
 	cmd := exec.CommandContext(ctx, "powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script)
 	out, err := cmd.Output()
 	if err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			if reason := firstErrorLine(exitErr.Stderr); reason != "" {
+				return nil, fmt.Errorf("powershell: %s", reason)
+			}
+		}
 		return nil, fmt.Errorf("powershell: %w", err)
 	}
 	return out, nil
+}
+
+// firstErrorLine pulls the human-readable reason ("Access denied", "The
+// term 'Get-MpComputerStatus' is not recognized ...") out of PowerShell's
+// multi-line error output, so an unknown category records why.
+func firstErrorLine(stderr []byte) string {
+	for _, line := range strings.Split(string(stderr), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "At line:") || strings.HasPrefix(line, "+") {
+			continue
+		}
+		if len(line) > 200 {
+			line = line[:200]
+		}
+		return line
+	}
+	return ""
 }
 
 // runJSON runs script and decodes its stdout as JSON into v. PowerShell's

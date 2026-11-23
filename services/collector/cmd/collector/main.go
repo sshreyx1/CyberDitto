@@ -31,7 +31,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	consent := fs.Bool("consent", false, "required to actually collect; without it, only --dry-run is allowed")
 	dryRun := fs.Bool("dry-run", false, "print the manifest of what would be collected and exit without collecting anything")
 	output := fs.String("output", "", "write the snapshot JSON to this path instead of stdout")
-	pseudonymiseFlag := fs.Bool("pseudonymise", false, "replace the hostname with a stable local placeholder before output")
+	pseudonymiseFlag := fs.Bool("pseudonymise", false, "replace the hostname and non-built-in account names with stable local placeholders before output")
 	mapPath := fs.String("pseudonymise-map", "collector-pseudonymise-map.json", "where the local, reversible placeholder map is stored (0600; never upload this file)")
 	if err := fs.Parse(args); err != nil {
 		return 2
@@ -59,12 +59,10 @@ func run(args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintf(stderr, "collector: %v\n", err)
 			return 1
 		}
-		placeholder, err := mapper.Replace(snap.Hostname)
-		if err != nil {
+		if err := pseudonymiseSnapshot(&snap, mapper); err != nil {
 			fmt.Fprintf(stderr, "collector: %v\n", err)
 			return 1
 		}
-		snap.Hostname = placeholder
 		if err := mapper.Save(*mapPath); err != nil {
 			fmt.Fprintf(stderr, "collector: %v\n", err)
 			return 1
