@@ -912,6 +912,17 @@ Settings          └ Workspace, members/roles, AI & privacy, integrations, API 
 
 **Accept:** eval suite green; injection tests cannot trigger a mutating action without approval; AI toggled off → app fully functional.
 
+### Phase 6.5: Console UI design (added 2026-11-23, `docs/adr/0013`)
+- [ ] `packages/ui` design system (tokens, shadcn/ui + Radix components) per §8.1 and ADR 0010
+- [ ] Console information architecture per §8.3: sidebar nav, overview dashboard, command palette, theme switch
+- [ ] Rich views: ATT&CK heatmap, fidelity ring, config diff, controls table with evidence drawer, live run console, gap factor breakdown
+- [ ] Every page restyled on the design system with loading/empty/error/success states; motion ≤ 200 ms, reduced-motion respected
+- [ ] Accessibility audit (WCAG 2.2 AA, axe in CI)
+
+**Accept:** every functional page from Phases 1–6 is restyled without behaviour changes (existing e2e/unit tests still pass unmodified); axe clean.
+
+> Phases 1–6 deliberately ship plain, functional console pages; visual design is this phase's job, not theirs (ADR 0013).
+
 ### Phase 7: Website, docs, demo, polish (≈ 3 weeks)
 - [ ] Marketing site (§8.6), animated hero, bento, interactive mini-demo
 - [ ] Docs site + "Ask Ditto" docs bot (rate-limited, budget-capped, Turnstile)
