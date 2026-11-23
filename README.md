@@ -62,17 +62,17 @@ Full defect list, severities, and what's actually worth reusing: [`docs/MASTER_P
 
 ## Status
 
-**Early build — Phase 1 ("walking skeleton") in progress.** This is being built in public, phase by phase; the live checklist is [`docs/PROGRESS.md`](docs/PROGRESS.md).
+**Phases 1–3 working end to end; the real hypervisor lab is next.** Built in public, phase by phase; the live checklist is [`docs/PROGRESS.md`](docs/PROGRESS.md).
 
 Built and verified so far:
 
-- Postgres schema + migrations with **Row-Level Security** on every workspace-scoped table, verified to actually block cross-workspace access
-- IAM: first-run setup, Argon2id password hashing, server-side sessions (`httpOnly`/`Secure`/`SameSite`, `__Host-` prefix), RBAC with a single policy checkpoint, CSRF via Origin checking
-- Append-only, hash-chained audit log (lock-protected so the chain can't fork under concurrent writers)
-- HTTP transport for `setup` / `login` / `logout` / `me`, with real integration tests against a dockerized Postgres and CI running the same tests on every push
-- `fake` adapters for IAM/audit so the core logic is testable without infrastructure
+- **Collector** — a read-only, consent-gated Go binary reading 20 Windows configuration categories (UAC, LSA, RDP/NLA, SMB, Defender, firewall, VBS/HVCI, accounts, patches, Secure Boot, BitLocker, …). Anything it can't read is reported as *unknown* with the reason, never defaulted. Optional pseudonymisation of hostnames and account names with a local-only reverse map.
+- **Assets and snapshots** — upload the collector's file; strict schema validation, immutable versions, SHA-256 of the exact bytes received, optional digest check against what the collector printed.
+- **Compliance engine** — 28 controls with CyberDitto's own IDs and wording, each verdict backed by the observed values from the snapshot, unset settings judged against Windows' documented defaults, and a weighted posture score that excludes unknowns rather than counting them as passes.
+- **Twins** — persistent twin lifecycle with live build progress over SSE (built by a `fake` lab provider until the real Hyper-V provider lands).
+- **Platform security** — Postgres Row-Level Security on every workspace table, Argon2id, server-side httpOnly sessions, RBAC with an every-route × every-role test matrix, CSRF/CORS allow-lists, rate-limited auth, and a hash-chained audit log.
 
-Not built yet (by design, not oversight — see the roadmap): the lab provider, twin lifecycle, collector, assessment/emulation engines, and the console UI. There are no product screenshots in this README yet because there isn't a product screen to show honestly — that changes from Phase 1's console shell onward, and this README will grow real screenshots and a demo GIF as soon as there's something real to point a camera at.
+Not built yet: the real Hyper-V lab and twin agent (waiting on an image/hardware decision), attack emulation, gap correlation and remediation, the AI copilot, and the console's visual design — the console is deliberately plain until every feature works ([ADR 0013](docs/adr/0013-functionality-before-visual-design.md)), which is also why there are no screenshots here yet.
 
 ## Architecture
 
@@ -232,25 +232,35 @@ CyberDitto runs real attack tooling. It only ever targets an isolated lab **twin
 Requires Go 1.26+, Node 24+, pnpm, and Docker (for Postgres).
 
 ```powershell
-cp .env.example .env
+cp .env.example .env   # then set CD_DATABASE_URL / CD_APP_DATABASE_URL passwords to match deploy/compose/dev.yml
 docker compose -f deploy/compose/dev.yml up -d
+cd services/api; go run ./cmd/migrate up; cd ../..
 pnpm install
 task dev
 ```
 
-`task dev` runs the Go API (`:8080`) and the Next.js app (`:3000`) together. `task lint test` runs the full check suite used in CI — see [`Taskfile.yml`](Taskfile.yml) for the individual targets. The web app is currently a placeholder page; the API's first-run setup/login flow is the only user-facing surface so far (see [Status](#status)).
+`task dev` runs the Go API (`:8080`) and the Next.js console (`:3000`). Open the console, create the owner account, add an asset, and upload a snapshot from the collector:
+
+```powershell
+cd services/collector
+go run ./cmd/collector --dry-run                                   # shows exactly what would be read
+go run ./cmd/collector --consent --pseudonymise --output snapshot.json
+```
+
+Run it from an elevated prompt to include BitLocker and TPM state. `task lint test` runs the same checks as CI; see [`Taskfile.yml`](Taskfile.yml).
 
 ## Roadmap
 
 | Phase | Focus | State |
 |---|---|---|
 | 0 | Foundations, repo hygiene, CI, ADRs | ✅ done |
-| 1 | Walking skeleton — auth, RBAC, audit log, fake lab provider, console shell | 🔶 in progress |
-| 2 | Real collector + Hyper-V twin provider, Fidelity Score | ⬜ planned |
-| 3 | CIS-style assessment engine (native + Wazuh SCA) | ⬜ planned |
+| 1 | Walking skeleton — auth, RBAC, audit log, fake lab provider, console shell | ✅ done |
+| 2 | Real collector + Hyper-V twin provider, Fidelity Score | 🔶 collector, assets & snapshots done; Hyper-V provider waiting on an image/hardware decision |
+| 3 | Configuration assessment engine (native + Wazuh SCA) | 🔶 native engine done; Wazuh SCA and history views remain |
 | 4 | Attack emulation — Atomic Red Team + MITRE Caldera, ATT&CK heatmap | ⬜ planned |
 | 5 | Gap correlation, remediation, re-test loop, reports | ⬜ planned |
 | 6 | Ditto Copilot (AI layer) + MCP server | ⬜ planned |
+| 6.5 | Console UI design system and visual pass ([ADR 0013](docs/adr/0013-functionality-before-visual-design.md)) | ⬜ planned |
 | 7 | Public website, docs, demo mode, polish | ⬜ planned |
 | 8 | Self pen-test, signed releases, `v2.0.0` | ⬜ planned |
 
