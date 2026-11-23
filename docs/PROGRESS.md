@@ -2,7 +2,7 @@
 
 > Read this first at the start of every session (per `CLAUDE.md`). Then `docs/BLOCKERS.md` and `docs/OWNER_TODO.md`.
 
-**Current phase:** 1 (Walking skeleton) — complete. Phase 2 (collector and real twin) starting; the real `LabProvider` work within it is owner-blocked (see `docs/OWNER_TODO.md` items 6–7), so the collector is the active front.
+**Current phase:** 2 (collector and real twin) — in progress. The Go host collector exists and has been run for real against this machine; the `LabProvider` work within Phase 2 is still owner-blocked (see `docs/OWNER_TODO.md` items 6–7).
 **Last updated:** 2026-11-23.
 
 ## Phase 0 checklist
@@ -45,6 +45,18 @@
 
 Phase 1 is otherwise complete: the full journey (login → create a fake twin → watch its build → start/stop/destroy it) works end to end in a real browser against the real API, matching the phase's acceptance criterion. Assets/Snapshots upload and 2FA are deliberately deferred past Phase 1, not blocking it — see the two items above.
 
+## Phase 2 checklist
+
+- [x] Go host collector (`services/collector`, its own module — a separate deployable binary, same pattern as `services/api`): `--consent`/`--dry-run` gating (collection never happens without explicit consent; `--dry-run` shows the full manifest and touches nothing), a `Collector` interface with one implementation per category so a category's failure is isolated and reported as `error` (never a default value — the exact class of defect v1 shipped, MASTER_PLAN §2.3 #3), canonical JSON output with a SHA-256 digest, and a local pseudonymisation map (`internal/pseudonymise`) that never leaves the machine.
+  - **Categories implemented so far:** `os.version` (registry read via `reg.exe`), `services` (via `Get-Service`), `firewall.profiles` (via `Get-NetFirewallProfile`), `defender.status` (via `Get-MpComputerStatus`). This is a deliberate subset of MASTER_PLAN §5.10's full L1 list, not all of it — **remaining categories, not yet built:** hotfixes, audit policy (`auditpol`), policy registry keys beyond `CurrentVersion`, scheduled tasks, local users/groups, installed software + versions, optional features, BitLocker/Secure Boot/TPM/VBS/HVCI/Credential Guard/LSA protection state, SChannel/RDP/WinRM/PowerShell-logging settings, NICs/listening ports/DNS, shares, AppLocker/WDAC policy presence, and firewall *rules* (only profile-level state is collected so far). Each is meant to be added the same way: a small `Collector` behind an interface, golden-tested.
+  - **Not yet built:** code signing (cosign/minisign) of the output, fuzz tests for the registry-output parser (golden tests exist; fuzzing is tracked separately), the `snapshot.schema.json` versioned JSON Schema file (the Go struct is the only source of truth right now), and the optional `--upload URL` path (there is no snapshot-upload API endpoint yet — see the Assets/Snapshots item in the Phase 1 checklist above).
+  - **Verified for real, not just unit-tested:** built and run against this actual Windows host (read-only, via WSL2 interop calling `reg.exe`/`powershell.exe` — the collector targets native Windows first, per MASTER_PLAN §5.10, and this is the dev-loop workaround documented below, same as every other Go binary on this machine). Real output: genuine OS build info, 329 real services, 3 real firewall profiles, real Defender status — and `--pseudonymise` correctly replaced the real hostname with a stable placeholder, with the reverse map written to a separate, permission-restricted (0600) local file.
+  - CI: `services/collector` now has its own build/vet/test/govulncheck steps in `ci.yml`/`security.yml`, parallel to `services/api`'s.
+- [ ] Hyper-V `LabProvider`, mTLS lab gateway, twin-agent enrolment — **owner-blocked**, see `docs/OWNER_TODO.md` items 6–7 (Windows evaluation image/VHDX decision, Wazuh hardware layout decision) and the need for a real Hyper-V-capable host to build/test against.
+- [ ] `ApplyConfig` from snapshot + re-collect + Fidelity Score — depends on the above.
+- [ ] Twin detail UI (fidelity ring, config diff, resource metrics) — depends on the above.
+- [ ] Assets/Snapshots upload endpoint so a collector's real output can become a real `snapshot_id` a twin is built from (currently any UUID is accepted unvalidated, per the Phase 1 checklist).
+
 ## Important environment note (read before running Go tests on this Windows host)
 
 Running a freshly-built Go test binary directly on this Windows machine is blocked by a host **Application Control policy** ("An Application Control policy has blocked this file") — this is outside the project directory and not something this automation can or should change (MASTER_PLAN §0.5.3.2). **Workaround that works and was used to verify Phase 0:** run Go inside the existing WSL2 **Ubuntu** distro (already present on this machine), where `go build`/`go test` execute normally. Go 1.26.3 was installed there under `~/sdk/go` (user-space, no `sudo`, consistent with §0.5.3.2's allowance for installing dev dependencies inside a WSL2 sandbox). Example:
@@ -83,11 +95,12 @@ Full manual E2E pass in a real browser, against the real Go API (not a mock), wi
 
 ## Next action (Phase 2: collector and real twin)
 
-Phase 2's real `LabProvider` (Hyper-V) work is **owner-blocked**: it needs a decision on a Windows 11 evaluation image/VHDX and a Wazuh hardware-layout decision (`docs/OWNER_TODO.md` items 6–7), plus a real Hyper-V-capable Windows host to build and test against, neither of which this automation can resolve on its own. The collector, by contrast, is self-contained Go code that runs against the actual host and needs neither — it's the active front:
+Phase 2's real `LabProvider` (Hyper-V) work is still **owner-blocked**: it needs a decision on a Windows 11 evaluation image/VHDX and a Wazuh hardware-layout decision (`docs/OWNER_TODO.md` items 6–7), plus a real Hyper-V-capable host to build and test against. The collector (self-contained, needs neither) now exists with four of the ~16 L1 categories implemented and verified for real against this host — see the Phase 2 checklist above for exactly which, and which remain.
 
-1. Go collector (replaces `scripts/config_collector.ps1` from v1): consent prompt, a manifest of exactly what it gathers, dry-run mode, L1 categories (OS/patch level, services, firewall profiles/rules, Defender config, local users/groups without hashes, installed software — MASTER_PLAN §4.3/§5.10), golden-data unit tests, pseudonymisation of hostnames/users/IPs before anything is exported. Must not repeat v1's defects (MASTER_PLAN §2.3 #3: hardcoded `firewall.enabled = true`) — every value is a real read, with evidence.
-2. Once the collector exists: an Assets/Snapshots upload handler (schema validation, signature check, content-addressed storage) so a real snapshot can replace the synthetic `snapshot_id` twins currently accept unvalidated.
-3. Hyper-V `LabProvider`, mTLS lab gateway, twin-agent enrolment, `ApplyConfig` + re-collect for the Fidelity Score — blocked on the owner items above; do not start without them (building against an assumed image/licensing setup risks throwaway work).
-4. River queue, MinIO (`CD_BLOB_BACKEND=s3`) — add to `deploy/compose/dev.yml` once snapshot upload storage or async twin builds actually need them.
-5. Branch protection on `main` stays on `docs/OWNER_TODO.md` (item 4) — current `gh` token scope doesn't include repo-admin.
+1. More collector categories (same pattern as the four that exist: a `Collector` behind an interface, golden-tested): hotfixes, audit policy, local users/groups, installed software, the BitLocker/Secure Boot/TPM/VBS/HVCI/Credential Guard/LSA group, SChannel/RDP/WinRM/PowerShell-logging settings, NICs/ports/DNS, shares, AppLocker/WDAC, and firewall *rules* (not just profile state). Pick these up incrementally — there's no requirement to do all of them before anything else in Phase 2 proceeds.
+2. An Assets/Snapshots upload handler (schema validation, signature check, content-addressed storage) so a real collector snapshot can replace the synthetic `snapshot_id` twins currently accept unvalidated.
+3. Code-sign the collector's output (cosign/minisign) and write `snapshot.schema.json` as the versioned JSON Schema source of truth (currently the Go struct is the only definition).
+4. Hyper-V `LabProvider`, mTLS lab gateway, twin-agent enrolment, `ApplyConfig` + re-collect for the Fidelity Score — blocked on the owner items above; do not start without them (building against an assumed image/licensing setup risks throwaway work).
+5. River queue, MinIO (`CD_BLOB_BACKEND=s3`) — add to `deploy/compose/dev.yml` once snapshot upload storage or async twin builds actually need them.
+6. Branch protection on `main` stays on `docs/OWNER_TODO.md` (item 4) — current `gh` token scope doesn't include repo-admin.
 6. TOTP and WebAuthn passkeys (deferred within Phase 1, see checklist above) — pick up whenever convenient; nothing downstream depends on them yet.

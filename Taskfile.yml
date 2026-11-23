@@ -2,6 +2,7 @@ version: "3"
 
 vars:
   GO_API_DIR: services/api
+  GO_COLLECTOR_DIR: services/collector
 
 tasks:
   default:
@@ -28,11 +29,18 @@ tasks:
     desc: Build the Go binaries and the web app.
     cmds:
       - task: build:api
+      - task: build:collector
       - task: build:web
 
   build:api:
     desc: Build all Go binaries.
     dir: "{{.GO_API_DIR}}"
+    cmds:
+      - go build ./...
+
+  build:collector:
+    desc: Build the host collector binary.
+    dir: "{{.GO_COLLECTOR_DIR}}"
     cmds:
       - go build ./...
 
@@ -42,14 +50,34 @@ tasks:
       - pnpm --filter @cyberditto/web build
 
   test:
-    desc: Run Go unit tests with race detection.
+    desc: Run Go unit tests with race detection (api + collector).
+    cmds:
+      - task: test:api
+      - task: test:collector
+
+  test:api:
     dir: "{{.GO_API_DIR}}"
     cmds:
       - go test ./... -race -count=1
 
+  test:collector:
+    dir: "{{.GO_COLLECTOR_DIR}}"
+    cmds:
+      - go test ./... -race -count=1
+
   vet:
-    desc: Run go vet.
+    desc: Run go vet (api + collector).
+    cmds:
+      - task: vet:api
+      - task: vet:collector
+
+  vet:api:
     dir: "{{.GO_API_DIR}}"
+    cmds:
+      - go vet ./...
+
+  vet:collector:
+    dir: "{{.GO_COLLECTOR_DIR}}"
     cmds:
       - go vet ./...
 

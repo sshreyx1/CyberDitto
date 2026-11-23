@@ -39,3 +39,6 @@ jobs:
         run: |
           go install golang.org/x/vuln/cmd/govulncheck@latest
           govulncheck ./...
+      - name: govulncheck (collector)
+        working-directory: services/collector
+        run: govulncheck ./...

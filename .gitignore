@@ -40,6 +40,10 @@ coverage.html
 fixtures/real/
 *.snapshot.json
 !fixtures/**/*.json
+# services/collector's real output and its local pseudonymisation map
+# (the reversible value<->placeholder map for whichever machine ran it —
+# never meant to be shared, let alone committed).
+*-pseudonymise-map.json
 
 # --- OS / editor ---
 .DS_Store
