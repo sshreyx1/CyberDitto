@@ -65,6 +65,7 @@ func NewRouter(deps Deps) http.Handler {
 	handler = csrfOriginCheck(deps.AllowedOrigins)(handler)
 	handler = limitRequestBody(handler)
 	handler = securityHeaders(handler)
+	handler = cors(deps.AllowedOrigins)(handler)
 	return handler
 }
 
