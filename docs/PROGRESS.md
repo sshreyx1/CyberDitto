@@ -2,8 +2,8 @@
 
 > Read this first at the start of every session (per `CLAUDE.md`). Then `docs/BLOCKERS.md` and `docs/OWNER_TODO.md`.
 
-**Current phase:** 1 (Walking skeleton) — in progress. IAM (auth, RBAC, hash-chained audit log) is built and verified against a real Postgres; HTTP handlers/middleware, the `fake` LabProvider, and the console shell are next.
-**Last updated:** 2026-11-11.
+**Current phase:** 1 (Walking skeleton) — complete. Phase 2 (collector and real twin) starting; the real `LabProvider` work within it is owner-blocked (see `docs/OWNER_TODO.md` items 6–7), so the collector is the active front.
+**Last updated:** 2026-11-23.
 
 ## Phase 0 checklist
 
@@ -35,13 +35,15 @@
 - [x] Adapters: `internal/adapters/postgres` (`IAMRepo`, `AuditRepo` — the audit repo takes a `pg_advisory_xact_lock` per workspace so the hash chain can't fork under concurrent writers), `internal/adapters/argon2` (Argon2id hasher, OWASP-baseline params, unit-tested), `internal/adapters/token` (256-bit session tokens)
 - [x] **Real integration tests, not fabricated**: `internal/adapters/postgres/integration_test.go` (build tag `integration`) runs Setup→Login→Authenticate→Logout, cross-workspace RLS isolation, and audit hash-chain verification against the actual dockerized Postgres — all passing. `ci.yml`'s `go` job now runs a `postgres:18.6-alpine` service container and executes these in CI too.
 - [x] HTTP transport: `GET /healthz`, `GET /api/v1/auth/setup-status`, `POST /api/v1/auth/{setup,login,logout}`, `GET /api/v1/me`; session-cookie middleware (`__Host-` prefix when `CD_ENV≠dev`, httpOnly, SameSite=Lax), Origin-based CSRF check on state-changing methods, 1 MiB request body cap, `requireCapability()` as the single authZ checkpoint (not yet exercised by a real mutating route — Assets/Twins handlers will be the first). `api/openapi.yaml` updated to match. **Verified** with fast unit tests against new in-memory `internal/adapters/fake` repos (`fake.IAMRepo`/`fake.AuditRepo`, reusing the real domain hash-chain logic) — full setup→login→/me→logout flow, wrong-password/unknown-email giving the same response, double-setup rejection, session-cookie flags, and a cross-origin CSRF rejection. `cmd/api/main.go` wires the real Postgres adapters.
-- [ ] Rate limiting on `/auth/login` and `/auth/setup` — not built yet (tracked here, not forgotten; needed before this is internet-facing)
-- [ ] `fake` LabProvider + twin lifecycle state machine + SSE progress events — not started (the `fake.IAMRepo`/`fake.AuditRepo` added above are the first instance of the `internal/adapters/fake` package the LabProvider fake will also live in)
-- [ ] Console shell in `apps/web` (layout, nav, auth pages) — not started
+- [x] Rate limiting on `/auth/login` and `/auth/setup`: in-memory sliding-window limiter (`internal/transport/http/ratelimit.go`), 10 attempts/minute, shared budget across both routes keyed by caller IP (deliberately not `X-Forwarded-For` — nothing establishes a trusted proxy yet). Single-instance only; revisit before running more than one control-plane replica. Unit-tested, including the shared-budget behaviour.
+- [x] `fake` LabProvider + twin lifecycle state machine + SSE progress events: `internal/domain/twin` (pure state machine mirroring the `twins` table's CHECK constraint), `internal/adapters/fake.LabProvider` (timer-driven build simulation) + `fake.TwinRepo` (in-memory — Phase 1's ask was explicitly the fake provider, not real persistence; that's Phase 2), `internal/app/twins.Service` (create/start/stop/destroy, append-only event log, in-process pub/sub for live SSE). HTTP transport: create/list/get/start/stop/destroy plus `GET .../events` (SSE, replays recorded events then streams live, deduplicated by sequence). All unit- and integration-tested, including a real SSE stream read in a test.
+- [x] Console shell in `apps/web`: hand-written typed API client (`lib/api.ts`), `/setup` and `/login` pages, a `(console)` route group with a nav layout + session gate, and a `/twins` page (create, list, live SSE build log, start/stop/destroy). **Verified end to end in a real browser** against the actual Go API (fake lab provider) and a throwaway Postgres container: first-run setup → login → create twin → watch live SSE progress to Ready → start → stop → destroy → logout → unauthenticated visit to `/twins` redirects to `/login`. No CSP or CORS console errors during any of it.
+- [x] **CORS** (not originally itemised here, but required for the above to work at all): explicit allow-list, credentialed, no wildcard (`internal/transport/http/cors.go`) — there was no CORS support before this, which would have silently broken every browser call from the web app's origin to the API's.
+- [x] The first HTTP-level authZ-matrix test (every **twins** route × every role), driven through the real middleware chain now that a real capability-gated route exists to exercise it against (`internal/transport/http/twin_handlers_test.go`). The route × role matrix grows as more capability-gated routes (Assets, membership management, emulation/remediation) land.
 - [ ] TOTP, WebAuthn passkeys — deliberately deferred within Phase 1: password + Argon2id + sessions + RBAC + audit is the security-critical core (directly fixes the v1 defects in MASTER_PLAN §2.3 #1-2) and is built and tested first; 2FA layers on top without changing what's already verified. Tracked here, not forgotten.
-- [ ] Assets/Snapshots upload + schema validation + signature check (fixture snapshots) — schema exists (`assets`, `snapshots` tables + queries); upload handler not built yet
-- [ ] AuthZ-matrix tests exist at the domain level (`rbac_test.go`); the HTTP-route × role matrix (MASTER_PLAN §9.4) lands once handlers exist
-- [ ] e2e: login → add asset → build fake twin → watch progress — depends on the above
+- [ ] Assets/Snapshots upload + schema validation + signature check (fixture snapshots) — schema exists (`assets`, `snapshots` tables + queries); upload handler not built yet. Twins currently accept any UUID as `snapshot_id` without validating it against a real snapshot — a known, documented gap until this lands.
+
+Phase 1 is otherwise complete: the full journey (login → create a fake twin → watch its build → start/stop/destroy it) works end to end in a real browser against the real API, matching the phase's acceptance criterion. Assets/Snapshots upload and 2FA are deliberately deferred past Phase 1, not blocking it — see the two items above.
 
 ## Important environment note (read before running Go tests on this Windows host)
 
@@ -75,12 +77,17 @@ GitHub Actions (Linux runners) are unaffected by this and are the authoritative 
 
 - **`CODE_OF_CONDUCT.md` and `CONTRIBUTING.md` removed.** This is a solo portfolio project, not one accepting outside contributions, and the all-rights-reserved license already makes that explicit — a contributor workflow and conduct policy for a project that doesn't take PRs was dead weight. `README.md` rewritten to lead with product/architecture/security content instead of repo-hygiene boilerplate (diagrams reused from `docs/MASTER_PLAN.md §5`; no screenshots yet since there's no real UI to show honestly — the README's own Status section says so directly).
 
-## Next action
+## Phase 1 verification (2026-11-23)
 
-1. HTTP transport layer: `POST /api/v1/auth/setup`, `/auth/login`, `/auth/logout`, `GET /api/v1/me`, session-cookie middleware (httpOnly/Secure/SameSite, `__Host-` prefix), CSRF protection on state-changing requests, rate limiting on auth endpoints, wire into `cmd/api/main.go` (DB pool, services, router). Update `api/openapi.yaml` with these paths.
-2. HTTP-level authZ-matrix tests (every route × every role, table-driven, per MASTER_PLAN §9.4) once the handlers exist.
-3. `fake` `LabProvider` with the twin lifecycle state machine + SSE progress events (River queue not strictly required yet for a `fake` provider — evaluate when wiring it whether to introduce River now or with the first real background job).
-4. Console shell in `apps/web` (layout, nav, generated API client — `oapi-codegen`/`openapi-typescript` codegen is still a placeholder in `Taskfile.yml`'s `gen` task — auth pages, Assets/Twins pages).
-5. River queue, MinIO (for `CD_BLOB_BACKEND=s3`) — add to `deploy/compose/dev.yml` when the first feature actually needs them (snapshot upload storage, async twin builds).
-6. Branch protection on `main` stays on `docs/OWNER_TODO.md` (item 4) — current `gh` token scope doesn't include repo-admin.
-7. TOTP and WebAuthn passkeys (deferred within Phase 1, see checklist above).
+Full manual E2E pass in a real browser, against the real Go API (not a mock), with a throwaway Postgres container (migrated, then discarded — the persistent dev volume's leftover test-fixture data was left untouched rather than truncated): first-run setup → login → create a twin → watch the fake provider's build (imaging → provisioning → applying → verifying → ready) stream live over SSE → start → stop → destroy → logout → confirmed an unauthenticated visit to `/twins` redirects to `/login`. Zero CSP or CORS errors in the browser console throughout. `go build/vet/test -race` and `pnpm typecheck/build` both clean on everything touched this session.
+
+## Next action (Phase 2: collector and real twin)
+
+Phase 2's real `LabProvider` (Hyper-V) work is **owner-blocked**: it needs a decision on a Windows 11 evaluation image/VHDX and a Wazuh hardware-layout decision (`docs/OWNER_TODO.md` items 6–7), plus a real Hyper-V-capable Windows host to build and test against, neither of which this automation can resolve on its own. The collector, by contrast, is self-contained Go code that runs against the actual host and needs neither — it's the active front:
+
+1. Go collector (replaces `scripts/config_collector.ps1` from v1): consent prompt, a manifest of exactly what it gathers, dry-run mode, L1 categories (OS/patch level, services, firewall profiles/rules, Defender config, local users/groups without hashes, installed software — MASTER_PLAN §4.3/§5.10), golden-data unit tests, pseudonymisation of hostnames/users/IPs before anything is exported. Must not repeat v1's defects (MASTER_PLAN §2.3 #3: hardcoded `firewall.enabled = true`) — every value is a real read, with evidence.
+2. Once the collector exists: an Assets/Snapshots upload handler (schema validation, signature check, content-addressed storage) so a real snapshot can replace the synthetic `snapshot_id` twins currently accept unvalidated.
+3. Hyper-V `LabProvider`, mTLS lab gateway, twin-agent enrolment, `ApplyConfig` + re-collect for the Fidelity Score — blocked on the owner items above; do not start without them (building against an assumed image/licensing setup risks throwaway work).
+4. River queue, MinIO (`CD_BLOB_BACKEND=s3`) — add to `deploy/compose/dev.yml` once snapshot upload storage or async twin builds actually need them.
+5. Branch protection on `main` stays on `docs/OWNER_TODO.md` (item 4) — current `gh` token scope doesn't include repo-admin.
+6. TOTP and WebAuthn passkeys (deferred within Phase 1, see checklist above) — pick up whenever convenient; nothing downstream depends on them yet.
