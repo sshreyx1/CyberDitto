@@ -36,6 +36,7 @@ type Querier interface {
 	InsertFinding(ctx context.Context, arg InsertFindingParams) error
 	InsertTwinEvent(ctx context.Context, arg InsertTwinEventParams) (TwinEvent, error)
 	ListAssessments(ctx context.Context, arg ListAssessmentsParams) ([]Assessment, error)
+	ListAssessmentsForAsset(ctx context.Context, arg ListAssessmentsForAssetParams) ([]Assessment, error)
 	ListAssets(ctx context.Context, workspaceID uuid.UUID) ([]Asset, error)
 	ListAuditEvents(ctx context.Context, arg ListAuditEventsParams) ([]AuditEvent, error)
 	ListFindings(ctx context.Context, arg ListFindingsParams) ([]Finding, error)

@@ -32,6 +32,8 @@ var authzRoutes = []routeCase{
 	{http.MethodPost, "/api/v1/assessments", iam.CapRunAssessment},
 	{http.MethodGet, "/api/v1/assessments", iam.CapViewAssessments},
 	{http.MethodGet, "/api/v1/assessments/{id}", iam.CapViewAssessments},
+	{http.MethodGet, "/api/v1/assessments/{id}/diff", iam.CapViewAssessments},
+	{http.MethodGet, "/api/v1/assets/{id}/assessments", iam.CapViewAssessments},
 	{http.MethodGet, "/api/v1/controls", iam.CapViewAssessments},
 	{http.MethodPost, "/api/v1/twins", iam.CapManageTwins},
 	{http.MethodGet, "/api/v1/twins", iam.CapViewTwins},

@@ -180,6 +180,54 @@ func (q *Queries) ListAssessments(ctx context.Context, arg ListAssessmentsParams
 	return items, nil
 }
 
+const listAssessmentsForAsset = `-- name: ListAssessmentsForAsset :many
+SELECT a.id, a.workspace_id, a.snapshot_id, a.twin_id, a.engine, a.engine_version, a.posture_score, a.passed, a.failed, a.unknown, a.not_applicable, a.created_by, a.created_at FROM assessments a
+JOIN snapshots s ON s.id = a.snapshot_id
+WHERE s.asset_id = $1 AND a.workspace_id = $2
+ORDER BY a.created_at DESC
+LIMIT $3
+`
+
+type ListAssessmentsForAssetParams struct {
+	AssetID     uuid.UUID `json:"asset_id"`
+	WorkspaceID uuid.UUID `json:"workspace_id"`
+	Limit       int32     `json:"limit"`
+}
+
+func (q *Queries) ListAssessmentsForAsset(ctx context.Context, arg ListAssessmentsForAssetParams) ([]Assessment, error) {
+	rows, err := q.db.Query(ctx, listAssessmentsForAsset, arg.AssetID, arg.WorkspaceID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Assessment
+	for rows.Next() {
+		var i Assessment
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorkspaceID,
+			&i.SnapshotID,
+			&i.TwinID,
+			&i.Engine,
+			&i.EngineVersion,
+			&i.PostureScore,
+			&i.Passed,
+			&i.Failed,
+			&i.Unknown,
+			&i.NotApplicable,
+			&i.CreatedBy,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listFindings = `-- name: ListFindings :many
 SELECT id, workspace_id, assessment_id, control_id, title, category, severity, status, observed, expected, reason, remediation, techniques FROM findings WHERE assessment_id = $1 AND workspace_id = $2 ORDER BY control_id
 `

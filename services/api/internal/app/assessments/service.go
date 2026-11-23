@@ -122,3 +122,33 @@ func (s *Service) List(ctx context.Context, workspaceID uuid.UUID) ([]compliance
 func (s *Service) Get(ctx context.Context, workspaceID, id uuid.UUID) (compliance.Assessment, error) {
 	return s.repo.Get(ctx, workspaceID, id)
 }
+
+// ListForAsset is an asset's assessment history (every snapshot version,
+// snapshot- and twin-targeted runs alike), newest first.
+func (s *Service) ListForAsset(ctx context.Context, workspaceID, assetID uuid.UUID) ([]compliance.Assessment, error) {
+	if _, err := s.assets.GetAsset(ctx, workspaceID, assetID); err != nil {
+		return nil, err
+	}
+	return s.repo.ListForAsset(ctx, workspaceID, assetID, 100)
+}
+
+// ErrEngineMismatch: diffs only make sense between assessments produced by
+// the same control set; otherwise a "change" could just be a control
+// whose definition changed.
+var ErrEngineMismatch = errors.New("assessments: can only compare assessments from the same engine version")
+
+// Diff compares an earlier assessment with a later one.
+func (s *Service) Diff(ctx context.Context, workspaceID, beforeID, afterID uuid.UUID) (before, after compliance.Assessment, changes []compliance.Change, err error) {
+	if before, err = s.repo.Get(ctx, workspaceID, beforeID); err != nil {
+		return
+	}
+	if after, err = s.repo.Get(ctx, workspaceID, afterID); err != nil {
+		return
+	}
+	if before.Engine != after.Engine || before.EngineVersion != after.EngineVersion {
+		err = ErrEngineMismatch
+		return
+	}
+	changes = compliance.Diff(before, after)
+	return
+}

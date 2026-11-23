@@ -13,5 +13,7 @@ type AssessmentRepository interface {
 	Create(ctx context.Context, a compliance.Assessment, createdBy uuid.UUID) (compliance.Assessment, error)
 	// List returns summaries (Findings empty), newest first.
 	List(ctx context.Context, workspaceID uuid.UUID, limit int) ([]compliance.Assessment, error)
+	// ListForAsset returns summaries for every snapshot of one asset.
+	ListForAsset(ctx context.Context, workspaceID, assetID uuid.UUID, limit int) ([]compliance.Assessment, error)
 	Get(ctx context.Context, workspaceID, id uuid.UUID) (compliance.Assessment, error)
 }

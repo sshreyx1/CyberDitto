@@ -31,7 +31,7 @@ func newFixture(t *testing.T, docPath string) fixture {
 	ws := uuid.New()
 	a, _ := assets.CreateAsset(context.Background(), ws, "host")
 	snap, _ := assets.CreateSnapshot(context.Background(), ws, a.ID, data, "sha")
-	svc := NewService(fake.NewAssessmentRepo(), assets, twins, fake.NewAuditRepo())
+	svc := NewService(fake.NewAssessmentRepo(assets), assets, twins, fake.NewAuditRepo())
 	svc.now = func() time.Time { return time.Date(2026, 11, 23, 12, 0, 0, 0, time.UTC) }
 	return fixture{svc: svc, twins: twins, ws: ws, actor: uuid.New(), snapshotID: snap.ID}
 }

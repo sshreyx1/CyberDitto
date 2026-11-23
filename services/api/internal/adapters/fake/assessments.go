@@ -10,14 +10,34 @@ import (
 	"github.com/sshreyx1/cyberditto/services/api/internal/domain/compliance"
 )
 
-// AssessmentRepo is an in-memory ports.AssessmentRepository.
+// AssessmentRepo is an in-memory ports.AssessmentRepository. It reads the
+// fake AssetRepo to resolve a snapshot's asset, standing in for the SQL
+// join the Postgres adapter does.
 type AssessmentRepo struct {
-	mu   sync.Mutex
-	rows map[uuid.UUID]compliance.Assessment
+	mu     sync.Mutex
+	rows   map[uuid.UUID]compliance.Assessment
+	assets *AssetRepo
 }
 
-func NewAssessmentRepo() *AssessmentRepo {
-	return &AssessmentRepo{rows: map[uuid.UUID]compliance.Assessment{}}
+func NewAssessmentRepo(assets *AssetRepo) *AssessmentRepo {
+	return &AssessmentRepo{rows: map[uuid.UUID]compliance.Assessment{}, assets: assets}
+}
+
+func (r *AssessmentRepo) ListForAsset(ctx context.Context, workspaceID, assetID uuid.UUID, limit int) ([]compliance.Assessment, error) {
+	all, err := r.List(ctx, workspaceID, len(r.rows)+1)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]compliance.Assessment, 0)
+	for _, a := range all {
+		if s, err := r.assets.GetSnapshot(ctx, workspaceID, a.SnapshotID); err == nil && s.AssetID == assetID {
+			out = append(out, a)
+		}
+	}
+	if len(out) > limit {
+		out = out[:limit]
+	}
+	return out, nil
 }
 
 func (r *AssessmentRepo) Create(ctx context.Context, a compliance.Assessment, createdBy uuid.UUID) (compliance.Assessment, error) {

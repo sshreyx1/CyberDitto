@@ -135,6 +135,67 @@ func (h *assessmentHandlers) get(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, assessmentResponse(a, true))
 }
 
+func (h *assessmentHandlers) listForAsset(w http.ResponseWriter, r *http.Request) {
+	ac := authFromContext(r.Context())
+	id, ok := pathUUID(w, r, "id")
+	if !ok {
+		return
+	}
+	as, err := h.svc.ListForAsset(r.Context(), ac.Membership.WorkspaceID, id)
+	if err != nil {
+		if errors.Is(err, ports.ErrNotFound) {
+			writeProblem(w, http.StatusNotFound, "asset not found", "")
+			return
+		}
+		writeProblem(w, http.StatusInternalServerError, "request failed", "")
+		return
+	}
+	out := make([]map[string]any, 0, len(as))
+	for _, a := range as {
+		out = append(out, assessmentResponse(a, false))
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"assessments": out})
+}
+
+// diff compares assessment {id} (the later one) against ?against= (the
+// earlier one).
+func (h *assessmentHandlers) diff(w http.ResponseWriter, r *http.Request) {
+	ac := authFromContext(r.Context())
+	afterID, ok := pathUUID(w, r, "id")
+	if !ok {
+		return
+	}
+	beforeID, err := uuid.Parse(r.URL.Query().Get("against"))
+	if err != nil {
+		writeProblem(w, http.StatusBadRequest, "invalid against", "?against= must be the earlier assessment's UUID")
+		return
+	}
+	before, after, changes, err := h.svc.Diff(r.Context(), ac.Membership.WorkspaceID, beforeID, afterID)
+	if err != nil {
+		switch {
+		case errors.Is(err, ports.ErrNotFound):
+			writeProblem(w, http.StatusNotFound, "assessment not found", "")
+		case errors.Is(err, appassessments.ErrEngineMismatch):
+			writeProblem(w, http.StatusConflict, "not comparable", err.Error())
+		default:
+			writeProblem(w, http.StatusInternalServerError, "request failed", "")
+		}
+		return
+	}
+	out := make([]map[string]any, 0, len(changes))
+	for _, c := range changes {
+		out = append(out, map[string]any{
+			"control_id": c.ControlID, "title": c.Title, "severity": c.Severity,
+			"before": c.Before, "after": c.After, "direction": c.Direction(),
+		})
+	}
+	writeJSON(w, http.StatusOK, map[string]any{
+		"before":  assessmentResponse(before, false),
+		"after":   assessmentResponse(after, false),
+		"changes": out,
+	})
+}
+
 // controls lists the catalog: what each control checks, its weight, and
 // the ATT&CK techniques it relates to.
 func (h *assessmentHandlers) controls(w http.ResponseWriter, r *http.Request) {

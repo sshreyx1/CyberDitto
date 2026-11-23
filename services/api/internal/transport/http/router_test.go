@@ -33,7 +33,7 @@ func testDepsWithIAMRepo() (Deps, *fake.IAMRepo) {
 		IAM:            appiam.NewService(iamRepo, audit, argon2.New(), token.New()),
 		Assets:         appassets.NewService(assetRepo, audit),
 		Twins:          apptwins.NewService(twinRepo, assetRepo, fake.LabProvider{StepDelay: time.Millisecond}, "fake", audit),
-		Assessments:    appassessments.NewService(fake.NewAssessmentRepo(), assetRepo, twinRepo, audit),
+		Assessments:    appassessments.NewService(fake.NewAssessmentRepo(assetRepo), assetRepo, twinRepo, audit),
 		Secure:         false,
 		AllowedOrigins: []string{"http://localhost:3000"},
 	}, iamRepo

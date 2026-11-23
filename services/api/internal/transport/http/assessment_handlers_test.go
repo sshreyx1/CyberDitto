@@ -98,6 +98,77 @@ func TestAssessments_Validation(t *testing.T) {
 	}
 }
 
+func firewallDoc(enabled int) []byte {
+	return []byte(`{"schema_version":"1","hostname":"HOST-t","collected_at":"2026-11-23T06:00:00Z","fields":{"firewall.profiles":{"source":"firewall.profiles","collected_at":"2026-11-23T06:00:00Z","value":[{"Name":"Public","Enabled":` +
+		map[int]string{0: "0", 1: "1"}[enabled] + `,"DefaultInboundAction":4,"DefaultOutboundAction":2}]}}}`)
+}
+
+func TestAssessments_HistoryAndDiff(t *testing.T) {
+	router, cookies := setupAs(t, iam.RoleOwner, true)
+	rec := doJSON(t, router, http.MethodPost, "/api/v1/assets", createAssetRequest{Name: "laptop"}, cookies)
+	var asset struct {
+		ID string `json:"id"`
+	}
+	_ = json.NewDecoder(rec.Body).Decode(&asset)
+
+	assess := func(doc []byte) string {
+		t.Helper()
+		rec := doRaw(t, router, http.MethodPost, "/api/v1/assets/"+asset.ID+"/snapshots", doc, nil, cookies)
+		var s struct {
+			ID string `json:"id"`
+		}
+		_ = json.NewDecoder(rec.Body).Decode(&s)
+		rec = doJSON(t, router, http.MethodPost, "/api/v1/assessments", runAssessmentRequest{SnapshotID: s.ID}, cookies)
+		if rec.Code != http.StatusCreated {
+			t.Fatalf("assess status = %d, body = %s", rec.Code, rec.Body.String())
+		}
+		var a assessmentBody
+		_ = json.NewDecoder(rec.Body).Decode(&a)
+		return a.ID
+	}
+	v1 := assess(firewallDoc(0)) // firewall off: CD-FW-001 fails
+	v2 := assess(firewallDoc(1)) // fixed: CD-FW-001 passes
+
+	rec = doJSON(t, router, http.MethodGet, "/api/v1/assets/"+asset.ID+"/assessments", nil, cookies)
+	var hist struct {
+		Assessments []assessmentBody `json:"assessments"`
+	}
+	_ = json.NewDecoder(rec.Body).Decode(&hist)
+	if len(hist.Assessments) != 2 {
+		t.Fatalf("history = %d assessments, want 2", len(hist.Assessments))
+	}
+
+	rec = doJSON(t, router, http.MethodGet, "/api/v1/assessments/"+v2+"/diff?against="+v1, nil, cookies)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("diff status = %d, body = %s", rec.Code, rec.Body.String())
+	}
+	var diff struct {
+		Changes []struct {
+			ControlID string `json:"control_id"`
+			Before    string `json:"before"`
+			After     string `json:"after"`
+			Direction string `json:"direction"`
+		} `json:"changes"`
+	}
+	_ = json.NewDecoder(rec.Body).Decode(&diff)
+	found := false
+	for _, c := range diff.Changes {
+		if c.ControlID == "CD-FW-001" {
+			found = true
+			if c.Before != "fail" || c.After != "pass" || c.Direction != "improved" {
+				t.Errorf("CD-FW-001 change = %+v, want fail -> pass improved", c)
+			}
+		}
+	}
+	if !found {
+		t.Fatalf("diff missing CD-FW-001: %+v", diff.Changes)
+	}
+
+	if rec := doJSON(t, router, http.MethodGet, "/api/v1/assessments/"+v2+"/diff", nil, cookies); rec.Code != http.StatusBadRequest {
+		t.Errorf("diff without ?against= status = %d, want 400", rec.Code)
+	}
+}
+
 func TestControls_ListsCatalog(t *testing.T) {
 	router, cookies := setupAs(t, iam.RoleViewer, false)
 	rec := doJSON(t, router, http.MethodGet, "/api/v1/controls", nil, cookies)

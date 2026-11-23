@@ -69,6 +69,8 @@ func NewRouter(deps Deps) http.Handler {
 	mux.Handle("POST /api/v1/assessments", requireCapability(iam.CapRunAssessment)(http.HandlerFunc(ah.run)))
 	mux.Handle("GET /api/v1/assessments", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.list)))
 	mux.Handle("GET /api/v1/assessments/{id}", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.get)))
+	mux.Handle("GET /api/v1/assessments/{id}/diff", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.diff)))
+	mux.Handle("GET /api/v1/assets/{id}/assessments", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.listForAsset)))
 	mux.Handle("GET /api/v1/controls", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.controls)))
 
 	tw := &twinHandlers{svc: deps.Twins}

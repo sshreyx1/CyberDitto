@@ -107,6 +107,23 @@ func (r *AssessmentRepo) List(ctx context.Context, workspaceID uuid.UUID, limit 
 	return out, nil
 }
 
+func (r *AssessmentRepo) ListForAsset(ctx context.Context, workspaceID, assetID uuid.UUID, limit int) ([]compliance.Assessment, error) {
+	var rows []pgdb.Assessment
+	err := withWorkspaceContext(ctx, r.pool, workspaceID, nil, func(q *pgdb.Queries) error {
+		var err error
+		rows, err = q.ListAssessmentsForAsset(ctx, pgdb.ListAssessmentsForAssetParams{AssetID: assetID, WorkspaceID: workspaceID, Limit: int32(limit)})
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	out := make([]compliance.Assessment, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, assessmentFromRow(row))
+	}
+	return out, nil
+}
+
 func (r *AssessmentRepo) Get(ctx context.Context, workspaceID, id uuid.UUID) (compliance.Assessment, error) {
 	var row pgdb.Assessment
 	var findings []pgdb.Finding

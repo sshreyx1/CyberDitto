@@ -1,22 +1,25 @@
 "use client";
 
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ChangeEvent } from "react";
-import { api, ApiError, type Asset, type SnapshotSummary } from "@/lib/api";
+import { api, ApiError, type Asset, type Assessment, type SnapshotSummary } from "@/lib/api";
 
 export default function AssetDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [asset, setAsset] = useState<Asset | null>(null);
   const [snapshots, setSnapshots] = useState<SnapshotSummary[] | null>(null);
+  const [history, setHistory] = useState<Assessment[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
-      const [a, s] = await Promise.all([api.getAsset(id), api.listSnapshots(id)]);
+      const [a, s, h] = await Promise.all([api.getAsset(id), api.listSnapshots(id), api.listAssetAssessments(id)]);
       setAsset(a);
       setSnapshots(s.snapshots);
+      setHistory(h.assessments);
     } catch (err) {
       setError(err instanceof ApiError && err.status === 404 ? "Asset not found." : "Could not load the asset.");
     }
@@ -126,6 +129,52 @@ export default function AssetDetailPage() {
                   </td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <div>
+        <h2 className="mb-2 font-medium">Assessment history</h2>
+        {history.length === 0 ? (
+          <p className="text-sm text-zinc-500">No assessments yet.</p>
+        ) : (
+          <table className="w-full text-left text-sm">
+            <thead className="text-zinc-400">
+              <tr>
+                <th className="py-1">When</th>
+                <th>Snapshot</th>
+                <th>Target</th>
+                <th>Score</th>
+                <th>Failed</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((a, i) => {
+                const previous = history[i + 1];
+                const version = snapshots?.find((s) => s.id === a.snapshot_id)?.version;
+                return (
+                  <tr key={a.id} className="border-t border-white/10">
+                    <td className="py-2">
+                      <Link href={`/assessments/${a.id}`} className="underline">
+                        {new Date(a.created_at).toLocaleString()}
+                      </Link>
+                    </td>
+                    <td>{version ? `v${version}` : "—"}</td>
+                    <td className="text-xs text-zinc-400">{a.twin_id ? "twin" : "snapshot"}</td>
+                    <td className="font-medium">{a.score ?? "n/a"}</td>
+                    <td>{a.counts.failed}</td>
+                    <td className="text-right">
+                      {previous && previous.engine_version === a.engine_version && (
+                        <Link href={`/assessments/${a.id}/diff?against=${previous.id}`} className="text-xs underline">
+                          compare with previous
+                        </Link>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

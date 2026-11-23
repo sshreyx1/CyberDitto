@@ -133,6 +133,21 @@ export interface Assessment {
   created_at: string;
 }
 
+export interface AssessmentChange {
+  control_id: string;
+  title: string;
+  severity: Severity;
+  before: FindingStatus | "";
+  after: FindingStatus | "";
+  direction: "regressed" | "improved" | "changed";
+}
+
+export interface AssessmentDiff {
+  before: Assessment;
+  after: Assessment;
+  changes: AssessmentChange[];
+}
+
 export const api = {
   setupStatus: () => request<{ initialized: boolean }>("/api/v1/auth/setup-status"),
 
@@ -173,6 +188,12 @@ export const api = {
   listAssessments: () => request<{ assessments: Assessment[] }>("/api/v1/assessments"),
 
   getAssessment: (id: string) => request<Assessment>(`/api/v1/assessments/${id}`),
+
+  listAssetAssessments: (assetId: string) =>
+    request<{ assessments: Assessment[] }>(`/api/v1/assets/${assetId}/assessments`),
+
+  diffAssessments: (afterId: string, beforeId: string) =>
+    request<AssessmentDiff>(`/api/v1/assessments/${afterId}/diff?against=${encodeURIComponent(beforeId)}`),
 
   listTwins: () => request<{ twins: Twin[] }>("/api/v1/twins"),
 
