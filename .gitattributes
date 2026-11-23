@@ -4,3 +4,8 @@
 *.sh text eol=lf
 *.sql text eol=lf
 Dockerfile text eol=lf
+
+# The embedded attack catalog is integrity-checked by SHA-256 at startup;
+# line-ending conversion on checkout would change its bytes and (correctly)
+# fail that check. Keep it byte-identical on every platform.
+services/api/internal/adapters/atomic/catalog.json -text

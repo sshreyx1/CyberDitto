@@ -1,0 +1,67 @@
+{
+  "source": "atomic-red-team",
+  "repository": "redcanaryco/atomic-red-team",
+  "commit": "a0e3f9bc69fed2fd711bd1f1aa87a40c33482fe6",
+  "commit_date": "2026-11-06",
+  "license": "MIT",
+  "tests": [
+    {"guid": "2536dee2-12fb-459a-8c37-971844fa73be", "technique": "T1003.001", "tier": "intrusive", "note": "Dumps LSASS to a file in %TEMP% with a built-in DLL; cleanup deletes the dump."},
+    {"guid": "47a539d1-61b9-4364-bf49-a68bc2a95ef0", "technique": "T1003.001", "tier": "intrusive", "note": "LSASS dump via the rdrleakdiag LOLBin."},
+    {"guid": "5c2571d0-1572-416d-9676-812e64ca9f44", "technique": "T1003.002", "tier": "intrusive", "note": "Saves SAM/SYSTEM/SECURITY hives to %TEMP%; cleanup deletes them."},
+    {"guid": "21df41be-cdd8-4695-a650-c3981113aa3c", "technique": "T1003.002", "tier": "intrusive", "note": "Exports SAM/SYSTEM/SECURITY via reg export."},
+    {"guid": "c0413fb5-33e2-40b7-9b6f-60b29f4a7a18", "technique": "T1112", "tier": "intrusive", "note": "Turns on WDigest plaintext credential caching; cleanup reverts."},
+    {"guid": "fa050f5e-bc75-4230-af73-b6fd7852cd73", "technique": "T1059.001", "tier": "intrusive", "note": "Runs an encoded PowerShell payload that only writes a marker file."},
+    {"guid": "49eb9404-5e0f-4031-a179-b40f7be385e3", "technique": "T1059.001", "tier": "intrusive", "note": "Invokes well-known offensive cmdlet names (not their implementations) to exercise AMSI/AV detection."},
+    {"guid": "95b25212-91a7-42ff-9613-124aca6845a8", "technique": "T1112", "tier": "intrusive", "note": "Disables PowerShell module logging via policy; cleanup reverts."},
+    {"guid": "01d1c6c0-faf0-408e-b368-752a02285cb2", "technique": "T1021.001", "tier": "intrusive", "note": "Turns off Network Level Authentication for RDP; cleanup reverts."},
+    {"guid": "638730e7-7aed-43dc-bf8c-8117f805f5bb", "technique": "T1218.011", "tier": "intrusive", "note": "rundll32 runs VBScript via mshtml to launch a benign command."},
+    {"guid": "58f641ea-12e3-499a-b684-44dee46bd182", "technique": "T1548.002", "tier": "intrusive", "note": "Fodhelper UAC bypass launching a benign binary; cleanup removes the hijack key."},
+    {"guid": "5073adf8-9a50-4bd9-b298-a9bd2ead8af9", "technique": "T1548.002", "tier": "intrusive", "note": "Event Viewer (mscfile) UAC bypass; cleanup removes the hijack key."},
+    {"guid": "9e8af564-53ec-407e-aaa8-3cb20c3af7f9", "technique": "T1548.002", "tier": "intrusive", "note": "Sets EnableLUA=0 (UAC off after reboot); cleanup restores it."},
+    {"guid": "e55be3fd-3521-4610-9d1a-e210e42dcf05", "technique": "T1547.001", "tier": "benign", "note": "Adds a per-user Run key pointing at a benign binary; cleanup removes it."},
+    {"guid": "554cbd88-cde1-4b56-8168-0be552eed9eb", "technique": "T1547.001", "tier": "intrusive", "note": "Adds a machine-wide RunOnceEx entry; cleanup removes it."},
+    {"guid": "42f53695-ad4a-4546-abb6-7d837f644a71", "technique": "T1053.005", "tier": "benign", "note": "Creates a one-off local scheduled task; cleanup deletes it."},
+    {"guid": "af9fd58f-c4ac-4bf2-a9ba-224b71ff25fd", "technique": "T1053.005", "tier": "benign", "note": "Creates a scheduled task via PowerShell cmdlets; cleanup deletes it."},
+    {"guid": "6657864e-0323-4206-9344-ac9cd7265a4f", "technique": "T1136.001", "tier": "intrusive", "note": "Creates a local user; cleanup deletes it."},
+    {"guid": "fda74566-a604-4581-a4cc-fbbe21d66559", "technique": "T1136.001", "tier": "intrusive", "note": "Creates a local user and adds it to Administrators; cleanup deletes it."},
+    {"guid": "1f896ce4-8070-4959-8a25-2658856a70c9", "technique": "T1543.003", "tier": "intrusive", "note": "Repoints a service binary path at a benign binary; cleanup restores the service."},
+    {"guid": "80887bec-5a9b-4efc-a81d-f83eb2eb32ab", "technique": "T1087.001", "tier": "benign", "note": "net user."},
+    {"guid": "1f454dd6-e134-44df-bebb-67de70fb6cd8", "technique": "T1069.001", "tier": "benign", "note": "net localgroup."},
+    {"guid": "66703791-c902-4560-8770-42b8a91f7667", "technique": "T1082", "tier": "benign", "note": "systeminfo and related queries."},
+    {"guid": "970ab6a1-0157-4f3f-9a73-ec4166754b23", "technique": "T1016", "tier": "benign", "note": "ipconfig, arp, nbtstat, netsh queries."},
+    {"guid": "038263cb-00f4-4b0a-98ae-0696c67e1752", "technique": "T1016", "tier": "benign", "note": "Lists firewall rules."},
+    {"guid": "c5806a4f-62b8-4900-980b-c7ec004e9908", "technique": "T1057", "tier": "benign", "note": "tasklist."}
+  ],
+  "scenarios": [
+    {
+      "id": "credential-access",
+      "name": "Credential access",
+      "description": "Tries the common ways an attacker with admin rights pulls credentials off a Windows machine: LSASS memory dumps, registry hive copies, and enabling plaintext credential caching. Exercises LSA protection, Credential Guard, and Defender.",
+      "test_guids": ["2536dee2-12fb-459a-8c37-971844fa73be", "47a539d1-61b9-4364-bf49-a68bc2a95ef0", "5c2571d0-1572-416d-9676-812e64ca9f44", "21df41be-cdd8-4695-a650-c3981113aa3c", "c0413fb5-33e2-40b7-9b6f-60b29f4a7a18"]
+    },
+    {
+      "id": "uac-bypass",
+      "name": "UAC bypass",
+      "description": "Registry-hijack UAC bypasses (fodhelper, Event Viewer) and switching UAC off. Exercises UAC configuration and detection of auto-elevation abuse.",
+      "test_guids": ["58f641ea-12e3-499a-b684-44dee46bd182", "5073adf8-9a50-4bd9-b298-a9bd2ead8af9", "9e8af564-53ec-407e-aaa8-3cb20c3af7f9"]
+    },
+    {
+      "id": "persistence",
+      "name": "Persistence",
+      "description": "Run keys, scheduled tasks, new local (admin) accounts, and service hijacking — the ways malware survives a reboot.",
+      "test_guids": ["e55be3fd-3521-4610-9d1a-e210e42dcf05", "554cbd88-cde1-4b56-8168-0be552eed9eb", "42f53695-ad4a-4546-abb6-7d837f644a71", "af9fd58f-c4ac-4bf2-a9ba-224b71ff25fd", "6657864e-0323-4206-9344-ac9cd7265a4f", "fda74566-a604-4581-a4cc-fbbe21d66559", "1f896ce4-8070-4959-8a25-2658856a70c9"]
+    },
+    {
+      "id": "defense-evasion",
+      "name": "Execution and defense evasion",
+      "description": "Encoded/fileless PowerShell, offensive cmdlet names, turning off PowerShell logging and RDP NLA, and rundll32 script proxy execution. Exercises AMSI, logging, and detection coverage.",
+      "test_guids": ["fa050f5e-bc75-4230-af73-b6fd7852cd73", "49eb9404-5e0f-4031-a179-b40f7be385e3", "95b25212-91a7-42ff-9613-124aca6845a8", "01d1c6c0-faf0-408e-b368-752a02285cb2", "638730e7-7aed-43dc-bf8c-8117f805f5bb"]
+    },
+    {
+      "id": "discovery",
+      "name": "Local discovery",
+      "description": "The reconnaissance an intruder runs first: accounts, groups, system and network configuration, firewall rules, processes. All benign; mostly a test of whether it is logged.",
+      "test_guids": ["80887bec-5a9b-4efc-a81d-f83eb2eb32ab", "1f454dd6-e134-44df-bebb-67de70fb6cd8", "66703791-c902-4560-8770-42b8a91f7667", "970ab6a1-0157-4f3f-9a73-ec4166754b23", "038263cb-00f4-4b0a-98ae-0696c67e1752", "c5806a4f-62b8-4900-980b-c7ec004e9908"]
+    }
+  ]
+}
