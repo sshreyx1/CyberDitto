@@ -315,6 +315,88 @@ paths:
       responses:
         "200":
           description: OK.
+  /api/v1/attack/catalog:
+    get:
+      operationId: getAttackCatalog
+      summary: >
+        The pinned Atomic Red Team catalog (source commit, verification
+        status, curated tests with their commands and risk tiers, scenarios,
+        run limits, and the authorisation statement) (requires
+        emulation:view).
+      responses:
+        "200":
+          description: OK.
+  /api/v1/runs:
+    post:
+      operationId: postRuns
+      summary: >
+        Start an attack-emulation run against a twin (requires
+        emulation:run, which needs the approver flag). Preflight enforces
+        the lab safety invariants; a refused run is still recorded and is
+        returned with 422 and its failed checks. The fake lab provider
+        records every test as not_executed (docs/adr/0014).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [twin_id, authorisation_acknowledged]
+              properties:
+                twin_id:
+                  type: string
+                  format: uuid
+                scenario_id:
+                  type: string
+                test_guids:
+                  type: array
+                  items:
+                    type: string
+                authorisation_acknowledged:
+                  type: boolean
+      responses:
+        "201":
+          description: Preflight passed; the run is executing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmulationRun"
+        "400":
+          description: Malformed body or unknown scenario.
+        "422":
+          description: Preflight refused the run (body is the recorded run), or the twin doesn't exist in this workspace.
+    get:
+      operationId: getRuns
+      summary: List runs, newest first (requires emulation:view).
+      responses:
+        "200":
+          description: OK.
+  /api/v1/runs/{id}:
+    get:
+      operationId: getRun
+      summary: One run with its preflight checks and per-test executions (requires emulation:view).
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmulationRun"
+        "404":
+          description: Not found.
+  /api/v1/runs/{id}/abort:
+    post:
+      operationId: postRunAbort
+      summary: The kill switch. Stops the run and reverts the twin (requires emulation:run).
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Aborted (or the final status, if it finished while stopping).
+        "409":
+          description: The run is not running.
   /api/v1/twins:
     post:
       operationId: postTwins
@@ -639,6 +721,50 @@ components:
         techniques:
           type: array
           items: {type: string}
+    EmulationRun:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        twin_id: {type: string, format: uuid}
+        scenario_id: {type: string}
+        test_guids:
+          type: array
+          items: {type: string}
+        status:
+          type: string
+          enum: [preflight_failed, running, completed, aborted, failed]
+        detail: {type: string}
+        preflight:
+          type: array
+          items:
+            type: object
+            properties:
+              id: {type: string, example: lab.isolated}
+              name: {type: string}
+              passed: {type: boolean}
+              detail: {type: string}
+        catalog_source: {type: string}
+        catalog_commit: {type: string}
+        provider: {type: string}
+        authorised_by: {type: string, format: uuid}
+        authorisation_statement: {type: string}
+        executions:
+          type: array
+          items:
+            type: object
+            properties:
+              test_guid: {type: string}
+              technique_id: {type: string}
+              test_name: {type: string}
+              risk_tier: {type: string, enum: [benign, intrusive]}
+              outcome:
+                type: string
+                enum: [blocked, detected, logged, missed, not_executed, error, skipped]
+              detail: {type: string}
+              started_at: {type: string, format: date-time}
+              finished_at: {type: string, format: date-time}
+        created_at: {type: string, format: date-time}
+        finished_at: {type: string, format: date-time, nullable: true}
     Twin:
       type: object
       required: [id, workspace_id, snapshot_id, provider, state, created_at, updated_at]

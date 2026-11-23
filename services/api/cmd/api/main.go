@@ -10,11 +10,13 @@ import (
 	"time"
 
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/argon2"
+	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/atomic"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/fake"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/postgres"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/token"
 	appassessments "github.com/sshreyx1/cyberditto/services/api/internal/app/assessments"
 	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
+	appemulation "github.com/sshreyx1/cyberditto/services/api/internal/app/emulation"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 	transporthttp "github.com/sshreyx1/cyberditto/services/api/internal/transport/http"
@@ -58,7 +60,18 @@ func main() {
 		os.Exit(1)
 	}
 	twinRepo := postgres.NewTwinRepo(pool)
-	twinsSvc := apptwins.NewService(twinRepo, assetRepo, fake.LabProvider{}, labProvider, auditRepo)
+	// ExecDelay gives each (not-)executed test a visible duration so a
+	// run's progress and the kill switch can be exercised from the console.
+	provider := &fake.LabProvider{ExecDelay: 750 * time.Millisecond}
+	twinsSvc := apptwins.NewService(twinRepo, assetRepo, provider, labProvider, auditRepo)
+
+	catalog := atomic.Load()
+	if ok, detail := catalog.Verified(); !ok {
+		// Not fatal: the API still serves everything else, and preflight
+		// refuses every run while the catalog is unverified.
+		slog.Error("attack catalog failed verification; emulation runs will be refused", "detail", detail)
+	}
+	emulationSvc := appemulation.NewService(catalog, postgres.NewRunRepo(pool), twinRepo, provider, labProvider, auditRepo)
 	assessmentsSvc := appassessments.NewService(postgres.NewAssessmentRepo(pool), assetRepo, twinRepo, auditRepo)
 
 	router := transporthttp.NewRouter(transporthttp.Deps{
@@ -66,6 +79,7 @@ func main() {
 		Assets:         assetsSvc,
 		Twins:          twinsSvc,
 		Assessments:    assessmentsSvc,
+		Emulation:      emulationSvc,
 		Secure:         secure,
 		AllowedOrigins: allowedOrigins,
 	})

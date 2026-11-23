@@ -15,6 +15,7 @@ const (
 	CapViewTwins        Capability = "twins:view"
 	CapRunAssessment    Capability = "assessments:run"
 	CapViewAssessments  Capability = "assessments:view"
+	CapViewEmulation    Capability = "emulation:view"
 	CapRunEmulation     Capability = "emulation:run"     // requires Approver, see Can
 	CapApplyRemediation Capability = "remediation:apply" // requires Approver, see Can
 	CapViewAuditLog     Capability = "audit:view"
@@ -26,7 +27,7 @@ var roleCapabilities = map[Role]map[Capability]bool{
 		CapViewWorkspace: true, CapManageMembers: true,
 		CapManageAssets: true, CapViewAssets: true,
 		CapManageTwins: true, CapViewTwins: true,
-		CapRunAssessment: true, CapViewAssessments: true,
+		CapRunAssessment: true, CapViewAssessments: true, CapViewEmulation: true,
 		CapRunEmulation: true, CapApplyRemediation: true,
 		CapViewAuditLog: true,
 	},
@@ -34,7 +35,7 @@ var roleCapabilities = map[Role]map[Capability]bool{
 		CapViewWorkspace: true, CapManageMembers: true,
 		CapManageAssets: true, CapViewAssets: true,
 		CapManageTwins: true, CapViewTwins: true,
-		CapRunAssessment: true, CapViewAssessments: true,
+		CapRunAssessment: true, CapViewAssessments: true, CapViewEmulation: true,
 		CapRunEmulation: true, CapApplyRemediation: true,
 		CapViewAuditLog: true,
 	},
@@ -42,7 +43,7 @@ var roleCapabilities = map[Role]map[Capability]bool{
 		CapViewWorkspace: true,
 		CapManageAssets:  true, CapViewAssets: true,
 		CapManageTwins: true, CapViewTwins: true,
-		CapRunAssessment: true, CapViewAssessments: true,
+		CapRunAssessment: true, CapViewAssessments: true, CapViewEmulation: true,
 		CapRunEmulation: true, CapApplyRemediation: true,
 	},
 	RoleViewer: {
@@ -50,6 +51,7 @@ var roleCapabilities = map[Role]map[Capability]bool{
 		CapViewAssets:      true,
 		CapViewTwins:       true,
 		CapViewAssessments: true,
+		CapViewEmulation:   true,
 	},
 }
 

@@ -46,6 +46,24 @@ type AuditEvent struct {
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }
 
+type EmulationRun struct {
+	ID                     uuid.UUID          `json:"id"`
+	WorkspaceID            uuid.UUID          `json:"workspace_id"`
+	TwinID                 uuid.UUID          `json:"twin_id"`
+	ScenarioID             string             `json:"scenario_id"`
+	TestGuids              []string           `json:"test_guids"`
+	Status                 string             `json:"status"`
+	Detail                 string             `json:"detail"`
+	Preflight              []byte             `json:"preflight"`
+	CatalogSource          string             `json:"catalog_source"`
+	CatalogCommit          string             `json:"catalog_commit"`
+	Provider               string             `json:"provider"`
+	AuthorisedBy           pgtype.UUID        `json:"authorised_by"`
+	AuthorisationStatement string             `json:"authorisation_statement"`
+	CreatedAt              pgtype.Timestamptz `json:"created_at"`
+	FinishedAt             pgtype.Timestamptz `json:"finished_at"`
+}
+
 type Finding struct {
 	ID           uuid.UUID `json:"id"`
 	WorkspaceID  uuid.UUID `json:"workspace_id"`
@@ -70,6 +88,21 @@ type Membership struct {
 	Approver    bool               `json:"approver"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
+
+type RunExecution struct {
+	ID          uuid.UUID          `json:"id"`
+	WorkspaceID uuid.UUID          `json:"workspace_id"`
+	RunID       uuid.UUID          `json:"run_id"`
+	TestGuid    string             `json:"test_guid"`
+	TechniqueID string             `json:"technique_id"`
+	TestName    string             `json:"test_name"`
+	RiskTier    string             `json:"risk_tier"`
+	Outcome     string             `json:"outcome"`
+	Detail      string             `json:"detail"`
+	StartedAt   pgtype.Timestamptz `json:"started_at"`
+	FinishedAt  pgtype.Timestamptz `json:"finished_at"`
+	Seq         *int64             `json:"seq"`
 }
 
 type Session struct {

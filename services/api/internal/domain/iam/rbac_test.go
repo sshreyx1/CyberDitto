@@ -8,7 +8,7 @@ import "testing"
 var allCapabilities = []Capability{
 	CapViewWorkspace, CapManageMembers, CapManageAssets, CapViewAssets,
 	CapManageTwins, CapViewTwins, CapRunAssessment, CapViewAssessments,
-	CapRunEmulation, CapApplyRemediation, CapViewAuditLog,
+	CapViewEmulation, CapRunEmulation, CapApplyRemediation, CapViewAuditLog,
 }
 
 var allRoles = []Role{RoleOwner, RoleAdmin, RoleAnalyst, RoleViewer}
@@ -22,25 +22,25 @@ func TestAuthZMatrix(t *testing.T) {
 		RoleOwner: {
 			CapViewWorkspace: true, CapManageMembers: true, CapManageAssets: true,
 			CapViewAssets: true, CapManageTwins: true, CapViewTwins: true,
-			CapRunAssessment: true, CapViewAssessments: true,
+			CapRunAssessment: true, CapViewAssessments: true, CapViewEmulation: true,
 			CapRunEmulation: true, CapApplyRemediation: true, CapViewAuditLog: true,
 		},
 		RoleAdmin: {
 			CapViewWorkspace: true, CapManageMembers: true, CapManageAssets: true,
 			CapViewAssets: true, CapManageTwins: true, CapViewTwins: true,
-			CapRunAssessment: true, CapViewAssessments: true,
+			CapRunAssessment: true, CapViewAssessments: true, CapViewEmulation: true,
 			CapRunEmulation: true, CapApplyRemediation: true, CapViewAuditLog: true,
 		},
 		RoleAnalyst: {
 			CapViewWorkspace: true, CapManageMembers: false, CapManageAssets: true,
 			CapViewAssets: true, CapManageTwins: true, CapViewTwins: true,
-			CapRunAssessment: true, CapViewAssessments: true,
+			CapRunAssessment: true, CapViewAssessments: true, CapViewEmulation: true,
 			CapRunEmulation: true, CapApplyRemediation: true, CapViewAuditLog: false,
 		},
 		RoleViewer: {
 			CapViewWorkspace: true, CapManageMembers: false, CapManageAssets: false,
 			CapViewAssets: true, CapManageTwins: false, CapViewTwins: true,
-			CapRunAssessment: false, CapViewAssessments: true,
+			CapRunAssessment: false, CapViewAssessments: true, CapViewEmulation: true,
 			CapRunEmulation: false, CapApplyRemediation: false, CapViewAuditLog: false,
 		},
 	}

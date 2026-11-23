@@ -30,7 +30,7 @@ func newFixture(t *testing.T) fixture {
 	if err != nil {
 		t.Fatal(err)
 	}
-	svc := NewService(fake.NewTwinRepo(), assets, fake.LabProvider{StepDelay: time.Millisecond}, "fake", fake.NewAuditRepo())
+	svc := NewService(fake.NewTwinRepo(), assets, &fake.LabProvider{StepDelay: time.Millisecond}, "fake", fake.NewAuditRepo())
 	return fixture{svc: svc, actorID: uuid.New(), workspaceID: workspaceID, snapshotID: snap.ID}
 }
 

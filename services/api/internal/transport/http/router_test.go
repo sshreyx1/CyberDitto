@@ -9,10 +9,12 @@ import (
 	"time"
 
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/argon2"
+	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/atomic"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/fake"
 	"github.com/sshreyx1/cyberditto/services/api/internal/adapters/token"
 	appassessments "github.com/sshreyx1/cyberditto/services/api/internal/app/assessments"
 	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
+	appemulation "github.com/sshreyx1/cyberditto/services/api/internal/app/emulation"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 )
@@ -29,11 +31,13 @@ func testDepsWithIAMRepo() (Deps, *fake.IAMRepo) {
 	audit := fake.NewAuditRepo()
 	assetRepo := fake.NewAssetRepo()
 	twinRepo := fake.NewTwinRepo()
+	provider := &fake.LabProvider{StepDelay: time.Millisecond}
 	return Deps{
 		IAM:            appiam.NewService(iamRepo, audit, argon2.New(), token.New()),
 		Assets:         appassets.NewService(assetRepo, audit),
-		Twins:          apptwins.NewService(twinRepo, assetRepo, fake.LabProvider{StepDelay: time.Millisecond}, "fake", audit),
+		Twins:          apptwins.NewService(twinRepo, assetRepo, provider, "fake", audit),
 		Assessments:    appassessments.NewService(fake.NewAssessmentRepo(assetRepo), assetRepo, twinRepo, audit),
+		Emulation:      appemulation.NewService(atomic.Load(), fake.NewRunRepo(), twinRepo, provider, "fake", audit),
 		Secure:         false,
 		AllowedOrigins: []string{"http://localhost:3000"},
 	}, iamRepo

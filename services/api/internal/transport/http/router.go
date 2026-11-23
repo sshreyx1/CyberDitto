@@ -10,6 +10,7 @@ import (
 
 	appassessments "github.com/sshreyx1/cyberditto/services/api/internal/app/assessments"
 	appassets "github.com/sshreyx1/cyberditto/services/api/internal/app/assets"
+	appemulation "github.com/sshreyx1/cyberditto/services/api/internal/app/emulation"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 	"github.com/sshreyx1/cyberditto/services/api/internal/domain"
@@ -40,6 +41,7 @@ type Deps struct {
 	Assets         *appassets.Service
 	Twins          *apptwins.Service
 	Assessments    *appassessments.Service
+	Emulation      *appemulation.Service
 	Secure         bool // true in prod (HTTPS); controls cookie Secure/__Host- (see cookies.go)
 	AllowedOrigins []string
 }
@@ -72,6 +74,13 @@ func NewRouter(deps Deps) http.Handler {
 	mux.Handle("GET /api/v1/assessments/{id}/diff", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.diff)))
 	mux.Handle("GET /api/v1/assets/{id}/assessments", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.listForAsset)))
 	mux.Handle("GET /api/v1/controls", requireCapability(iam.CapViewAssessments)(http.HandlerFunc(ah.controls)))
+
+	em := &emulationHandlers{svc: deps.Emulation}
+	mux.Handle("GET /api/v1/attack/catalog", requireCapability(iam.CapViewEmulation)(http.HandlerFunc(em.catalog)))
+	mux.Handle("POST /api/v1/runs", requireCapability(iam.CapRunEmulation)(http.HandlerFunc(em.start)))
+	mux.Handle("GET /api/v1/runs", requireCapability(iam.CapViewEmulation)(http.HandlerFunc(em.list)))
+	mux.Handle("GET /api/v1/runs/{id}", requireCapability(iam.CapViewEmulation)(http.HandlerFunc(em.get)))
+	mux.Handle("POST /api/v1/runs/{id}/abort", requireCapability(iam.CapRunEmulation)(http.HandlerFunc(em.abort)))
 
 	tw := &twinHandlers{svc: deps.Twins}
 	mux.Handle("POST /api/v1/twins", requireCapability(iam.CapManageTwins)(http.HandlerFunc(tw.create)))

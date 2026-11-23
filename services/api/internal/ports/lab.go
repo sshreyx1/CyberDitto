@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/sshreyx1/cyberditto/services/api/internal/domain/emulation"
 	"github.com/sshreyx1/cyberditto/services/api/internal/domain/twin"
 )
 
@@ -30,6 +31,19 @@ type LabProvider interface {
 	Start(ctx context.Context, twinID uuid.UUID) error
 	Stop(ctx context.Context, twinID uuid.UUID) error
 	Destroy(ctx context.Context, twinID uuid.UUID) error
+
+	// VerifyIsolation checks, right now, that nothing in the twin can reach
+	// outside the lab network (§6.4 invariant 2). Called before every run.
+	VerifyIsolation(ctx context.Context, twinID uuid.UUID) (emulation.IsolationReport, error)
+	// Execute runs one catalog test inside the twin and reports what
+	// happened. The parameter is a twin ID: there is deliberately no way to
+	// hand a provider an asset, a host, or a command string (§6.4
+	// invariants 1 and 6). A provider that cannot really execute must
+	// return OutcomeNotExecuted, never a guessed outcome (docs/adr/0014).
+	Execute(ctx context.Context, twinID uuid.UUID, test emulation.Test) emulation.Execution
+	// Revert restores the twin to its clean snapshot — after every run,
+	// and as the kill switch (§6.4 invariant 5).
+	Revert(ctx context.Context, twinID uuid.UUID) error
 }
 
 // TwinRepository persists twin records and their append-only event log.
