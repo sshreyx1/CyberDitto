@@ -38,6 +38,9 @@ export default function ConsoleLayout({ children }: Readonly<{ children: React.R
         <div className="flex items-center gap-6">
           <span className="font-semibold">CyberDitto</span>
           <nav className="flex gap-4 text-sm text-zinc-400">
+            <Link href="/assets" className="hover:text-zinc-100">
+              Assets
+            </Link>
             <Link href="/twins" className="hover:text-zinc-100">
               Twins
             </Link>

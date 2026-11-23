@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, type Twin, type TwinState } from "@/lib/api";
 
@@ -20,7 +21,6 @@ const STATE_COLOR: Partial<Record<TwinState, string>> = {
 export default function TwinsPage() {
   const [twins, setTwins] = useState<Twin[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [logs, setLogs] = useState<Record<string, string[]>>({});
 
@@ -63,19 +63,6 @@ export default function TwinsPage() {
     return () => sources.forEach((s) => s.close());
   }, [buildingIds]);
 
-  async function onCreate() {
-    setCreating(true);
-    setError(null);
-    try {
-      await api.createTwin();
-      await refresh();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.detail || err.message : "Could not create a twin.");
-    } finally {
-      setCreating(false);
-    }
-  }
-
   async function onAction(id: string, action: "start" | "stop" | "destroy") {
     setBusyId(id);
     setError(null);
@@ -93,26 +80,21 @@ export default function TwinsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold">Twins</h1>
-          <p className="text-sm text-zinc-400">
-            Built by the fake lab provider — no real hypervisor yet (docs/MASTER_PLAN.md §10 Phase 2).
-          </p>
-        </div>
-        <button
-          onClick={onCreate}
-          disabled={creating}
-          className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50"
-        >
-          {creating ? "Creating..." : "New twin"}
-        </button>
+      <div>
+        <h1 className="text-xl font-semibold">Twins</h1>
+        <p className="text-sm text-zinc-400">
+          Built by the fake lab provider — no real hypervisor yet. To build one, open an{" "}
+          <Link href="/assets" className="underline">
+            asset
+          </Link>{" "}
+          and choose a snapshot.
+        </p>
       </div>
 
       {error && <p className="text-sm text-rose-400">{error}</p>}
 
       {twins.length === 0 ? (
-        <p className="text-sm text-zinc-500">No twins yet. Create one to watch the fake build pipeline run.</p>
+        <p className="text-sm text-zinc-500">No twins yet.</p>
       ) : (
         <ul className="space-y-3">
           {twins.map((t) => {
@@ -122,6 +104,7 @@ export default function TwinsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-mono text-sm text-zinc-200">{t.id}</p>
+                    <p className="font-mono text-xs text-zinc-500">snapshot {t.snapshot_id}</p>
                     <span className={`text-xs ${STATE_COLOR[t.state] ?? "text-amber-400"}`}>{t.state}</span>
                   </div>
                   <div className="flex gap-2">

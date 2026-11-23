@@ -89,6 +89,22 @@ export interface Twin {
   updated_at: string;
 }
 
+export interface Asset {
+  id: string;
+  workspace_id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SnapshotSummary {
+  id: string;
+  asset_id: string;
+  version: number;
+  sha256: string;
+  created_at: string;
+}
+
 export const api = {
   setupStatus: () => request<{ initialized: boolean }>("/api/v1/auth/setup-status"),
 
@@ -108,9 +124,25 @@ export const api = {
 
   me: () => request<Me>("/api/v1/me"),
 
+  listAssets: () => request<{ assets: Asset[] }>("/api/v1/assets"),
+
+  createAsset: (name: string) =>
+    request<Asset>("/api/v1/assets", { method: "POST", body: JSON.stringify({ name }) }),
+
+  getAsset: (id: string) => request<Asset>(`/api/v1/assets/${id}`),
+
+  listSnapshots: (assetId: string) =>
+    request<{ snapshots: SnapshotSummary[] }>(`/api/v1/assets/${assetId}/snapshots`),
+
+  // The collector's output file is sent as-is (a Blob keeps the exact
+  // bytes), so the server's SHA-256 matches the one the collector printed.
+  uploadSnapshot: (assetId: string, file: Blob) =>
+    request<SnapshotSummary>(`/api/v1/assets/${assetId}/snapshots`, { method: "POST", body: file }),
+
   listTwins: () => request<{ twins: Twin[] }>("/api/v1/twins"),
 
-  createTwin: () => request<Twin>("/api/v1/twins", { method: "POST", body: JSON.stringify({}) }),
+  createTwin: (snapshotId: string) =>
+    request<Twin>("/api/v1/twins", { method: "POST", body: JSON.stringify({ snapshot_id: snapshotId }) }),
 
   getTwin: (id: string) => request<Twin>(`/api/v1/twins/${id}`),
 
