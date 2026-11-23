@@ -358,6 +358,35 @@ paths:
                 type: string
         "404":
           description: Not found.
+  /api/v1/assessments/{id}/report:
+    get:
+      operationId: getAssessmentReport
+      summary: >
+        Export an assessment with its prioritised gaps as a download:
+        a structured JSON report, SARIF 2.1.0 (failed controls as results
+        at error/warning/note by severity, unknown controls at "none"), or
+        a MITRE ATT&CK Navigator layer (techniques scored by their highest
+        gap priority). Requires assessments:view. The export is audit-logged.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - name: format
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [json, sarif, navigator]
+            default: json
+      responses:
+        "200":
+          description: The report, with a Content-Disposition filename.
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Unsupported format.
+        "404":
+          description: Not found.
   /api/v1/controls:
     get:
       operationId: getControls

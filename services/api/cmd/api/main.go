@@ -20,6 +20,7 @@ import (
 	appgaps "github.com/sshreyx1/cyberditto/services/api/internal/app/gaps"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
 	appremediation "github.com/sshreyx1/cyberditto/services/api/internal/app/remediation"
+	appreports "github.com/sshreyx1/cyberditto/services/api/internal/app/reports"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 	transporthttp "github.com/sshreyx1/cyberditto/services/api/internal/transport/http"
 )
@@ -79,6 +80,7 @@ func main() {
 	assessmentsSvc := appassessments.NewService(assessmentRepo, assetRepo, twinRepo, auditRepo)
 	gapsSvc := appgaps.NewService(assessmentRepo, twinRepo, runRepo)
 	remediationSvc := appremediation.NewService(assessmentRepo, auditRepo)
+	reportsSvc := appreports.NewService(gapsSvc, assetRepo, auditRepo)
 
 	router := transporthttp.NewRouter(transporthttp.Deps{
 		IAM:            iamSvc,
@@ -88,6 +90,7 @@ func main() {
 		Emulation:      emulationSvc,
 		Gaps:           gapsSvc,
 		Remediation:    remediationSvc,
+		Reports:        reportsSvc,
 		Secure:         secure,
 		AllowedOrigins: allowedOrigins,
 	})

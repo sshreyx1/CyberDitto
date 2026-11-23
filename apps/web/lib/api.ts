@@ -154,6 +154,8 @@ export interface AssessmentDiff {
   changes: AssessmentChange[];
 }
 
+export type ReportFormat = "json" | "sarif" | "navigator";
+
 export type RiskTier = "benign" | "intrusive";
 
 export interface CatalogTest {
@@ -318,6 +320,16 @@ export const api = {
     const res = await fetch(`${API_BASE}/api/v1/assessments/${assessmentId}/remediation.ps1`, { credentials: "include" });
     if (!res.ok) throw new ApiError(res.status, res.statusText || "download failed");
     return res.blob();
+  },
+
+  // Returns the report body plus the server's suggested filename.
+  downloadReport: async (assessmentId: string, format: ReportFormat): Promise<{ blob: Blob; filename: string }> => {
+    const res = await fetch(`${API_BASE}/api/v1/assessments/${assessmentId}/report?format=${format}`, {
+      credentials: "include",
+    });
+    if (!res.ok) throw new ApiError(res.status, res.statusText || "download failed");
+    const match = /filename="([^"]+)"/.exec(res.headers.get("Content-Disposition") ?? "");
+    return { blob: await res.blob(), filename: match?.[1] ?? `cyberditto-report.${format === "sarif" ? "sarif" : "json"}` };
   },
 
   listAssetAssessments: (assetId: string) =>

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { api, ApiError, type Assessment, type FindingStatus } from "@/lib/api";
 import { GapsView } from "@/components/gaps-view";
 import { RemediationView } from "@/components/remediation-view";
+import { ReportExport } from "@/components/report-export";
 
 const STATUS_ORDER: FindingStatus[] = ["fail", "unknown", "pass", "not_applicable"];
 const SEVERITY_ORDER = { high: 0, medium: 1, low: 2 } as const;
@@ -69,6 +70,9 @@ export default function AssessmentDetailPage() {
           snapshot {a.snapshot_id}
           {a.twin_id && ` · twin ${a.twin_id}`}
         </p>
+        <div className="mt-3">
+          <ReportExport assessmentId={a.id} />
+        </div>
       </div>
 
       <div className="flex gap-2 border-b border-white/10 pb-2 text-sm">

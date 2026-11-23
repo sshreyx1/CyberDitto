@@ -21,6 +21,10 @@ func cors(allowedOrigins []string) func(http.Handler) http.Handler {
 				h := w.Header()
 				h.Set("Access-Control-Allow-Origin", origin)
 				h.Set("Access-Control-Allow-Credentials", "true")
+				// Downloads (reports, remediation bundles) name themselves in
+				// Content-Disposition, which browsers hide from cross-origin
+				// scripts unless it is exposed.
+				h.Set("Access-Control-Expose-Headers", "Content-Disposition")
 				// Vary: Origin so a cache in front of this API (CDN, shared
 				// proxy) never serves one caller's CORS headers to another.
 				h.Add("Vary", "Origin")

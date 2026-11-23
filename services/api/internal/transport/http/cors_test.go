@@ -26,6 +26,18 @@ func TestCORS_PreflightForAllowedOrigin(t *testing.T) {
 	}
 }
 
+// Download filenames live in Content-Disposition; the console can only read
+// it cross-origin if the API exposes it.
+func TestCORS_ExposesContentDisposition(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
+	req.Header.Set("Origin", "http://localhost:3000")
+	rec := httptest.NewRecorder()
+	NewRouter(testDeps()).ServeHTTP(rec, req)
+	if got := rec.Header().Get("Access-Control-Expose-Headers"); got != "Content-Disposition" {
+		t.Errorf("Access-Control-Expose-Headers = %q, want Content-Disposition", got)
+	}
+}
+
 func TestCORS_NoHeadersForDisallowedOrigin(t *testing.T) {
 	router := NewRouter(testDeps())
 
