@@ -252,6 +252,12 @@ export interface Gap {
   }[];
 }
 
+export interface RemediationPlan {
+  filename: string;
+  automated: { control_id: string; summary: string; reboot_required: boolean; risk: string }[];
+  manual: { control_id: string; title: string; remediation: string }[];
+}
+
 export interface GapsResult {
   assessment_id: string;
   snapshot_id: string;
@@ -302,6 +308,17 @@ export const api = {
   getAssessment: (id: string) => request<Assessment>(`/api/v1/assessments/${id}`),
 
   getGaps: (assessmentId: string) => request<GapsResult>(`/api/v1/assessments/${assessmentId}/gaps`),
+
+  getRemediationPlan: (assessmentId: string) =>
+    request<RemediationPlan>(`/api/v1/assessments/${assessmentId}/remediation`),
+
+  // Fetched (not a plain link) so the session cookie comes along on any
+  // deployment layout; returns the script text for the caller to save.
+  downloadRemediationScript: async (assessmentId: string): Promise<Blob> => {
+    const res = await fetch(`${API_BASE}/api/v1/assessments/${assessmentId}/remediation.ps1`, { credentials: "include" });
+    if (!res.ok) throw new ApiError(res.status, res.statusText || "download failed");
+    return res.blob();
+  },
 
   listAssetAssessments: (assetId: string) =>
     request<{ assessments: Assessment[] }>(`/api/v1/assets/${assetId}/assessments`),

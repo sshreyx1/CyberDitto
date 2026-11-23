@@ -325,6 +325,39 @@ paths:
           description: OK.
         "404":
           description: Not found.
+  /api/v1/assessments/{id}/remediation:
+    get:
+      operationId: getRemediationPlan
+      summary: >
+        Which failed controls the exported bundle fixes automatically (with
+        reboot and risk notes) and which need manual work (requires
+        assessments:view).
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK.
+        "404":
+          description: Not found.
+  /api/v1/assessments/{id}/remediation.ps1:
+    get:
+      operationId: getRemediationScript
+      summary: >
+        Download the remediation bundle: a PowerShell script that dry-runs
+        by default, saves previous values to a rollback file before -Apply
+        changes anything, verifies each fix, and supports -Rollback.
+        CyberDitto never runs it. The export is audit-logged.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: The script.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: Not found.
   /api/v1/controls:
     get:
       operationId: getControls

@@ -17,6 +17,7 @@ import (
 	appemulation "github.com/sshreyx1/cyberditto/services/api/internal/app/emulation"
 	appgaps "github.com/sshreyx1/cyberditto/services/api/internal/app/gaps"
 	appiam "github.com/sshreyx1/cyberditto/services/api/internal/app/iam"
+	appremediation "github.com/sshreyx1/cyberditto/services/api/internal/app/remediation"
 	apptwins "github.com/sshreyx1/cyberditto/services/api/internal/app/twins"
 )
 
@@ -42,6 +43,7 @@ func testDepsWithIAMRepo() (Deps, *fake.IAMRepo) {
 		Assessments:    appassessments.NewService(assessmentRepo, assetRepo, twinRepo, audit),
 		Emulation:      appemulation.NewService(atomic.Load(), runRepo, twinRepo, provider, "fake", audit),
 		Gaps:           appgaps.NewService(assessmentRepo, twinRepo, runRepo),
+		Remediation:    appremediation.NewService(assessmentRepo, audit),
 		Secure:         false,
 		AllowedOrigins: []string{"http://localhost:3000"},
 	}, iamRepo
