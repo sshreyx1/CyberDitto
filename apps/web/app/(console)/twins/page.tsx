@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, type Twin, type TwinState } from "@/lib/api";
 
@@ -22,7 +23,10 @@ export default function TwinsPage() {
   const [twins, setTwins] = useState<Twin[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [logs, setLogs] = useState<Record<string, string[]>>({});
+  // Per twin: build log lines keyed by event sequence, so a reconnecting
+  // stream (which replays from the start) can't duplicate lines.
+  const [logs, setLogs] = useState<Record<string, Record<number, string>>>({});
+  const router = useRouter();
 
   const refresh = useCallback(async () => {
     try {
@@ -52,10 +56,10 @@ export default function TwinsPage() {
     const sources = buildingIds.split(",").map((id) => {
       const source = new EventSource(api.twinEventsUrl(id), { withCredentials: true });
       source.onmessage = (event) => {
-        const payload = JSON.parse(event.data) as { state: string; message: string };
+        const payload = JSON.parse(event.data) as { sequence: number; state: string; message: string };
         setLogs((prev) => ({
           ...prev,
-          [id]: [...(prev[id] ?? []), `${payload.state}: ${payload.message}`],
+          [id]: { ...(prev[id] ?? {}), [payload.sequence]: `${payload.state}: ${payload.message}` },
         }));
       };
       return source;
@@ -74,6 +78,18 @@ export default function TwinsPage() {
     } catch (err) {
       setError(err instanceof ApiError ? err.detail || err.message : `Could not ${action} the twin.`);
     } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function onAssess(id: string) {
+    setBusyId(id);
+    setError(null);
+    try {
+      const a = await api.runAssessment({ twin_id: id });
+      router.push(`/assessments/${a.id}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.detail || err.message : "Could not assess the twin.");
       setBusyId(null);
     }
   }
@@ -98,7 +114,10 @@ export default function TwinsPage() {
       ) : (
         <ul className="space-y-3">
           {twins.map((t) => {
-            const twinLogs = logs[t.id] ?? [];
+            const twinLogs = Object.entries(logs[t.id] ?? {})
+              .sort(([a], [b]) => Number(a) - Number(b))
+              .map(([, line]) => line);
+            const built = t.state === "ready" || t.state === "running" || t.state === "stopped";
             return (
               <li key={t.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
                 <div className="flex items-center justify-between">
@@ -108,6 +127,13 @@ export default function TwinsPage() {
                     <span className={`text-xs ${STATE_COLOR[t.state] ?? "text-amber-400"}`}>{t.state}</span>
                   </div>
                   <div className="flex gap-2">
+                    <button
+                      disabled={busyId === t.id || !built}
+                      onClick={() => onAssess(t.id)}
+                      className="rounded-md border border-white/10 px-3 py-1 text-xs hover:bg-white/5 disabled:opacity-30"
+                    >
+                      Assess
+                    </button>
                     <button
                       disabled={busyId === t.id || !(t.state === "ready" || t.state === "stopped")}
                       onClick={() => onAction(t.id, "start")}

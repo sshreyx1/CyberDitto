@@ -105,6 +105,34 @@ export interface SnapshotSummary {
   created_at: string;
 }
 
+export type FindingStatus = "pass" | "fail" | "unknown" | "not_applicable";
+export type Severity = "high" | "medium" | "low";
+
+export interface Finding {
+  control_id: string;
+  title: string;
+  category: string;
+  severity: Severity;
+  status: FindingStatus;
+  observed: unknown;
+  expected: string;
+  reason: string;
+  remediation: string;
+  techniques: string[];
+}
+
+export interface Assessment {
+  id: string;
+  snapshot_id: string;
+  twin_id: string | null;
+  engine: string;
+  engine_version: string;
+  score: number | null;
+  counts: { passed: number; failed: number; unknown: number; not_applicable: number };
+  findings?: Finding[];
+  created_at: string;
+}
+
 export const api = {
   setupStatus: () => request<{ initialized: boolean }>("/api/v1/auth/setup-status"),
 
@@ -138,6 +166,13 @@ export const api = {
   // bytes), so the server's SHA-256 matches the one the collector printed.
   uploadSnapshot: (assetId: string, file: Blob) =>
     request<SnapshotSummary>(`/api/v1/assets/${assetId}/snapshots`, { method: "POST", body: file }),
+
+  runAssessment: (target: { snapshot_id: string } | { twin_id: string }) =>
+    request<Assessment>("/api/v1/assessments", { method: "POST", body: JSON.stringify(target) }),
+
+  listAssessments: () => request<{ assessments: Assessment[] }>("/api/v1/assessments"),
+
+  getAssessment: (id: string) => request<Assessment>(`/api/v1/assessments/${id}`),
 
   listTwins: () => request<{ twins: Twin[] }>("/api/v1/twins"),
 

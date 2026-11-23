@@ -54,6 +54,18 @@ export default function AssetDetailPage() {
     }
   }
 
+  async function onAssess(snapshotId: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const a = await api.runAssessment({ snapshot_id: snapshotId });
+      router.push(`/assessments/${a.id}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.detail || err.message : "Could not run the assessment.");
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -96,7 +108,14 @@ export default function AssetDetailPage() {
                   <td className="font-mono text-xs" title={s.sha256}>
                     {s.sha256.slice(0, 16)}…
                   </td>
-                  <td className="text-right">
+                  <td className="space-x-2 text-right">
+                    <button
+                      onClick={() => onAssess(s.id)}
+                      disabled={busy}
+                      className="rounded-md border border-white/10 px-3 py-1 text-xs hover:bg-white/5 disabled:opacity-30"
+                    >
+                      Assess
+                    </button>
                     <button
                       onClick={() => onBuildTwin(s.id)}
                       disabled={busy}
