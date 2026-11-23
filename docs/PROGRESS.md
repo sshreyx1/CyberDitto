@@ -2,7 +2,7 @@
 
 > Read this first at the start of every session (per `CLAUDE.md`). Then `docs/BLOCKERS.md` and `docs/OWNER_TODO.md`.
 
-**Current phase:** 3 (assessment engine) — `native` engine done and verified on real data; Wazuh SCA adapter and assessment trend/history views remain. Phase 2 is done except the owner-blocked real `LabProvider` (see `docs/OWNER_TODO.md` items 6–7). Console UI is deliberately plain until the Phase 6.5 design phase (`docs/adr/0013`).
+**Current phase:** 5 done as far as it can go without a real lab; Phase 6 (Copilot/MCP) next. Phases 2–5 are complete except the parts that need the owner-blocked real `LabProvider` (`docs/OWNER_TODO.md` items 6–7): Hyper-V twins, Fidelity Score, Wazuh SCA, real test execution, Caldera, and the re-test loop. Console UI is deliberately plain until the Phase 6.5 design phase (`docs/adr/0013`).
 **Last updated:** 2026-11-23.
 
 ## Phase 0 checklist
@@ -69,9 +69,32 @@ Phase 1 is otherwise complete: the full journey (login → create a fake twin �
 - [x] Console: assessments list, detail with fails-first findings, status filter, per-finding evidence/fix/ATT&CK; "Assess" on snapshots and built twins.
 - [x] **Verified end to end** on this machine's real, pseudonymised snapshot through the real API and console: 84.71/100, 20 pass / 5 fail / 2 unknown (BitLocker, TPM — collector not elevated) / 1 not applicable (Credential Guard on Home). Twin assessment gives the same result (fake provider replicates configuration exactly).
 - [ ] `wazuh-sca` adapter (needs the Wazuh stack; `docs/OWNER_TODO.md` item 7 defaults to `native`-only lite mode for the MVP).
-- [ ] Assessment history/trend per asset and diff between two assessments.
+- [x] Assessment history per asset (`GET /api/v1/assets/{id}/assessments`) and a diff between two assessments (`GET /api/v1/assessments/{id}/diff?against=`; refused with 409 if the engine versions differ, since the scores wouldn't be comparable). Console: history on the asset page, compare view.
 - [ ] Policy/benchmark selection by OS build (all controls currently apply to every Windows build, with build-dependent defaults handled inside individual controls).
 - [ ] Acceptance spot-check of 10 controls against an independent check on a real twin — needs a real twin (owner-blocked, above); done here against the host snapshot instead, by reading the evidence of each failing control.
+
+## Phase 4 checklist
+
+- [x] **Pinned Atomic Red Team catalog** (`internal/adapters/atomic`): `cmd/catalog-import` fetches the YAML at one commit (`a0e3f9bc…`), keeps only Windows tests with a PowerShell or cmd executor, no dependencies and no `PathToAtomicsFolder` references, and writes `catalog.json` with a SHA-256 per source file. 26 tests in 5 scenarios (credential access, UAC bypass, persistence, defense evasion, discovery), curated in `curation.json`. At startup `atomic.Load()` checks the file hash and commit against constants compiled into the binary and re-checks every test against the denylist; an unverified catalog refuses every run. Licence in `THIRD_PARTY_NOTICES.md`; `catalog.json` is `-text` in `.gitattributes` so line endings can't change its hash.
+- [x] **Destructive denylist in code** (`domain/emulation/denylist.go`, ADR 0006): techniques (ransomware-style encryption, disk wipe, inhibit recovery, shutdown, account removal, …) plus command patterns (`vssadmin delete`, `bcdedit`, `cipher /w`, formatting, deleting whole drive roots or the Windows directory). Narrowed after it wrongly flagged a cleanup deleting one marker file under `C:\Windows\Temp`.
+- [x] **Preflight policy engine** (`domain/emulation/preflight.go`) enforcing §6.4: twin ready, lab isolated, catalog verified, tests catalog-only and not destructive, run limits (≤ 25 tests, ≤ 30 min per run, ≤ 2 min per test), and the operator's authorised-use acknowledgement. Every check is recorded on the run; a refused run is stored as `preflight_failed` with the reasons (422). `invariants_test.go` has a failing test per invariant.
+- [x] **Emulation runs** (migration 0004: `emulation_runs` with a NOT NULL twin FK — a run can't target anything but a twin — and `run_executions`, RLS, risk tier CHECK limited to benign/intrusive). `emulation:run` stays approver-gated. Abort reverts the twin and marks remaining tests skipped; the API waits for the run to settle so the response reflects the final state.
+- [x] **No simulated outcomes** (ADR 0014): with only the `fake` provider, every test is recorded `not_executed` with that reason. Nothing derived from configuration is presented as an execution result.
+- [x] Console: catalog with scenarios and risk tiers, run launcher with the acknowledgement, live run page with abort; a persistent "authorised testing only" banner on every console page.
+- [ ] Real execution on a Hyper-V twin, Sysmon/Wazuh telemetry for detected/logged outcomes, Caldera — need the real lab (owner-blocked).
+- [ ] ATT&CK technique metadata import (names/tactics for a heatmap) — the Navigator layer export covers the heatmap for now.
+
+## Phase 5 checklist
+
+- [x] **Prioritised gaps** (`domain/correlation`, `GET /api/v1/assessments/{id}/gaps`): each failed control joined with its techniques and the evidence from runs on twins built from the same snapshot. Priority = severity × evidence (1.0 if a technique was observed to succeed, else 0.3) × prevalence × exposure; prevalence and exposure are 1.0 and say so in their explanations until multi-asset data and asset criticality exist. Every factor carries an explanation.
+- [x] **Remediation bundles** (`domain/remediation`, `GET .../remediation` and `.../remediation.ps1`): 18 templates (registry settings plus scripted firewall/Defender/account fixes). The script dry-runs by default; `-Apply` needs elevation, writes a rollback file of current values first, applies, and verifies each change; `-Rollback <file>` restores. Each template's "compliant" set is tested against the matching control's verdict for every probed value (this caught a bundle that would have lowered `RunAsPPL=2` to 1). A PowerShell parse test runs in CI. Exports are audit-logged. A dry run on this host changed nothing and wrote no rollback file.
+- [x] **Reports** (`domain/report`, `GET .../report?format=json|sarif|navigator`): JSON (assessment, findings, gaps, score formula), SARIF 2.1.0 (one rule per control; failed controls as results at error/warning/note by severity, unknowns at `none` so a reader can see what wasn't checked), ATT&CK Navigator layer (techniques scored by their highest gap priority). Exports are audit-logged; the API exposes `Content-Disposition` to the console via CORS.
+- [ ] Re-test loop (apply on a twin, re-assess, re-run techniques) — needs the real lab.
+- [ ] PDF report.
+
+## Phase 4–5 verification (2026-11-23)
+
+Fresh Postgres (migrations 0001–0004), real API, real console. Emulation: an unacknowledged run refused at preflight with the reason shown; a completed run with every test `not_executed`; an abort mid-run (status aborted, remaining tests skipped, twin reverted). Gaps and remediation views render for an assessment of the synthetic weak fixture. Reports: all three formats downloaded through the console buttons with server-side filenames; the SARIF output validated against the official SARIF 2.1.0 JSON schema with zero errors (28 rules, 28 results); six `report.export` audit rows written, none for a rejected `format=pdf` (400). All Postgres integration suites pass, including runs. Test data lived in a throwaway container, removed afterwards.
 
 ## Important environment note (read before running Go tests on this Windows host)
 
@@ -117,9 +140,9 @@ Fresh Postgres (migrations 0001–0003), real API, real console: owner setup and
 
 The real lab (Hyper-V `LabProvider`, lab gateway, twin agent, Fidelity Score) is **owner-blocked** (`docs/OWNER_TODO.md` items 6–7). Everything below can proceed without it:
 
-1. **Phase 3 remainder:** assessment history per asset and a diff between two assessments (what changed between snapshot versions).
-2. **Phase 4, unblocked parts:** Atomic Red Team catalog importer pinned to a verified commit SHA with a hash manifest, risk tiers and a code-level destructive denylist (ADR 0006); ATT&CK technique metadata import (pinned); the preflight policy engine enforcing the §6.4 invariants with a failing-build test per invariant; emulation runs that can only target `TWIN` records, executed by the `fake` provider with outcomes clearly labelled *simulated* (derived from the twin's configuration, never presented as real execution). Real execution and Caldera wait for the real lab.
-3. **Phase 5, unblocked parts:** control ↔ technique correlation and gap priority with factor breakdown (§4.4), remediation templates with apply/rollback/verify scripts, reports (JSON/SARIF/ATT&CK Navigator layer first, PDF later).
+1. **Phase 6, Ditto Copilot + MCP server:** needs an `ANTHROPIC_API_KEY` from the owner to verify against the real API (`docs/OWNER_TODO.md` item 8); AI stays off by default (`CD_AI_ENABLED=false`) and pseudonymised. The MCP server's read-only tools (assets, assessments, gaps, reports) can be built and tested without a key.
+2. **Phase 6.5, console UI design** — only after the functionality above is done (ADR 0013).
+3. PDF report; asset criticality so the gap exposure factor stops being 1.0.
 4. Collector: remaining categories (audit policy, scheduled tasks, shares, AppLocker/WDAC, firewall rules), output signing, fuzz tests, `--upload`.
 5. TOTP and WebAuthn passkeys; member management (invite users, change roles) so non-owner roles are reachable without test-only helpers.
 6. River queue / MinIO only when a feature needs them. Branch protection stays on `docs/OWNER_TODO.md` item 4.

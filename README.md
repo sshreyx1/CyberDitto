@@ -62,7 +62,7 @@ Full defect list, severities, and what's actually worth reusing: [`docs/MASTER_P
 
 ## Status
 
-**Phases 1–3 working end to end; the real hypervisor lab is next.** Built in public, phase by phase; the live checklist is [`docs/PROGRESS.md`](docs/PROGRESS.md).
+**Phases 1–5 working end to end against the `fake` lab provider; the real hypervisor lab is waiting on a hardware decision.** Built in public, phase by phase; the live checklist is [`docs/PROGRESS.md`](docs/PROGRESS.md).
 
 Built and verified so far:
 
@@ -70,9 +70,13 @@ Built and verified so far:
 - **Assets and snapshots** — upload the collector's file; strict schema validation, immutable versions, SHA-256 of the exact bytes received, optional digest check against what the collector printed.
 - **Compliance engine** — 28 controls with CyberDitto's own IDs and wording, each verdict backed by the observed values from the snapshot, unset settings judged against Windows' documented defaults, and a weighted posture score that excludes unknowns rather than counting them as passes.
 - **Twins** — persistent twin lifecycle with live build progress over SSE (built by a `fake` lab provider until the real Hyper-V provider lands).
+- **Attack emulation pipeline** — 26 curated Windows tests from Atomic Red Team, pinned to one commit and verified by SHA-256 at startup; a code-level denylist for destructive techniques; a preflight policy engine that refuses a run unless the target is a ready, isolated twin, every test comes from the verified catalog, limits hold, and the operator has acknowledged authorised use; an abort switch that reverts the twin. Until a real lab exists the `fake` provider records every test as *not executed* — it never invents outcomes ([ADR 0014](docs/adr/0014-emulation-without-a-real-lab.md)).
+- **Prioritised gaps** — failed controls joined with the techniques they make easier, ranked by severity × attack evidence × prevalence × exposure, with every factor explained.
+- **Remediation bundles** — a PowerShell script per assessment that dry-runs by default, saves current values to a rollback file before `-Apply` changes anything, verifies each fix, and can `-Rollback`. CyberDitto never runs it for you; every export is audit-logged.
+- **Reports** — export an assessment as JSON, SARIF 2.1.0 (validated against the official schema) or a MITRE ATT&CK Navigator layer.
 - **Platform security** — Postgres Row-Level Security on every workspace table, Argon2id, server-side httpOnly sessions, RBAC with an every-route × every-role test matrix, CSRF/CORS allow-lists, rate-limited auth, and a hash-chained audit log.
 
-Not built yet: the real Hyper-V lab and twin agent (waiting on an image/hardware decision), attack emulation, gap correlation and remediation, the AI copilot, and the console's visual design — the console is deliberately plain until every feature works ([ADR 0013](docs/adr/0013-functionality-before-visual-design.md)), which is also why there are no screenshots here yet.
+Not built yet: the real Hyper-V lab and twin agent (waiting on an image/hardware decision), and with it real test execution and Caldera; PDF reports; the AI copilot; and the console's visual design — the console is deliberately plain until every feature works ([ADR 0013](docs/adr/0013-functionality-before-visual-design.md)), which is also why there are no screenshots here yet.
 
 ## Architecture
 
@@ -256,9 +260,9 @@ Run it from an elevated prompt to include BitLocker and TPM state. `task lint te
 | 0 | Foundations, repo hygiene, CI, ADRs | ✅ done |
 | 1 | Walking skeleton — auth, RBAC, audit log, fake lab provider, console shell | ✅ done |
 | 2 | Real collector + Hyper-V twin provider, Fidelity Score | 🔶 collector, assets & snapshots done; Hyper-V provider waiting on an image/hardware decision |
-| 3 | Configuration assessment engine (native + Wazuh SCA) | 🔶 native engine done; Wazuh SCA and history views remain |
-| 4 | Attack emulation — Atomic Red Team + MITRE Caldera, ATT&CK heatmap | ⬜ planned |
-| 5 | Gap correlation, remediation, re-test loop, reports | ⬜ planned |
+| 3 | Configuration assessment engine (native + Wazuh SCA) | 🔶 native engine, history and diffs done; Wazuh SCA waits on the lab |
+| 4 | Attack emulation — Atomic Red Team + MITRE Caldera, ATT&CK heatmap | 🔶 pinned catalog, denylist, preflight, runs and abort done; real execution and Caldera wait on the lab |
+| 5 | Gap correlation, remediation, re-test loop, reports | 🔶 gaps, remediation bundles, JSON/SARIF/Navigator reports done; re-test loop waits on the lab, PDF later |
 | 6 | Ditto Copilot (AI layer) + MCP server | ⬜ planned |
 | 6.5 | Console UI design system and visual pass ([ADR 0013](docs/adr/0013-functionality-before-visual-design.md)) | ⬜ planned |
 | 7 | Public website, docs, demo mode, polish | ⬜ planned |
