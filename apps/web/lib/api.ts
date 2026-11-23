@@ -6,11 +6,15 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 export class ApiError extends Error {
   status: number;
   detail?: string;
+  // The parsed error body, for endpoints whose error response carries data
+  // (e.g. a refused emulation run returns the run with its preflight).
+  body?: unknown;
 
-  constructor(status: number, title: string, detail?: string) {
+  constructor(status: number, title: string, detail?: string, body?: unknown) {
     super(title);
     this.status = status;
     this.detail = detail;
+    this.body = body;
   }
 }
 
@@ -34,14 +38,16 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (!res.ok) {
     let title = res.statusText || `request failed (${res.status})`;
     let detail: string | undefined;
+    let body: unknown;
     try {
-      const problem = (await res.json()) as Problem;
+      body = await res.json();
+      const problem = body as Problem;
       title = problem.title ?? title;
       detail = problem.detail;
     } catch {
-      // Not a problem+json body (e.g. a plain 401/403 with no body).
+      // Not a JSON body (e.g. a plain 401/403 with no body).
     }
-    throw new ApiError(res.status, title, detail);
+    throw new ApiError(res.status, title, detail, body);
   }
 
   if (res.status === 204 || res.headers.get("Content-Length") === "0") {
@@ -148,6 +154,82 @@ export interface AssessmentDiff {
   changes: AssessmentChange[];
 }
 
+export type RiskTier = "benign" | "intrusive";
+
+export interface CatalogTest {
+  guid: string;
+  technique_id: string;
+  technique_name: string;
+  name: string;
+  description: string;
+  executor: string;
+  elevation_required: boolean;
+  command: string;
+  cleanup?: string;
+  risk_tier: RiskTier;
+  curation_note?: string;
+}
+
+export interface Scenario {
+  id: string;
+  name: string;
+  description: string;
+  test_guids: string[];
+}
+
+export interface AttackCatalog {
+  source: string;
+  repository: string;
+  commit: string;
+  commit_date: string;
+  license: string;
+  verified: boolean;
+  verification_detail: string;
+  authorisation_statement: string;
+  limits: { max_tests_per_run: number; max_run_seconds: number; max_test_seconds: number };
+  tests: CatalogTest[];
+  scenarios: Scenario[];
+}
+
+export interface PreflightCheck {
+  id: string;
+  name: string;
+  passed: boolean;
+  detail: string;
+}
+
+export type RunStatus = "preflight_failed" | "running" | "completed" | "aborted" | "failed";
+export type Outcome = "blocked" | "detected" | "logged" | "missed" | "not_executed" | "error" | "skipped";
+
+export interface Execution {
+  test_guid: string;
+  technique_id: string;
+  test_name: string;
+  risk_tier: RiskTier;
+  outcome: Outcome;
+  detail: string;
+  started_at: string;
+  finished_at: string;
+}
+
+export interface EmulationRun {
+  id: string;
+  twin_id: string;
+  scenario_id: string;
+  test_guids: string[];
+  status: RunStatus;
+  detail: string;
+  preflight: PreflightCheck[];
+  catalog_source: string;
+  catalog_commit: string;
+  provider: string;
+  authorised_by: string;
+  authorisation_statement: string;
+  executions: Execution[];
+  created_at: string;
+  finished_at: string | null;
+}
+
 export const api = {
   setupStatus: () => request<{ initialized: boolean }>("/api/v1/auth/setup-status"),
 
@@ -194,6 +276,32 @@ export const api = {
 
   diffAssessments: (afterId: string, beforeId: string) =>
     request<AssessmentDiff>(`/api/v1/assessments/${afterId}/diff?against=${encodeURIComponent(beforeId)}`),
+
+  getAttackCatalog: () => request<AttackCatalog>("/api/v1/attack/catalog"),
+
+  // A refused run comes back as 422 with the run body (its preflight
+  // results), so this resolves either way instead of throwing on 422.
+  startRun: async (body: {
+    twin_id: string;
+    scenario_id?: string;
+    test_guids?: string[];
+    authorisation_acknowledged: boolean;
+  }): Promise<EmulationRun> => {
+    try {
+      return await request<EmulationRun>("/api/v1/runs", { method: "POST", body: JSON.stringify(body) });
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 422 && err.body && typeof err.body === "object" && "preflight" in err.body) {
+        return err.body as EmulationRun;
+      }
+      throw err;
+    }
+  },
+
+  listRuns: () => request<{ runs: EmulationRun[] }>("/api/v1/runs"),
+
+  getRun: (id: string) => request<EmulationRun>(`/api/v1/runs/${id}`),
+
+  abortRun: (id: string) => request<EmulationRun>(`/api/v1/runs/${id}/abort`, { method: "POST" }),
 
   listTwins: () => request<{ twins: Twin[] }>("/api/v1/twins"),
 

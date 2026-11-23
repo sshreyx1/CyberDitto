@@ -47,6 +47,9 @@ export default function ConsoleLayout({ children }: Readonly<{ children: React.R
             <Link href="/assessments" className="hover:text-zinc-100">
               Assessments
             </Link>
+            <Link href="/emulation" className="hover:text-zinc-100">
+              Emulation
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4 text-sm text-zinc-400">
@@ -60,6 +63,11 @@ export default function ConsoleLayout({ children }: Readonly<{ children: React.R
           </button>
         </div>
       </header>
+      {/* docs/MASTER_PLAN.md §6.4 invariant 10: a persistent notice, on every console page. */}
+      <p role="note" className="border-b border-amber-500/20 bg-amber-500/5 px-6 py-1.5 text-xs text-amber-200/80">
+        Authorised testing only. Attack runs execute real attacker techniques, and only against lab twins of machines you
+        are permitted to test. See docs/ACCEPTABLE_USE.md.
+      </p>
       <main className="p-6">{children}</main>
     </div>
   );
